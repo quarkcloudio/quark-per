@@ -26,10 +26,10 @@
     "extra": {
         "laravel": {
             "aliases": {
-                "Quark": "Quarkcms\\QuarkAdmin\\Facades\\Quark"
+                "Quark": "Quarkcms\\QuarkAdmin\\Facades\\QuarkAdmin"
             },
             "providers": [
-                "Quarkcms\\QuarkAdmin\\QuarkServiceProvider"
+                "Quarkcms\\QuarkAdmin\\QuarkAdminServiceProvider"
             ]
         }
     }

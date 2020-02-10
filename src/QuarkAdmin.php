@@ -9,7 +9,7 @@ use InvalidArgumentException;
 /**
  * Class Quark.
  */
-class Quark
+class QuarkAdmin
 {
     /**
      * @param $model

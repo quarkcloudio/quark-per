@@ -4,7 +4,7 @@ namespace Quarkcms\QuarkAdmin;
 
 use Illuminate\Support\ServiceProvider;
 
-class QuarkServiceProvider extends ServiceProvider
+class QuarkAdminServiceProvider extends ServiceProvider
 {
     /**
      * Register services.
@@ -13,8 +13,8 @@ class QuarkServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('quark', function ($app) {
-            return new Quark($app['config']);
+        $this->app->singleton('quark-admin', function ($app) {
+            return new QuarkAdmin($app['config']);
         });
     }
 
