@@ -1,0 +1,36 @@
+{
+    "name": "tangtanglove/quark-admin",
+    "description": "laravel admin",
+    "keywords": [
+        "quark-admin",
+        "laravel",
+        "laravel-admin",
+        "sdk"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tangtanglove",
+            "email": "dai_hang_love@126.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "ext-fileinfo": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Tangtanglove\\QuarkAdmin\\": "src"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "aliases": {
+                "Quark": "Tangtanglove\\QuarkAdmin\\Facades\\Quark"
+            },
+            "providers": [
+                "Tangtanglove\\QuarkAdmin\\QuarkServiceProvider"
+            ]
+        }
+    }
+}
