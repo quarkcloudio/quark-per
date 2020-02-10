@@ -1,6 +1,6 @@
 <?php
 
-namespace Tangtanglove\QuarkAdmin;
+namespace Quarkcms\QuarkAdmin;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;

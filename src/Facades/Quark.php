@@ -1,6 +1,6 @@
 <?php
 
-namespace Tangtanglove\QuarkAdmin\Facades;
+namespace Quarkcms\QuarkAdmin\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

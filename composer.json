@@ -1,5 +1,5 @@
 {
-    "name": "tangtanglove/quark-admin",
+    "name": "quarkcms/quark-admin",
     "description": "laravel admin",
     "keywords": [
         "quark-admin",
@@ -20,16 +20,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Tangtanglove\\QuarkAdmin\\": "src"
+            "Quarkcms\\QuarkAdmin\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "aliases": {
-                "Quark": "Tangtanglove\\QuarkAdmin\\Facades\\Quark"
+                "Quark": "Quarkcms\\QuarkAdmin\\Facades\\Quark"
             },
             "providers": [
-                "Tangtanglove\\QuarkAdmin\\QuarkServiceProvider"
+                "Quarkcms\\QuarkAdmin\\QuarkServiceProvider"
             ]
         }
     }

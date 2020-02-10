@@ -1,6 +1,6 @@
 <?php
 
-namespace Tangtanglove\QuarkAdmin;
+namespace Quarkcms\QuarkAdmin;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
