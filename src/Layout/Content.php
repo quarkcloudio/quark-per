@@ -1,60 +1,52 @@
 <?php
 
-namespace App\Planet\Layout;
+namespace QuarkCMS\QuarkAdmin\Layout;
 
 class Content
 {
-    public  $title,
-            $description,
-            $breadcrumb,
-            $body;
+    public  $content;
 
     function __construct() {
-        $this->title = '';
-        $this->description = '';
-        $this->breadcrumb = null;
-        $this->body = null;
+        $this->content['title'] = false;
+        $this->content['subTitle'] = false;
+        $this->content['description'] = false;
+        $this->content['breadcrumb'] = null;
+        $this->content['body'] = null;
     }
 
     public function title($title)
     {
-        $this->title = $title;
+        $this->content['title'] = $title;
+        return $this;
+    }
 
-        // 删除空属性
-        $this->unsetNullProperty();
+    public function subTitle($subTitle)
+    {
+        $this->content['subTitle'] = $subTitle;
         return $this;
     }
 
     public function description($description)
     {
-        $this->description = $description;
+        $this->content['description'] = $description;
         return $this;
     }
 
     public function breadcrumb($breadcrumb)
     {
-        $this->breadcrumb = $breadcrumb;
+        $this->content['breadcrumb'] = $breadcrumb;
         return $this;
     }
 
     public function body($body)
     {
-        $this->body = $body;
+        $this->content['body'] = $body;
         return $this;
     }
 
     public function row($row)
     {
-        $this->body = $row;
+        $this->content['row'] = $row;
         return $this;
-    }
-
-    protected function unsetNullProperty()
-    {
-        foreach ($this as $key => $value) {
-            if(empty($value)) {
-                unset($this->$key);
-            }
-        }
     }
 }

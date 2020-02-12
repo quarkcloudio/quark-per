@@ -1,6 +1,6 @@
 <?php
 
-namespace Quarkcms\QuarkAdmin;
+namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Support\ServiceProvider;
 

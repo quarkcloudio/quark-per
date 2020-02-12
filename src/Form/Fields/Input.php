@@ -1,8 +1,8 @@
 <?php
 
-namespace Quarkcms\QuarkAdmin\Form\Fields;
+namespace QuarkCMS\QuarkAdmin\Form\Fields;
 
-use Quarkcms\QuarkAdmin\Form\Item;
+use QuarkCMS\QuarkAdmin\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 

@@ -20,16 +20,16 @@
     },
     "autoload": {
         "psr-4": {
-            "Quarkcms\\QuarkAdmin\\": "src"
+            "QuarkCMS\\QuarkAdmin\\": "src"
         }
     },
     "extra": {
         "laravel": {
             "aliases": {
-                "Quark": "Quarkcms\\QuarkAdmin\\Facades\\QuarkAdmin"
+                "QuarkAdmin": "QuarkCMS\\QuarkAdmin\\Facades\\QuarkAdmin"
             },
             "providers": [
-                "Quarkcms\\QuarkAdmin\\QuarkAdminServiceProvider"
+                "QuarkCMS\\QuarkAdmin\\QuarkAdminServiceProvider"
             ]
         }
     }

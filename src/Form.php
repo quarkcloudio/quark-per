@@ -1,19 +1,17 @@
 <?php
 
-namespace Quarkcms\QuarkAdmin;
+namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Support\Arr;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Http\Request;
+use Closure;
 
 class Form
 {
-    public $component;
+    public $form;
 
-    public $layout;
-
-    public $action;
-
-    public $items;
+    public $model;
 
     /**
      * Available fields.
@@ -30,12 +28,25 @@ class Form
      * @param $model
      * @param \Closure $callback
      */
-    public function __construct()
+    public function __construct($model)
     {
-        $this->component = 'form';
+        $this->model = $model;
         $layout['labelCol']['span'] = 3;
         $layout['wrapperCol']['span'] = 21;
-        $this->layout = $layout;
+        $this->form['layout'] = $layout;
+    }
+
+    /**
+     * form title.
+     *
+     * @param string $url
+     *
+     * @return bool|mixed
+     */
+    public function title($title)
+    {
+        $this->form['title'] = $title;
+        return $this;
     }
 
     /**
@@ -47,7 +58,29 @@ class Form
      */
     public function layout($layout)
     {
-        $this->layout = $layout;
+        $this->form['layout'] = $layout;
+        return $this;
+    }
+
+    /**
+     * form disableSubmit.
+     *
+     * @return bool
+     */
+    public function disableSubmit()
+    {
+        $this->form['disableSubmit'] = true;
+        return $this;
+    }
+
+    /**
+     * form disableReset.
+     *
+     * @return bool
+     */
+    public function disableReset()
+    {
+        $this->form['disableReset'] = true;
         return $this;
     }
 
@@ -60,8 +93,40 @@ class Form
      */
     public function setAction($url)
     {
-        $this->action = $url;
+        $this->form['action'] = $url;
         return $this;
+    }
+
+    /**
+     * form store.
+     *
+     * @return bool
+     */
+    public function store()
+    {
+        $request = new Request;
+
+        $data = json_decode($request->getContent(),true);
+        unset($data['actionUrl']);
+        $result = $this->model->create($data);
+
+        return $result;
+    }
+
+    /**
+     * form isCreating.
+     *
+     * @return bool
+     */
+    public function isCreating()
+    {
+        $request = new Request;
+
+        $data = json_decode($request->getContent(),true);
+        unset($data['actionUrl']);
+        $result = $this->model->create($data);
+
+        return $result;
     }
 
     /**
@@ -87,7 +152,7 @@ class Form
 
             $column = Arr::get($arguments, 0, ''); //[0];
             $element = new $className($column, array_slice($arguments, 1));
-            $this->items[] = $element;
+            $this->form['items'][] = $element;
 
             return $element;
         }

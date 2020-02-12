@@ -1,6 +1,6 @@
 <?php
 
-namespace Quarkcms\QuarkAdmin\Facades;
+namespace QuarkCMS\QuarkAdmin\Facades;
 
 use Illuminate\Support\Facades\Facade;
 

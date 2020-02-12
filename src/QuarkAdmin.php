@@ -1,6 +1,6 @@
 <?php
 
-namespace Quarkcms\QuarkAdmin;
+namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
 use Illuminate\Database\Eloquent\Model;
@@ -15,10 +15,21 @@ class QuarkAdmin
      * @param $model
      * @param Closure $callable
      *
-     * @return \Quark\Form
+     * @return QuarkCMS\QuarkAdmin\Form
      */
-    public function form()
+    public function form($model = null)
     {
-        return new Form();
+        return new Form($model);
+    }
+
+    /**
+     * @param $model
+     * @param Closure $callable
+     *
+     * @return QuarkCMS\QuarkAdmin\Layout\Content
+     */
+    public function Content()
+    {
+        return new Layout\Content();
     }
 }
