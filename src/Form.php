@@ -3,6 +3,7 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Closure;
@@ -114,11 +115,11 @@ class Form
     }
 
     /**
-     * form isCreating.
+     * form edit.
      *
      * @return bool
      */
-    public function isCreating()
+    public function edit($id)
     {
         $request = new Request;
 
@@ -127,6 +128,42 @@ class Form
         $result = $this->model->create($data);
 
         return $result;
+    }
+
+    /**
+     * form save.
+     *
+     * @return bool
+     */
+    public function save($id)
+    {
+        $request = new Request;
+
+        $data = json_decode($request->getContent(),true);
+        unset($data['actionUrl']);
+        $result = $this->model->create($data);
+
+        return $result;
+    }
+
+    /**
+     * Indicates if current form page is creating.
+     *
+     * @return bool
+     */
+    public function isCreating(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), ['/create', '/store']);
+    }
+
+    /**
+     * Indicates if current form page is editing.
+     *
+     * @return bool
+     */
+    public function isEditing(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), '/edit', '/save');
     }
 
     /**
