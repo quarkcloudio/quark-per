@@ -1,6 +1,9 @@
 <?php
 
-namespace App\Planet\Table;
+namespace QuarkCMS\QuarkAdmin\Table;
+
+use Illuminate\Support\Arr;
+use Exception;
 
 class Column
 {
@@ -15,16 +18,27 @@ class Column
             $a,
             $actions;
 
-    function __construct() {
+    function __construct($dataIndex,$title = '') {
+        $this->component = 'column';
+        $this->dataIndex = $dataIndex;
+        $this->title = $title;
+
+        if(empty($title) || !count($title)) {
+            $this->title = $dataIndex;
+        } else {
+            $title = Arr::get($title, 0, ''); //[0];
+            $this->title = $title;
+        }
+
         $this->align = 'left';
         $this->fixed = false;
         $this->actions = false;
         $this->tag = false;
-        $this->isImage = false;
-        $this->isIcon = false;
+        $this->image = false;
+        $this->icon = false;
     }
 
-    static function make($title,$dataIndex)
+    static function make($dataIndex,$title)
     {
         $self = new self();
 
@@ -87,15 +101,15 @@ class Column
         return $this;
     }
 
-    public function isIcon()
+    public function icon()
     {
-        $this->isIcon = true;
+        $this->icon = true;
         return $this;
     }
 
-    public function isImage()
+    public function image()
     {
-        $this->isImage = true;
+        $this->image = true;
         return $this;
     }
 

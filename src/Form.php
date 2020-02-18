@@ -121,13 +121,8 @@ class Form
      */
     public function edit($id)
     {
-        $request = new Request;
 
-        $data = json_decode($request->getContent(),true);
-        unset($data['actionUrl']);
-        $result = $this->model->create($data);
-
-        return $result;
+        return '';
     }
 
     /**
@@ -135,13 +130,29 @@ class Form
      *
      * @return bool
      */
-    public function save($id)
+    public function save()
     {
         $request = new Request;
 
         $data = json_decode($request->getContent(),true);
         unset($data['actionUrl']);
-        $result = $this->model->create($data);
+        $result = $this->model->save($data);
+
+        return $result;
+    }
+
+    /**
+     * form destroy.
+     *
+     * @return bool
+     */
+    public function destroy($id)
+    {
+        $request = new Request;
+
+        $data = json_decode($request->getContent(),true);
+        unset($data['actionUrl']);
+        $result = $this->model->save($data);
 
         return $result;
     }

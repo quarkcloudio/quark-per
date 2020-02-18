@@ -1,0 +1,14 @@
+<?php
+
+use Illuminate\Routing\Router;
+
+Quark::routes();
+
+Route::group([
+    'prefix'        => config('quark.route.prefix'),
+    'namespace'     => config('quark.route.namespace'),
+    'middleware'    => config('quark.route.middleware'),
+], function (Router $router) {
+
+    $router->get('/', 'HomeController@index')->name('admin.home');
+});

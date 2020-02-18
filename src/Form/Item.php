@@ -1,8 +1,7 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Form;
+namespace QuarkCMS\Quark\Form;
 
-use QuarkCMS\QuarkAdmin\Form;
 use Exception;
 
 class Item

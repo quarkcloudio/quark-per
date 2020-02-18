@@ -9,10 +9,10 @@ use Illuminate\Support\Facades\Facade;
  *
  * @see Quark\Quark
  */
-class QuarkAdmin extends Facade
+class Quark extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'quark-admin';
+        return 'quark';
     }
 }
