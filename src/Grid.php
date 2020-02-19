@@ -3,15 +3,10 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
-use QuarkCMS\QuarkAdmin\Exception\Handler;
 use QuarkCMS\QuarkAdmin\Grid\Column;
 use QuarkCMS\QuarkAdmin\Grid\Concerns;
-use QuarkCMS\QuarkAdmin\Grid\Displayers;
-use QuarkCMS\QuarkAdmin\Grid\Exporter;
-use QuarkCMS\QuarkAdmin\Grid\Exporters\AbstractExporter;
 use QuarkCMS\QuarkAdmin\Grid\Model;
 use QuarkCMS\QuarkAdmin\Grid\Row;
-use QuarkCMS\QuarkAdmin\Grid\Tools;
 use QuarkCMS\QuarkAdmin\Traits\ShouldSnakeAttributes;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations;
@@ -22,18 +17,7 @@ use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 
 class Grid
 {
-    use Concerns\HasElementNames,
-        Concerns\HasHeader,
-        Concerns\HasFooter,
-        Concerns\HasFilter,
-        Concerns\HasTools,
-        Concerns\HasTotalRow,
-        Concerns\HasHotKeys,
-        Concerns\HasQuickCreate,
-        Concerns\HasActions,
-        Concerns\HasSelector,
-        Concerns\CanHidesColumns,
-        Concerns\CanFixColumns,
+    use Concerns\HasFilter,
         ShouldSnakeAttributes,
         Macroable {
             __call as macroCall;
@@ -96,13 +80,6 @@ class Grid
     protected $variables = [];
 
     /**
-     * Resource path of the grid.
-     *
-     * @var
-     */
-    protected $resourcePath;
-
-    /**
      * Default primary key name.
      *
      * @var string
@@ -110,54 +87,9 @@ class Grid
     protected $keyName = 'id';
 
     /**
-     * Export driver.
-     *
-     * @var string
-     */
-    protected $exporter;
-
-    /**
-     * View for grid to render.
-     *
-     * @var string
-     */
-    protected $view = 'admin::grid.table';
-
-    /**
-     * Per-page options.
-     *
-     * @var array
-     */
-    public $perPages = [10, 20, 30, 50, 100];
-
-    /**
-     * Default items count per-page.
-     *
-     * @var int
-     */
-    public $perPage = 20;
-
-    /**
      * @var []callable
      */
     protected $renderingCallbacks = [];
-
-    /**
-     * Options for grid.
-     *
-     * @var array
-     */
-    protected $options = [
-        'show_pagination'        => true,
-        'show_tools'             => true,
-        'show_filter'            => true,
-        'show_exporter'          => true,
-        'show_actions'           => true,
-        'show_row_selector'      => true,
-        'show_create_btn'        => true,
-        'show_column_selector'   => true,
-        'show_define_empty_page' => true,
-    ];
 
     /**
      * @var string
@@ -185,8 +117,6 @@ class Grid
 
         $this->initialize();
 
-        $this->handleExportRequest();
-
         $this->callInitCallbacks();
     }
 
@@ -200,8 +130,7 @@ class Grid
         $this->columns = Collection::make();
         $this->rows = Collection::make();
 
-        $this->initTools()
-            ->initFilter();
+        $this->initFilter();
     }
 
     /**
@@ -226,64 +155,6 @@ class Grid
         foreach (static::$initCallbacks as $callback) {
             call_user_func($callback, $this);
         }
-    }
-
-    /**
-     * Handle export request.
-     *
-     * @param bool $forceExport
-     */
-    protected function handleExportRequest($forceExport = false)
-    {
-        if (!$scope = request(Exporter::$queryName)) {
-            return;
-        }
-
-        // clear output buffer.
-        if (ob_get_length()) {
-            ob_end_clean();
-        }
-
-        $this->model()->usePaginate(false);
-
-        if ($this->builder) {
-            call_user_func($this->builder, $this);
-
-            $this->getExporter($scope)->export();
-        }
-
-        if ($forceExport) {
-            $this->getExporter($scope)->export();
-        }
-    }
-
-    /**
-     * @param string $scope
-     *
-     * @return AbstractExporter
-     */
-    protected function getExporter($scope)
-    {
-        return (new Exporter($this))->resolve($this->exporter)->withScope($scope);
-    }
-
-    /**
-     * Get or set option for grid.
-     *
-     * @param string $key
-     * @param mixed  $value
-     *
-     * @return $this|mixed
-     */
-    public function option($key, $value = null)
-    {
-        if (is_null($value)) {
-            return $this->options[$key];
-        }
-
-        $this->options[$key] = $value;
-
-        return $this;
     }
 
     /**
@@ -448,89 +319,7 @@ class Grid
      */
     public function paginate($perPage = 20)
     {
-        $this->perPage = $perPage;
-
         $this->model()->setPerPage($perPage);
-    }
-
-    /**
-     * Get the grid paginator.
-     *
-     * @return mixed
-     */
-    public function paginator()
-    {
-        return new Tools\Paginator($this);
-    }
-
-    /**
-     * Disable grid pagination.
-     *
-     * @return $this
-     */
-    public function disablePagination(bool $disable = true)
-    {
-        $this->model->usePaginate(!$disable);
-
-        return $this->option('show_pagination', !$disable);
-    }
-
-    /**
-     * If this grid use pagination.
-     *
-     * @return bool
-     */
-    public function showPagination()
-    {
-        return $this->option('show_pagination');
-    }
-
-    /**
-     * Set per-page options.
-     *
-     * @param array $perPages
-     */
-    public function perPages(array $perPages)
-    {
-        $this->perPages = $perPages;
-    }
-
-    /**
-     * Disable row selector.
-     *
-     * @return Grid|mixed
-     */
-    public function disableRowSelector(bool $disable = true)
-    {
-        return $this->disableBatchActions($disable);
-    }
-
-    /**
-     * Prepend checkbox column for grid.
-     *
-     * @return void
-     */
-    protected function prependRowSelectorColumn()
-    {
-        if (!$this->option('show_row_selector')) {
-            return;
-        }
-
-        $checkAllBox = "<input type=\"checkbox\" class=\"{$this->getSelectAllName()}\" />&nbsp;";
-
-        $this->prependColumn(Column::SELECT_COLUMN_NAME, ' ')
-            ->displayUsing(Displayers\RowSelector::class)
-            ->addHeader($checkAllBox);
-    }
-
-    /**
-     * Apply column filter to grid query.
-     *
-     * @return void
-     */
-    protected function applyColumnFilter()
-    {
-        $this->columns->each->bindFilterQuery($this->model());
     }
 
     /**
@@ -548,27 +337,8 @@ class Grid
      */
     protected function applyQuery()
     {
-        $this->applyQuickSearch();
-
-        $this->applyColumnFilter();
-
         $this->applyColumnSearch();
-
-        $this->applySelectorQuery();
-
         return $this->applyFilter(false);
-    }
-
-    /**
-     * Add row selector columns and action columns before and after the grid.
-     *
-     * @return void
-     */
-    protected function addDefaultColumns()
-    {
-        $this->prependRowSelectorColumn();
-
-        $this->appendActionsColumn();
     }
 
     /**
@@ -583,8 +353,6 @@ class Grid
         }
 
         $collection = $this->applyQuery();
-
-        $this->addDefaultColumns();
 
         Column::setOriginalGridModels($collection);
 
@@ -633,172 +401,6 @@ class Grid
         }
 
         $this->rowsCallback = $callable;
-    }
-
-    /**
-     * Set exporter driver for Grid to export.
-     *
-     * @param $exporter
-     *
-     * @return $this
-     */
-    public function exporter($exporter)
-    {
-        $this->exporter = $exporter;
-
-        return $this;
-    }
-
-    /**
-     * Get the export url.
-     *
-     * @param int  $scope
-     * @param null $args
-     *
-     * @return string
-     */
-    public function getExportUrl($scope = 1, $args = null)
-    {
-        $input = array_merge(request()->all(), Exporter::formatExportQuery($scope, $args));
-
-        if ($constraints = $this->model()->getConstraints()) {
-            $input = array_merge($input, $constraints);
-        }
-
-        return $this->resource().'?'.http_build_query($input);
-    }
-
-    /**
-     * Get create url.
-     *
-     * @return string
-     */
-    public function getCreateUrl()
-    {
-        $queryString = '';
-
-        if ($constraints = $this->model()->getConstraints()) {
-            $queryString = http_build_query($constraints);
-        }
-
-        return sprintf('%s/create%s',
-            $this->resource(),
-            $queryString ? ('?'.$queryString) : ''
-        );
-    }
-
-    /**
-     * If grid show export btn.
-     *
-     * @return bool
-     */
-    public function showExportBtn()
-    {
-        return $this->option('show_exporter');
-    }
-
-    /**
-     * Disable export.
-     *
-     * @return $this
-     */
-    public function disableExport(bool $disable = true)
-    {
-        return $this->option('show_exporter', !$disable);
-    }
-
-    /**
-     * Render export button.
-     *
-     * @return string
-     */
-    public function renderExportButton()
-    {
-        return (new Tools\ExportButton($this))->render();
-    }
-
-    /**
-     * Alias for method `disableCreateButton`.
-     *
-     * @return $this
-     *
-     * @deprecated
-     */
-    public function disableCreation()
-    {
-        return $this->disableCreateButton();
-    }
-
-    /**
-     * Remove create button on grid.
-     *
-     * @return $this
-     */
-    public function disableCreateButton(bool $disable = true)
-    {
-        return $this->option('show_create_btn', !$disable);
-    }
-
-    /**
-     * Remove define empty page on grid.
-     *
-     * @return $this
-     */
-    public function disableDefineEmptyPage(bool $disable = true)
-    {
-        return $this->option('show_define_empty_page', !$disable);
-    }
-
-    /**
-     * If grid show define empty page on grid.
-     *
-     * @return bool
-     */
-    public function showDefineEmptyPage()
-    {
-        return $this->option('show_define_empty_page');
-    }
-
-    /**
-     * If allow creation.
-     *
-     * @return bool
-     */
-    public function showCreateBtn()
-    {
-        return $this->option('show_create_btn');
-    }
-
-    /**
-     * Render create button for grid.
-     *
-     * @return string
-     */
-    public function renderCreateButton()
-    {
-        return (new Tools\CreateButton($this))->render();
-    }
-
-    /**
-     * Get current resource url.
-     *
-     * @param string $path
-     *
-     * @return string
-     */
-    public function resource($path = null)
-    {
-        if (!empty($path)) {
-            $this->resourcePath = $path;
-
-            return $this;
-        }
-
-        if (!empty($this->resourcePath)) {
-            return $this->resourcePath;
-        }
-
-        return url(app('request')->getPathInfo());
     }
 
     /**
@@ -920,21 +522,6 @@ class Grid
     }
 
     /**
-     * Set a view to render.
-     *
-     * @param string $view
-     * @param array  $variables
-     */
-    public function setView($view, $variables = [])
-    {
-        if (!empty($variables)) {
-            $this->with($variables);
-        }
-
-        $this->view = $view;
-    }
-
-    /**
      * Set grid title.
      *
      * @param string $title
@@ -958,20 +545,6 @@ class Grid
     public function setRelation(Relations\Relation $relation)
     {
         $this->model()->setRelation($relation);
-
-        return $this;
-    }
-
-    /**
-     * Set resource path for grid.
-     *
-     * @param string $path
-     *
-     * @return $this
-     */
-    public function setResource($path)
-    {
-        $this->resourcePath = $path;
 
         return $this;
     }
@@ -1009,16 +582,19 @@ class Grid
      */
     public function render()
     {
-        $this->handleExportRequest(true);
 
         $this->build();
 
         $this->callRenderingCallback();
 
         $variables = $this->variables();
-
         dump($variables);
+
+        $data = [];
+        foreach ($variables['grid']->rows->all() as $key => $value) {
+            $data[] = $value->model();
+        }
     
-        return $variables;
+        return $data;
     }
 }

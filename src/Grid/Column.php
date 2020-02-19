@@ -4,7 +4,6 @@ namespace QuarkCMS\QuarkAdmin\Grid;
 
 use Carbon\Carbon;
 use Closure;
-use QuarkCMS\QuarkAdmin\Actions\RowAction;
 use QuarkCMS\QuarkAdmin\Grid;
 use QuarkCMS\QuarkAdmin\Grid\Displayers\AbstractDisplayer;
 use Illuminate\Contracts\Support\Arrayable;
@@ -42,12 +41,6 @@ use Illuminate\Support\Str;
  */
 class Column
 {
-    use Column\HasHeader;
-
-    const SELECT_COLUMN_NAME = '__row_selector__';
-
-    const ACTION_COLUMN_NAME = '__actions__';
-
     /**
      * @var Grid
      */
@@ -73,13 +66,6 @@ class Column
      * @var mixed
      */
     protected $original;
-
-    /**
-     * Attributes of column.
-     *
-     * @var array
-     */
-    protected $attributes = [];
 
     /**
      * Relation name.
@@ -147,16 +133,6 @@ class Column
     public static $defined = [];
 
     /**
-     * @var array
-     */
-    protected static $htmlAttributes = [];
-
-    /**
-     * @var array
-     */
-    protected static $rowAttributes = [];
-
-    /**
      * @var Model
      */
     protected static $model;
@@ -175,18 +151,6 @@ class Column
         $this->name = $name;
 
         $this->label = $this->formatLabel($label);
-
-        $this->initAttributes();
-    }
-
-    /**
-     * Initialize column attributes.
-     */
-    protected function initAttributes()
-    {
-        $name = str_replace('.', '-', $this->name);
-
-        $this->setAttributes(['class' => "column-{$name}"]);
     }
 
     /**
@@ -246,103 +210,6 @@ class Column
     }
 
     /**
-     * Set column attributes.
-     *
-     * @param array $attributes
-     *
-     * @return $this
-     */
-    public function setAttributes($attributes = [], $key = null)
-    {
-        if ($key) {
-            static::$rowAttributes[$this->name][$key] = array_merge(
-                Arr::get(static::$rowAttributes, "{$this->name}.{$key}", []),
-                $attributes
-            );
-
-            return $this;
-        }
-
-        static::$htmlAttributes[$this->name] = array_merge(
-            Arr::get(static::$htmlAttributes, $this->name, []),
-            $attributes
-        );
-
-        return $this;
-    }
-
-    /**
-     * Get column attributes.
-     *
-     * @param string $name
-     *
-     * @return mixed
-     */
-    public static function getAttributes($name, $key = null)
-    {
-        $rowAttributes = [];
-
-        if ($key && Arr::has(static::$rowAttributes, "{$name}.{$key}")) {
-            $rowAttributes = Arr::get(static::$rowAttributes, "{$name}.{$key}", []);
-        }
-
-        $columnAttributes = Arr::get(static::$htmlAttributes, $name, []);
-
-        return array_merge($rowAttributes, $columnAttributes);
-    }
-
-    /**
-     * Format attributes to html.
-     *
-     * @return string
-     */
-    public function formatHtmlAttributes()
-    {
-        $attrArr = [];
-        foreach (static::getAttributes($this->name) as $name => $val) {
-            $attrArr[] = "$name=\"$val\"";
-        }
-
-        return implode(' ', $attrArr);
-    }
-
-    /**
-     * Set style of this column.
-     *
-     * @param string $style
-     *
-     * @return $this
-     */
-    public function style($style)
-    {
-        return $this->setAttributes(compact('style'));
-    }
-
-    /**
-     * Set the width of column.
-     *
-     * @param int $width
-     *
-     * @return $this
-     */
-    public function width(int $width)
-    {
-        return $this->style("width: {$width}px;max-width: {$width}px;word-wrap: break-word;word-break: normal;");
-    }
-
-    /**
-     * Set the color of column.
-     *
-     * @param string $color
-     *
-     * @return $this
-     */
-    public function color($color)
-    {
-        return $this->style("color:$color;");
-    }
-
-    /**
      * Get original column value.
      *
      * @return mixed
@@ -360,16 +227,6 @@ class Column
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * @return string
-     */
-    public function getClassName()
-    {
-        $name = str_replace('.', '-', $this->getName());
-
-        return "column-{$name}";
     }
 
     /**
@@ -424,44 +281,6 @@ class Column
     protected function isRelation()
     {
         return (bool) $this->relation;
-    }
-
-    /**
-     * Mark this column as sortable.
-     *
-     * @param null|string $cast
-     *
-     * @return Column|string
-     */
-    public function sortable($cast = null)
-    {
-        return $this->addSorter($cast);
-    }
-
-    /**
-     * Set cast name for sortable.
-     *
-     * @return $this
-     *
-     * @deprecated Use `$column->sortable($cast)` instead.
-     */
-    public function cast($cast)
-    {
-        $this->cast = $cast;
-
-        return $this;
-    }
-
-    /**
-     * Set help message for column.
-     *
-     * @param string $help
-     *
-     * @return $this|string
-     */
-    public function help($help = '')
-    {
-        return $this->addHelp($help);
     }
 
     /**
@@ -587,22 +406,6 @@ class Column
     }
 
     /**
-     * Render this column with the given view.
-     *
-     * @param string $view
-     *
-     * @return $this
-     */
-    public function view($view)
-    {
-        return $this->display(function ($value) use ($view) {
-            $model = $this;
-
-            return view($view, compact('model', 'value'))->render();
-        });
-    }
-
-    /**
      * Hide this column by default.
      *
      * @return $this
@@ -610,20 +413,6 @@ class Column
     public function hide()
     {
         $this->grid->hideColumns($this->getName());
-
-        return $this;
-    }
-
-    /**
-     * Add column to total-row.
-     *
-     * @param null $display
-     *
-     * @return $this
-     */
-    public function totalRow($display = null)
-    {
-        $this->grid->addTotalRow($this->name, $display);
 
         return $this;
     }
@@ -751,54 +540,6 @@ class Column
 
             return $bool ? '<i class="fa fa-check text-green"></i>' : '<i class="fa fa-close text-red"></i>';
         });
-    }
-
-    /**
-     * Display column using a grid row action.
-     *
-     * @param string $action
-     *
-     * @return $this
-     */
-    public function action($action)
-    {
-        if (!is_subclass_of($action, RowAction::class)) {
-            throw new \InvalidArgumentException("Action class [$action] must be sub-class of [Encore\Admin\Actions\GridAction]");
-        }
-
-        $grid = $this->grid;
-
-        return $this->display(function ($_, $column) use ($action, $grid) {
-            /** @var RowAction $action */
-            $action = new $action();
-
-            return $action
-                ->asColumn()
-                ->setGrid($grid)
-                ->setColumn($column)
-                ->setRow($this);
-        });
-    }
-
-    /**
-     * Add a `dot` before column text.
-     *
-     * @param array  $options
-     * @param string $default
-     *
-     * @return $this
-     */
-    public function dot($options = [], $default = '')
-    {
-        return $this->prefix(function ($_, $original) use ($options, $default) {
-            if (is_null($original)) {
-                $style = $default;
-            } else {
-                $style = Arr::get($options, $original);
-            }
-
-            return "<span class=\"label-{$style}\" style='width: 8px;height: 8px;padding: 0;border-radius: 50%;display: inline-block;'></span>";
-        }, '&nbsp;&nbsp;');
     }
 
     /**

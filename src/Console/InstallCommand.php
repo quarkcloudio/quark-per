@@ -48,8 +48,8 @@ class InstallCommand extends Command
     {
         $this->call('migrate');
 
-        if (\QuarkAdminCMS\QuarkAdmin\Models\Admin::count() == 0) {
-            $this->call('db:seed', ['--class' => \QuarkAdminCMS\QuarkAdmin\Database\DatabaseSeeder::class]);
+        if (\QuarkCMS\QuarkAdmin\Models\Admin::count() == 0) {
+            $this->call('db:seed', ['--class' => \QuarkCMS\QuarkAdmin\Database\DatabaseSeeder::class]);
         }
     }
 

@@ -26,7 +26,14 @@ class AdminController extends QuarkController
         $grid = Quark::grid(new Admin);
         $grid->column('username','用户名');
         $grid->column('nickname','昵称');
-        $grid->model()->where('status',1)->paginate(10);
+        $grid->column('email','邮箱');
+        $grid->model()->where('status',1)->select('username','nickname','email')->paginate(10);
+
+        $grid->filter(function($filter){
+
+            // 在这里添加字段过滤器
+            $filter->like('username', 'tangtanglove');
+        });
 
         return $grid->render();
     }
