@@ -27,7 +27,7 @@ class AdminController extends QuarkController
         $grid->column('username','用户名');
         $grid->column('nickname','昵称');
         $grid->column('email','邮箱');
-        $grid->column('actions','操作')->width(80);
+        $grid->column('actions','操作')->width(100);
         $grid->model()
         ->where('status',1)
         ->select('id as key','id','username','nickname','email')
