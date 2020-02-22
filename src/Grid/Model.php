@@ -48,11 +48,11 @@ class Model
     protected $data = [];
 
     /*
-     * 20 items per page as default.
+     * 10 items per page as default.
      *
      * @var int
      */
-    protected $perPage = 20;
+    protected $perPage = 10;
 
     /**
      * If the model use pagination.

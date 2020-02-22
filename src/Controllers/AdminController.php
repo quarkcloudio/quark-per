@@ -23,17 +23,15 @@ class AdminController extends QuarkController
      */
     protected function table()
     {
-        $grid = Quark::grid(new Admin);
+        $grid = Quark::grid(new Admin)->title('表格');
         $grid->column('username','用户名');
         $grid->column('nickname','昵称');
         $grid->column('email','邮箱');
-        $grid->model()->where('status',1)->select('username','nickname','email')->paginate(10);
-
-        $grid->filter(function($filter){
-
-            // 在这里添加字段过滤器
-            $filter->like('username', 'tangtanglove');
-        });
+        $grid->column('actions','操作')->width(80);
+        $grid->model()
+        ->where('status',1)
+        ->select('id as key','id','username','nickname','email')
+        ->paginate(1);
 
         return $grid->render();
     }
@@ -52,6 +50,6 @@ class AdminController extends QuarkController
         $form->text('nickname','昵称');
         $form->setAction('api/admin/test/save');
 
-        return $form;
+        return $form->render();
     }
 }

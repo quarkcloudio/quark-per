@@ -195,7 +195,8 @@ class Form
         return false;
     }
 
-    public function __call($method, $arguments) {
+    public function __call($method, $arguments)
+    {
         if ($className = static::findFieldClass($method)) {
 
             $column = Arr::get($arguments, 0, ''); //[0];
@@ -204,5 +205,11 @@ class Form
 
             return $element;
         }
+    }
+
+    public function render()
+    {
+        $data['form'] = $this->form;
+        return $data;
     }
 }

@@ -17,8 +17,7 @@ use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 
 class Grid
 {
-    use Concerns\HasFilter,
-        ShouldSnakeAttributes,
+    use ShouldSnakeAttributes,
         Macroable {
             __call as macroCall;
         }
@@ -38,27 +37,6 @@ class Grid
     protected $columns;
 
     /**
-     * Collection of all data rows.
-     *
-     * @var \Illuminate\Support\Collection
-     */
-    protected $rows;
-
-    /**
-     * Rows callable fucntion.
-     *
-     * @var \Closure
-     */
-    protected $rowsCallback;
-
-    /**
-     * All column names of the grid.
-     *
-     * @var array
-     */
-    public $columnNames = [];
-
-    /**
      * Grid builder.
      *
      * @var \Closure
@@ -66,35 +44,11 @@ class Grid
     protected $builder;
 
     /**
-     * Mark if the grid is builded.
-     *
-     * @var bool
-     */
-    protected $builded = false;
-
-    /**
      * All variables in grid view.
      *
      * @var array
      */
-    protected $variables = [];
-
-    /**
-     * Default primary key name.
-     *
-     * @var string
-     */
-    protected $keyName = 'id';
-
-    /**
-     * @var []callable
-     */
-    protected $renderingCallbacks = [];
-
-    /**
-     * @var string
-     */
-    public $tableID;
+    protected $table = [];
 
     /**
      * Initialization closure array.
@@ -112,7 +66,6 @@ class Grid
     public function __construct(Eloquent $model, Closure $builder = null)
     {
         $this->model = new Model($model, $this);
-        $this->keyName = $model->getKeyName();
         $this->builder = $builder;
 
         $this->initialize();
@@ -125,12 +78,7 @@ class Grid
      */
     protected function initialize()
     {
-        $this->tableID = uniqid('grid-table');
-
         $this->columns = Collection::make();
-        $this->rows = Collection::make();
-
-        $this->initFilter();
     }
 
     /**
@@ -155,16 +103,6 @@ class Grid
         foreach (static::$initCallbacks as $callback) {
             call_user_func($callback, $this);
         }
-    }
-
-    /**
-     * Get primary key name of model.
-     *
-     * @return string
-     */
-    public function getKeyName()
-    {
-        return $this->keyName ?: 'id';
     }
 
     /**
@@ -317,7 +255,7 @@ class Grid
      *
      * @return void
      */
-    public function paginate($perPage = 20)
+    public function paginate($perPage = 10)
     {
         $this->model()->setPerPage($perPage);
     }
@@ -338,69 +276,14 @@ class Grid
     protected function applyQuery()
     {
         $this->applyColumnSearch();
-        return $this->applyFilter(false);
-    }
 
-    /**
-     * Build the grid.
-     *
-     * @return void
-     */
-    public function build()
-    {
-        if ($this->builded) {
-            return;
+        if (method_exists($this->model->eloquent(), 'paginate')) {
+            $this->model->usePaginate(true);
+
+            return $this->model->buildData(false);
         }
 
-        $collection = $this->applyQuery();
-
-        Column::setOriginalGridModels($collection);
-
-        $data = $collection->toArray();
-
-        $this->columns->map(function (Column $column) use (&$data) {
-            $data = $column->fill($data);
-
-            $this->columnNames[] = $column->getName();
-        });
-
-        $this->buildRows($data);
-
-        $this->builded = true;
-    }
-
-    /**
-     * Build the grid rows.
-     *
-     * @param array $data
-     *
-     * @return void
-     */
-    protected function buildRows(array $data)
-    {
-        $this->rows = collect($data)->map(function ($model, $number) {
-            return new Row($number, $model, $this->keyName);
-        });
-
-        if ($this->rowsCallback) {
-            $this->rows->map($this->rowsCallback);
-        }
-    }
-
-    /**
-     * Set grid row callback function.
-     *
-     * @param Closure $callable
-     *
-     * @return Collection|null
-     */
-    public function rows(Closure $callable = null)
-    {
-        if (is_null($callable)) {
-            return $this->rows;
-        }
-
-        $this->rowsCallback = $callable;
+        return $this->model->buildData(false);
     }
 
     /**
@@ -496,41 +379,15 @@ class Grid
     }
 
     /**
-     * Add variables to grid view.
-     *
-     * @param array $variables
-     *
-     * @return $this
-     */
-    public function with($variables = [])
-    {
-        $this->variables = $variables;
-
-        return $this;
-    }
-
-    /**
-     * Get all variables will used in grid view.
-     *
-     * @return array
-     */
-    protected function variables()
-    {
-        $this->variables['grid'] = $this;
-
-        return $this->variables;
-    }
-
-    /**
      * Set grid title.
      *
      * @param string $title
      *
      * @return $this
      */
-    public function setTitle($title)
+    public function title($title)
     {
-        $this->variables['title'] = $title;
+        $this->table['title'] = $title;
 
         return $this;
     }
@@ -550,51 +407,39 @@ class Grid
     }
 
     /**
-     * Set rendering callback.
-     *
-     * @param callable $callback
-     *
-     * @return $this
-     */
-    public function rendering(callable $callback)
-    {
-        $this->renderingCallbacks[] = $callback;
-
-        return $this;
-    }
-
-    /**
-     * Call callbacks before render.
-     *
-     * @return void
-     */
-    protected function callRenderingCallback()
-    {
-        foreach ($this->renderingCallbacks as $callback) {
-            call_user_func($callback, $this);
-        }
-    }
-
-    /**
      * Get the string contents of the grid view.
      *
      * @return string
      */
     public function render()
     {
+        $collection = $this->applyQuery();
 
-        $this->build();
+        $this->columns->map(function (Column $column) {
+            $getColumn['title'] = $column->getLabel();
+            $getColumn['dataIndex'] = $column->getName();
+            $getColumn['key'] = $column->getName();
+            $getColumn['width'] = $column->width;
+            $this->table['columns'][] = $getColumn;
+        });
 
-        $this->callRenderingCallback();
+        $model = $this->model()->eloquent();
 
-        $variables = $this->variables();
-        dump($variables);
+        $this->table['dataSource'] = $collection->toArray();
 
-        $data = [];
-        foreach ($variables['grid']->rows->all() as $key => $value) {
-            $data[] = $value->model();
-        }
-    
+        // 默认页码
+        $pagination['defaultCurrent'] = 1;
+        // 当前页码
+        $pagination['current'] = $model->currentPage();
+        // 分页数量
+        $pagination['pageSize'] = $model->perPage();
+        // 总数量
+        $pagination['total'] = $model->total();
+
+        $this->table['pagination'] = $pagination;
+
+        $data['table'] = $this->table;
+
         return $data;
     }
 }

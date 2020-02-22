@@ -1,6 +1,6 @@
 <?php
 
-namespace QuarkCMS\Quark\Form;
+namespace QuarkCMS\QuarkAdmin\Form;
 
 use Exception;
 
