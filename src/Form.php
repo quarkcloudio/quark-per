@@ -14,6 +14,8 @@ class Form
 
     public $model;
 
+    public $request;
+
     /**
      * Available fields.
      *
@@ -35,6 +37,12 @@ class Form
         $layout['labelCol']['span'] = 3;
         $layout['wrapperCol']['span'] = 21;
         $this->form['layout'] = $layout;
+
+        // 设置默认表单行为
+        $this->setDefaultAction();
+
+        // 初始化表单数据
+        $this->initRequestData();
     }
 
     /**
@@ -86,6 +94,43 @@ class Form
     }
 
     /**
+     * form default action.
+     *
+     *
+     * @return bool|mixed
+     */
+    protected function setDefaultAction()
+    {
+        $action = \request()->route()->getName();
+        $action = Str::replaceFirst('api/','',$action);
+        if($this->isCreating()) {
+            $action = Str::replaceLast('/create','',$action);
+            $this->form['action'] = $action.'/store';
+        }
+
+        if($this->isEditing()) {
+            $action = Str::replaceLast('/edit','',$action);
+            $this->form['action'] = $action.'/update';
+        }
+    }
+
+    /**
+     * form default action.
+     *
+     *
+     * @return bool|mixed
+     */
+    protected function initRequestData()
+    {
+        if(Str::endsWith(\request()->route()->getName(), ['/store', '/update'])) {
+            $request = new Request;
+            $data = json_decode($request->getContent(),true);
+            unset($data['actionUrl']);
+            $this->request = $data;
+        }
+    }
+
+    /**
      * form action.
      *
      * @param string $url
@@ -105,10 +150,7 @@ class Form
      */
     public function store()
     {
-        $request = new Request;
-
-        $data = json_decode($request->getContent(),true);
-        unset($data['actionUrl']);
+        $data = $this->request;
         $result = $this->model->create($data);
 
         return $result;
@@ -121,16 +163,17 @@ class Form
      */
     public function edit($id)
     {
+        $result = $this->model->findOrFail($id);
 
-        return '';
+        return $result;
     }
 
     /**
-     * form save.
+     * form update.
      *
      * @return bool
      */
-    public function save()
+    public function update()
     {
         $request = new Request;
 
@@ -148,12 +191,7 @@ class Form
      */
     public function destroy($id)
     {
-        $request = new Request;
-
-        $data = json_decode($request->getContent(),true);
-        unset($data['actionUrl']);
-        $result = $this->model->save($data);
-
+        $result = $this->model->destroy($id);
         return $result;
     }
 
@@ -174,7 +212,17 @@ class Form
      */
     public function isEditing(): bool
     {
-        return Str::endsWith(\request()->route()->getName(), '/edit', '/save');
+        return Str::endsWith(\request()->route()->getName(), '/edit', '/update');
+    }
+
+    /**
+     * 保存前回调
+     *
+     * @return bool
+     */
+    public function saving(Closure $callback = null)
+    {
+        $callback($this);
     }
 
     /**

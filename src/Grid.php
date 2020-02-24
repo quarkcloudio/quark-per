@@ -423,23 +423,18 @@ class Grid
             $this->table['columns'][] = $getColumn;
         });
 
+        // dataSource
         $model = $this->model()->eloquent();
-
         $this->table['dataSource'] = $collection->toArray();
 
-        // 默认页码
+        // pagination
         $pagination['defaultCurrent'] = 1;
-        // 当前页码
         $pagination['current'] = $model->currentPage();
-        // 分页数量
         $pagination['pageSize'] = $model->perPage();
-        // 总数量
         $pagination['total'] = $model->total();
-
         $this->table['pagination'] = $pagination;
 
         $data['table'] = $this->table;
-
         return $data;
     }
 }
