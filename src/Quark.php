@@ -91,7 +91,7 @@ class Quark
                 $router->get('admin/admin/create', 'AdminController@create')->name('api/admin/admin/create');
                 $router->post('admin/admin/store', 'AdminController@store')->name('api/admin/admin/store');
                 $router->get('admin/admin/edit', 'AdminController@edit')->name('api/admin/admin/edit');
-                $router->post('admin/admin/save', 'AdminController@save')->name('api/admin/admin/save');
+                $router->post('admin/admin/update', 'AdminController@update')->name('api/admin/admin/update');
                 $router->post('admin/admin/changeStatus', 'AdminController@changeStatus')->name('api/admin/admin/changeStatus');
             
                 $router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');

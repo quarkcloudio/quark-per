@@ -142,10 +142,10 @@ class QuarkController extends Controller
 
         $url = "/quark/engine?api=".$action."&component=table";
 
-        if($result) {
+        if($result['status'] == 'success') {
             return $this->success('操作成功！',$url);
         } else {
-            return $this->error('操作失败！');
+            return $this->error($result['msg']);
         }
     }
 
@@ -163,7 +163,15 @@ class QuarkController extends Controller
         if(empty($id)) {
             return $this->error('参数错误！');
         }
-        $content = $this->form()->edit($id);
+
+        $form = $this->form()->edit($id);
+
+        $content = Quark::content()
+        ->title($this->title())
+        ->subTitle($this->subTitle())
+        ->description($this->description())
+        ->breadcrumb($this->breadcrumb())
+        ->body($form->render());
 
         return $this->success('获取成功！','',$content);
     }
@@ -179,10 +187,16 @@ class QuarkController extends Controller
     {
         $result = $this->form()->update();
 
-        if($result) {
-            return $this->success('操作成功！');
+        $action = \request()->route()->getName();
+        $action = Str::replaceFirst('api/','',$action);
+        $action = Str::replaceLast('/update','/index',$action);
+
+        $url = "/quark/engine?api=".$action."&component=table";
+
+        if($result['status'] == 'success') {
+            return $this->success('操作成功！',$url);
         } else {
-            return $this->error('操作失败！');
+            return $this->error($result['msg']);
         }
     }
 

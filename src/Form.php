@@ -6,7 +6,9 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
+use QuarkCMS\QuarkAdmin\Helper;
 use Closure;
+use Validator;
 
 class Form
 {
@@ -22,6 +24,7 @@ class Form
      * @var array
      */
     public static $availableFields = [
+        'id' => Form\Fields\ID::class,
         'text' => Form\Fields\Input::class,
     ];
 
@@ -151,9 +154,42 @@ class Form
     public function store()
     {
         $data = $this->request;
+
+        foreach ($this->form['items'] as $key => $value) {
+            if($value->rules) {
+                $rules[$value->name] = $value->rules;
+                $validator = Validator::make($data,$rules,$value->ruleMessages);
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+
+                    return Helper::error($errorMsg);
+                }
+            }
+
+            if($value->creationRules) {
+                $creationRules[$value->name] = $value->creationRules;
+                $validator = Validator::make($data,$creationRules,$value->creationRuleMessages);
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+                    
+                    return Helper::error($errorMsg);
+                }
+            }
+        }
+
         $result = $this->model->create($data);
 
-        return $result;
+        if($result) {
+            return Helper::success('操作成功！','',$result);
+        } else {
+            return Helper::error('操作失败！');
+        }
     }
 
     /**
@@ -163,9 +199,10 @@ class Form
      */
     public function edit($id)
     {
-        $result = $this->model->findOrFail($id);
+        $data = $this->model->findOrFail($id);
+        $this->form['data'] = $data;
 
-        return $result;
+        return $this;
     }
 
     /**
@@ -175,13 +212,58 @@ class Form
      */
     public function update()
     {
-        $request = new Request;
+        $data = $this->request;
 
-        $data = json_decode($request->getContent(),true);
-        unset($data['actionUrl']);
-        $result = $this->model->save($data);
+        foreach ($this->form['items'] as $key => $value) {
+            if($value->rules) {
 
-        return $result;
+                foreach ($value->rules as &$rule) {
+                    if (is_string($rule)) {
+                        $rule = str_replace('{{id}}', $data['id'], $rule);
+                    }
+                }
+
+                $rules[$value->name] = $value->rules;
+                $validator = Validator::make($data,$rules,$value->ruleMessages);
+                if ($validator->fails()) {
+
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+
+                    return Helper::error($errorMsg);
+                }
+            }
+
+            if($value->updateRules) {
+
+                foreach ($value->updateRules as &$rule) {
+                    if (is_string($rule)) {
+                        $rule = str_replace('{{id}}', $data['id'], $rule);
+                    }
+                }
+
+                $updateRules[$value->name] = $value->updateRules;
+                $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+                    
+                    return Helper::error($errorMsg);
+                }
+            }
+        }
+
+        $result = $this->model->where('id',$data['id'])->update($data);
+
+        if($result) {
+            return Helper::success('操作成功！','',$result);
+        } else {
+            return Helper::error('操作失败！');
+        }
     }
 
     /**

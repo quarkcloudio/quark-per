@@ -21,6 +21,11 @@ class Item
             $normalize,
             $required,
             $rules,
+            $ruleMessages,
+            $creationRules,
+            $creationRuleMessages,
+            $updateRules,
+            $updateRuleMessages,
             $shouldUpdate,
             $trigger,
             $validateStatus,
@@ -203,13 +208,36 @@ class Item
      * @param  array|$this $rules
      * @return $this
      */
-    public function rule($rules)
+    public function rules($rules,$messages = null)
     {
-        if(!is_array($rules)) {
-            throw new Exception("argument must be an array!");
-        }
-
         $this->rules = $rules;
+        $this->ruleMessages = $messages;
+        return $this;
+    }
+
+    /**
+     * 校验规则，只在创建表单提交时生效
+     * 
+     * @param  array|$this $rules
+     * @return $this
+     */
+    public function creationRules($rules,$messages = null)
+    {
+        $this->creationRules = $rules;
+        $this->creationRuleMessages = $messages;
+        return $this;
+    }
+
+    /**
+     * 校验规则，只在更新表单提交时生效
+     * 
+     * @param  array|$this $rules
+     * @return $this
+     */
+    public function updateRules($rules,$messages = null)
+    {
+        $this->updateRules = $rules;
+        $this->updateRuleMessages = $messages;
         return $this;
     }
 
