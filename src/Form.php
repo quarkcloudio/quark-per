@@ -26,6 +26,7 @@ class Form
     public static $availableFields = [
         'id' => Form\Fields\ID::class,
         'text' => Form\Fields\Input::class,
+        'radio' => Form\Fields\Radio::class,
     ];
 
     /**
@@ -337,8 +338,145 @@ class Form
         }
     }
 
+    /**
+     * 解析成前端验证规则
+     *
+     * @param array $rules
+     *
+     * @return array
+     */
+    protected function parseRules($rules,$messages)
+    {
+        $result = false;
+
+        foreach ($rules as $key => $value) {
+
+            if(strpos($value,':') !== false) {
+                $arr = explode(':',$value);
+                $rule = $arr[0];
+            } else {
+                $rule = $value;
+            }
+
+            $data = false;
+
+            switch ($rule) {
+                case 'required':
+                    // 必填
+                    $data['required'] = true;
+                    $data['message'] = $messages['required'];
+                    break;
+
+                case 'min':
+                    // 最小字符串数
+                    $data['min'] =  (int)$arr[1];
+                    $data['message'] = $messages['min'];
+                    break;
+
+                case 'max':
+                    // 最大字符串数
+                    $data['max'] =  (int)$arr[1];
+                    $data['message'] = $messages['max'];
+                    break;
+
+                case 'email':
+                    // 必须为邮箱
+                    $data['type'] = 'email';
+                    $data['message'] = $messages['email'];
+                    break;
+
+                case 'numeric':
+                    // 必须为数字
+                    $data['type'] = 'number';
+                    $data['message'] = $messages['numeric'];
+                    break;
+
+                case 'url':
+                    // 必须为url
+                    $data['type'] = 'url';
+                    $data['message'] = $messages['url'];
+                    break;
+
+                case 'integer':
+                    // 必须为整数
+                    $data['type'] = 'integer';
+                    $data['message'] = $messages['integer'];
+                    break;
+
+                case 'date':
+                    // 必须为日期
+                    $data['type'] = 'date';
+                    $data['message'] = $messages['date'];
+                    break;
+
+                case 'boolean':
+                    // 必须为布尔值
+                    $data['type'] = 'boolean';
+                    $data['message'] = $messages['boolean'];
+                    break;
+
+                default:
+                    $data = false;
+                    break;
+            }
+
+            if($data) {
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * 设置前端验证规则
+     *
+     * @param array $rules
+     *
+     * @return array
+     */
+    protected function setFrontendRules()
+    {
+        foreach ($this->form['items'] as $key => $item) {
+            $frontendRules = [];
+            $rules = false;
+            $creationRules = false;
+            $updateRules = false;
+
+            if(!empty($item->rules)) {
+                $rules = $this->parseRules($item->rules,$item->ruleMessages);
+            }
+
+            if($this->isCreating() && !empty($item->creationRules)) {
+                $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
+            }
+
+            if($this->isEditing() && !empty($item->updateRules)) {
+                $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
+            }
+
+            if($rules) {
+                $frontendRules = Arr::collapse([$frontendRules, $rules]);
+            }
+
+            if($creationRules) {
+                $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
+            }
+
+            if($updateRules) {
+                $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
+            }
+
+            $item->rules = $frontendRules;
+            $this->form['items'][$key] = $item;
+        }
+    }
+
     public function render()
     {
+        // 设置前端验证规则
+        $this->setFrontendRules();
+
         $data['form'] = $this->form;
         return $data;
     }

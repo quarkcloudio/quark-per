@@ -8,6 +8,8 @@ class Item
 {
     public  $colon,
             $dependencies,
+            $value,
+            $defaultValue,
             $extra,
             $getValueFromEvent,
             $hasFeedback,
@@ -267,6 +269,30 @@ class Item
         }
 
         $this->wrapperCol = $col;
+        return $this;
+    }
+
+    /**
+     * 设置保存值。
+     *
+     * @param  array|string
+     * @return $this
+     */
+    public function value($value)
+    {
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * 设置默认值。
+     *
+     * @param  array|string
+     * @return $this
+     */
+    public function default($value)
+    {
+        $this->defaultValue = $value;
         return $this;
     }
 

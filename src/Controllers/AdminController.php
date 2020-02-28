@@ -55,13 +55,15 @@ class AdminController extends QuarkController
 
         $form->text('username','用户名')
         ->width(200)
-        ->rules(['required','min:6','max:20'],['required'=>'用户名必须填写','min'=>'用户名不能少于6个字符','max'=>'不能超过20个字符'])
+        ->rules(['required','min:6','max:20'],['required'=>'用户名必须填写','min'=>'用户名不能少于6个字符','max'=>'用户名不能超过20个字符'])
         ->creationRules(["unique:admins"],['unique'=>'用户名已经存在'])
         ->updateRules(["unique:admins,username,{{id}}"],['unique'=>'用户名已经存在']);
 
         $form->text('nickname','昵称')
         ->width(200)
         ->rules(['required','max:20'],['required'=>'昵称必须填写','max'=>'昵称不能超过20个字符']);
+
+        $form->radio('sex','性别')->options(['1' => '男', '2'=> '女'])->default('1');
 
         $form->text('email','邮箱')
         ->width(200)
