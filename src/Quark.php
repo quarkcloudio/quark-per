@@ -60,6 +60,17 @@ class Quark
      * @param $model
      * @param Closure $callable
      *
+     * @return QuarkCMS\QuarkAdmin\Layout\Show
+     */
+    public function show($model = null)
+    {
+        return new Show($model);
+    }
+
+    /**
+     * @param $model
+     * @param Closure $callable
+     *
      * @return routes
      */
     public function routes()
@@ -88,11 +99,14 @@ class Quark
                 $router->any('admin/account/menus', 'AccountController@menus')->name('api/admin/account/menus');
             
                 $router->get('admin/admin/index', 'AdminController@index')->name('api/admin/admin/index');
+                $router->get('admin/admin/show', 'AdminController@show')->name('api/admin/admin/show');
                 $router->get('admin/admin/create', 'AdminController@create')->name('api/admin/admin/create');
                 $router->post('admin/admin/store', 'AdminController@store')->name('api/admin/admin/store');
                 $router->get('admin/admin/edit', 'AdminController@edit')->name('api/admin/admin/edit');
                 $router->post('admin/admin/update', 'AdminController@update')->name('api/admin/admin/update');
-                $router->post('admin/admin/changeStatus', 'AdminController@changeStatus')->name('api/admin/admin/changeStatus');
+                $router->post('admin/admin/resume', 'AdminController@resume')->name('api/admin/admin/resume');
+                $router->post('admin/admin/forbid', 'AdminController@forbid')->name('api/admin/admin/forbid');
+                $router->post('admin/admin/destroy', 'AdminController@destroy')->name('api/admin/admin/destroy');
             
                 $router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');
                 $router->get('admin/permission/create', 'PermissionController@create')->name('api/admin/permission/create');

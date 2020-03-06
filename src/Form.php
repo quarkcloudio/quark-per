@@ -268,6 +268,45 @@ class Form
     }
 
     /**
+     * form resume.
+     *
+     * @return bool
+     */
+    public function resume($id)
+    {
+        $model = $this->model;
+
+        if(is_array($id)) {
+            $query = $model->whereIn('id',$id);
+        } else {
+            $query = $model->where('id',$id);
+        }
+
+        $result = $query->update(['status'=>1]);
+        return $result;
+    }
+
+    /**
+     * form forbid.
+     *
+     * @return bool
+     */
+    public function forbid($id)
+    {
+        $model = $this->model;
+
+        if(is_array($id)) {
+            $query = $model->whereIn('id',$id);
+        } else {
+            $query = $model->where('id',$id);
+        }
+
+        $result = $query->update(['status'=>2]);
+
+        return $result;
+    }
+
+    /**
      * form destroy.
      *
      * @return bool
@@ -472,10 +511,29 @@ class Form
         }
     }
 
+    /**
+     * 表单默认值，只有初始化以及重置时生效
+     *
+     * @param array $rules
+     *
+     * @return array
+     */
+    protected function initialValues()
+    {
+        foreach ($this->form['items'] as $key => $item) {
+            $data[$item->name] = $item->defaultValue;
+        }
+
+        $this->form['initialValues'] = $data;
+    }
+
     public function render()
     {
         // 设置前端验证规则
         $this->setFrontendRules();
+
+        // 设置表单默认值
+        $this->initialValues();
 
         $data['form'] = $this->form;
         return $data;

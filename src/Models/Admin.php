@@ -19,13 +19,14 @@ class Admin extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'id',
         'username',
         'nickname',
         'email',
         'phone',
         'sex',
         'password',
-        'cover_id',
+        'avatar',
         'wechat_openid',
         'wechat_unionid',
         'qq_openid',
@@ -45,4 +46,9 @@ class Admin extends Authenticatable
     ];
 
     protected $dates = ['delete_at'];
+
+    public function picture()
+    {
+        return $this->hasOne('QuarkCMS\QuarkAdmin\Models\Picture', 'id', 'avatar');
+    }
 }

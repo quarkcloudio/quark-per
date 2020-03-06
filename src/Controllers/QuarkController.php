@@ -92,16 +92,21 @@ class QuarkController extends Controller
     {
         $id = $request->get('id');
 
-        $detail = $this->detail();
+        if(empty($id)) {
+            return $this->error('参数错误！');
+        }
+
+        $show = $this->detail($id);
 
         $content = Quark::content()
         ->title($this->title())
         ->subTitle($this->subTitle())
         ->description($this->description())
         ->breadcrumb($this->breadcrumb())
-        ->body($detail->render());
+        ->body($show->render());
 
         return $this->success('获取成功！','',$content);
+
     }
 
     /**
@@ -209,25 +214,16 @@ class QuarkController extends Controller
     public function resume(Request $request)
     {
         $id = $request->json('id');
-        $status = $request->json('status');
 
-        if(empty($id) || empty($status)) {
+        if(empty($id)) {
             return $this->error('参数错误！');
         }
 
         // 定义对象
-        $query = Menu::query();
-
-        if(is_array($id)) {
-            $query->whereIn('id',$id);
-        } else {
-            $query->where('id',$id);
-        }
-
-        $result = $query->update(['status'=>$status]);
+        $result = $this->form()->resume($id);
 
         if ($result) {
-            return $this->success('操作成功！');
+            return $this->success('已启用！');
         } else {
             return $this->error('操作失败！');
         }
@@ -242,25 +238,16 @@ class QuarkController extends Controller
     public function forbid(Request $request)
     {
         $id = $request->json('id');
-        $status = $request->json('status');
 
-        if(empty($id) || empty($status)) {
+        if(empty($id)) {
             return $this->error('参数错误！');
         }
 
         // 定义对象
-        $query = Menu::query();
-
-        if(is_array($id)) {
-            $query->whereIn('id',$id);
-        } else {
-            $query->where('id',$id);
-        }
-
-        $result = $query->update(['status'=>$status]);
+        $result = $this->form()->forbid($id);
 
         if ($result) {
-            return $this->success('操作成功！');
+            return $this->success('已禁用！');
         } else {
             return $this->error('操作失败！');
         }
@@ -273,8 +260,20 @@ class QuarkController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Request $request)
     {
-        return $this->form()->destroy($id);
+        $id = $request->json('id');
+
+        if(empty($id)) {
+            return $this->error('参数错误！');
+        }
+
+        $result = $this->form()->destroy($id);
+
+        if ($result) {
+            return $this->success('删除成功！');
+        } else {
+            return $this->error('删除失败！');
+        }
     }
 }

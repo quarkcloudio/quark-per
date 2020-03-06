@@ -2,13 +2,7 @@
 
 namespace QuarkCMS\QuarkAdmin\Grid;
 
-use Carbon\Carbon;
 use Closure;
-use QuarkCMS\QuarkAdmin\Grid;
-use Illuminate\Contracts\Support\Arrayable;
-use Illuminate\Database\Eloquent\Model as BaseModel;
-use Illuminate\Support\Arr;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 /**
@@ -18,42 +12,18 @@ use Illuminate\Support\Str;
 class Column
 {
     /**
-     * @var Grid
-     */
-    protected $grid;
-
-    /**
      * Name of column.
      *
      * @var string
      */
-    protected $name;
+    public $name;
 
     /**
      * Label of column.
      *
      * @var string
      */
-    protected $label;
-
-    /**
-     * Relation name.
-     *
-     * @var bool
-     */
-    protected $relation = false;
-
-    /**
-     * Relation column.
-     *
-     * @var string
-     */
-    protected $relationColumn;
-
-    /**
-     * @var Model
-     */
-    protected static $model;
+    public $label;
 
     /**
      * @var width
@@ -61,9 +31,29 @@ class Column
     public $width;
 
     /**
-     * @var bool
+     * @var using
      */
-    protected $searchable = false;
+    public $using;
+
+    /**
+     * @var tag
+     */
+    public $tag;
+
+    /**
+     * @var link
+     */
+    public $link;
+
+    /**
+     * @var image
+     */
+    public $image;
+
+    /**
+     * @var qrcode
+     */
+    public $qrcode;
 
     /**
      * @param string $name
@@ -72,114 +62,11 @@ class Column
     public function __construct($name, $label)
     {
         $this->name = $name;
-
-        $this->label = $this->formatLabel($label);
+        $this->label = $label;
     }
 
     /**
-     * Set grid instance for column.
-     *
-     * @param Grid $grid
-     */
-    public function setGrid(Grid $grid)
-    {
-        $this->grid = $grid;
-
-        $this->setModel($grid->model()->eloquent());
-    }
-
-    /**
-     * Set model for column.
-     *
-     * @param $model
-     */
-    public function setModel($model)
-    {
-        if (is_null(static::$model) && ($model instanceof BaseModel)) {
-            static::$model = $model->newInstance();
-        }
-    }
-
-    /**
-     * Get name of this column.
-     *
-     * @return mixed
-     */
-    public function getName()
-    {
-        return $this->name;
-    }
-
-    /**
-     * Format label.
-     *
-     * @param $label
-     *
-     * @return mixed
-     */
-    protected function formatLabel($label)
-    {
-        if ($label) {
-            return $label;
-        }
-
-        $label = ucfirst($this->name);
-
-        return __(str_replace(['.', '_'], ' ', $label));
-    }
-
-    /**
-     * Get label of the column.
-     *
-     * @return mixed
-     */
-    public function getLabel()
-    {
-        return $this->label;
-    }
-
-    /**
-     * Set relation.
-     *
-     * @param string $relation
-     * @param string $relationColumn
-     *
-     * @return $this
-     */
-    public function setRelation($relation, $relationColumn = null)
-    {
-        $this->relation = $relation;
-        $this->relationColumn = $relationColumn;
-
-        return $this;
-    }
-
-    /**
-     * If this column is relation column.
-     *
-     * @return bool
-     */
-    protected function isRelation()
-    {
-        return (bool) $this->relation;
-    }
-
-    /**
-     * Bind search query to grid model.
-     *
-     * @param Model $model
-     */
-    public function bindSearchQuery(Model $model)
-    {
-        if (!$this->searchable || !request()->has($this->getName())) {
-            return;
-        }
-
-        $model->where($this->getName(), request($this->getName()));
-    }
-
-    /**
-     * Get name of this column.
+     * width.
      *
      * @return mixed
      */
@@ -190,24 +77,63 @@ class Column
     }
 
     /**
-     * Passes through all unknown calls to builtin displayer or supported displayer.
+     * link.
      *
-     * Allow fluent calls on the Column object.
-     *
-     * @param string $method
-     * @param array  $arguments
-     *
-     * @return $this
+     * @return mixed
      */
-    public function __call($method, $arguments)
+    public function link($link=true)
     {
-        if ($this->isRelation() && !$this->relationColumn) {
-            $this->name = "{$this->relation}.$method";
-            $this->label = $this->formatLabel($arguments[0] ?? null);
+        $this->link = $link;
+        return $this;
+    }
 
-            $this->relationColumn = $method;
+    /**
+     * using.
+     *
+     * @return mixed
+     */
+    public function using($using)
+    {
+        $this->using = $using;
+        return $this;
+    }
 
-            return $this;
-        }
+    /**
+     * tag.
+     *
+     * @return mixed
+     */
+    public function tag($tag='default')
+    {
+        $this->tag = $tag;
+        return $this;
+    }
+
+    /**
+     * image.
+     *
+     * @return mixed
+     */
+    public function image($path=null,$width=25,$height=25)
+    {
+        $image['path'] = $path;
+        $image['width'] = $width;
+        $image['height'] = $height;
+        $this->image = $image;
+        return $this;
+    }
+
+    /**
+     * qrcode.
+     *
+     * @return mixed
+     */
+    public function qrcode($content=null,$width=150,$height=150)
+    {
+        $qrcode['content'] = $content;
+        $qrcode['width'] = $width;
+        $qrcode['height'] = $height;
+        $this->qrcode = $qrcode;
+        return $this;
     }
 }

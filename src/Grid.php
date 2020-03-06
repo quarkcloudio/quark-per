@@ -4,30 +4,37 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
 use QuarkCMS\QuarkAdmin\Grid\Column;
-use QuarkCMS\QuarkAdmin\Grid\Concerns;
+use QuarkCMS\QuarkAdmin\Grid\Search;
 use QuarkCMS\QuarkAdmin\Grid\Model;
-use QuarkCMS\QuarkAdmin\Grid\Row;
-use QuarkCMS\QuarkAdmin\Traits\ShouldSnakeAttributes;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
-use Jenssegers\Mongodb\Eloquent\Model as MongodbModel;
 
 class Grid
 {
-    use ShouldSnakeAttributes,
-        Macroable {
-            __call as macroCall;
-        }
-
     /**
      * The grid data model instance.
      *
      * @var \QuarkCMS\QuarkAdmin\Grid\Model|\Illuminate\Database\Eloquent\Builder
      */
     protected $model;
+
+    /**
+     * The grid search.
+     *
+     * @var
+     */
+    protected $search;
+
+    /**
+     * The grid advancedSearch.
+     *
+     * @var
+     */
+    protected $advancedSearch;
 
     /**
      * Collection of all grid columns.
@@ -37,13 +44,6 @@ class Grid
     protected $columns;
 
     /**
-     * Grid builder.
-     *
-     * @var \Closure
-     */
-    protected $builder;
-
-    /**
      * All variables in grid view.
      *
      * @var array
@@ -51,58 +51,23 @@ class Grid
     protected $table = [];
 
     /**
-     * Initialization closure array.
+     * The grid data.
      *
-     * @var []Closure
+     * @var
      */
-    protected static $initCallbacks = [];
+    protected $data;
 
     /**
      * Create a new grid instance.
      *
      * @param Eloquent $model
-     * @param Closure  $builder
      */
-    public function __construct(Eloquent $model, Closure $builder = null)
+    public function __construct(Eloquent $model)
     {
         $this->model = new Model($model, $this);
-        $this->builder = $builder;
-
-        $this->initialize();
-
-        $this->callInitCallbacks();
-    }
-
-    /**
-     * Initialize.
-     */
-    protected function initialize()
-    {
         $this->columns = Collection::make();
-    }
-
-    /**
-     * Initialize with user pre-defined default disables and exporter, etc.
-     *
-     * @param Closure $callback
-     */
-    public static function init(Closure $callback = null)
-    {
-        static::$initCallbacks[] = $callback;
-    }
-
-    /**
-     * Call the initialization closure array in sequence.
-     */
-    protected function callInitCallbacks()
-    {
-        if (empty(static::$initCallbacks)) {
-            return;
-        }
-
-        foreach (static::$initCallbacks as $callback) {
-            call_user_func($callback, $this);
-        }
+        $this->search = new Search;
+        $this->advancedSearch = new Search;
     }
 
     /**
@@ -115,127 +80,7 @@ class Grid
      */
     public function column($name, $label = '')
     {
-        if (Str::contains($name, '.')) {
-            return $this->addRelationColumn($name, $label);
-        }
-
-        if (Str::contains($name, '->')) {
-            return $this->addJsonColumn($name, $label);
-        }
-
         return $this->__call($name, array_filter([$label]));
-    }
-
-    /**
-     * Batch add column to grid.
-     *
-     * @example
-     * 1.$grid->columns(['name' => 'Name', 'email' => 'Email' ...]);
-     * 2.$grid->columns('name', 'email' ...)
-     *
-     * @param array $columns
-     *
-     * @return Collection|null
-     */
-    public function columns($columns = [])
-    {
-        if (func_num_args() == 0) {
-            return $this->columns;
-        }
-
-        if (func_num_args() == 1 && is_array($columns)) {
-            foreach ($columns as $column => $label) {
-                $this->column($column, $label);
-            }
-
-            return;
-        }
-
-        foreach (func_get_args() as $column) {
-            $this->column($column);
-        }
-    }
-
-    /**
-     * Add column to grid.
-     *
-     * @param string $column
-     * @param string $label
-     *
-     * @return Column
-     */
-    protected function addColumn($column = '', $label = '')
-    {
-        $column = new Column($column, $label);
-        $column->setGrid($this);
-
-        return tap($column, function ($value) {
-            $this->columns->push($value);
-        });
-    }
-
-    /**
-     * Add a relation column to grid.
-     *
-     * @param string $name
-     * @param string $label
-     *
-     * @return $this|bool|Column
-     */
-    protected function addRelationColumn($name, $label = '')
-    {
-        list($relation, $column) = explode('.', $name);
-
-        $model = $this->model()->eloquent();
-
-        if (!method_exists($model, $relation) || !$model->{$relation}() instanceof Relations\Relation) {
-            $class = get_class($model);
-
-            admin_error("Call to undefined relationship [{$relation}] on model [{$class}].");
-
-            return $this;
-        }
-
-        $name = ($this->shouldSnakeAttributes() ? Str::snake($relation) : $relation).'.'.$column;
-
-        $this->model()->with($relation);
-
-        return $this->addColumn($name, $label)->setRelation($relation, $column);
-    }
-
-    /**
-     * Add a json type column to grid.
-     *
-     * @param string $name
-     * @param string $label
-     *
-     * @return Column
-     */
-    protected function addJsonColumn($name, $label = '')
-    {
-        $column = substr($name, strrpos($name, '->') + 2);
-
-        $name = str_replace('->', '.', $name);
-
-        return $this->addColumn($name, $label ?: ucfirst($column));
-    }
-
-    /**
-     * Prepend column to grid.
-     *
-     * @param string $column
-     * @param string $label
-     *
-     * @return Column
-     */
-    protected function prependColumn($column = '', $label = '')
-    {
-        $column = new Column($column, $label);
-        $column->setGrid($this);
-
-        return tap($column, function ($value) {
-            $this->columns->prepend($value);
-        });
     }
 
     /**
@@ -261,13 +106,52 @@ class Grid
     }
 
     /**
-     * Apply column search to grid query.
+     * parseOperator
+     *
+     * @param $items
+     * @param $inputs
      *
      * @return void
      */
-    protected function applyColumnSearch()
+    protected function parseOperator($items,$inputs)
     {
-        $this->columns->each->bindSearchQuery($this->model());
+        foreach ($items as $key => $item) {
+            if(isset($inputs[$item->name])) {
+                switch ($item->operator) {
+                    case 'equal':
+                        $this->model->where($item->name,$inputs[$item->name]);
+                        break; 
+
+                    case 'like':
+                        $this->model->where($item->name,'like','%'.$inputs[$item->name].'%');
+                        break;
+
+                    case 'gt':
+                        $this->model->where($item->name,'>',$inputs[$item->name]);
+                        break;
+
+                    case 'lt':
+                        $this->model->where($item->name,'<',$inputs[$item->name]);
+                        break;
+
+                    case 'between':
+                        $this->model->whereBetween($item->name, [$inputs[$item->name][0], $inputs[$item->name][1]]);
+                        break;
+
+                    case 'in':
+                        $this->model->whereIn($item->name, $inputs[$item->name]);
+                        break;
+
+                    case 'notIn':
+                        $this->model->whereNotIn($item->name, $inputs[$item->name]);
+                        break;
+
+                    default:
+                        $this->model->where($item->name,$inputs[$item->name]);
+                        break;
+                }
+            }
+        }
     }
 
     /**
@@ -275,7 +159,20 @@ class Grid
      */
     protected function applyQuery()
     {
-        $this->applyColumnSearch();
+        if(request()->has('search')) {
+            $searchInputs = request('search');
+
+            // 普通搜索
+            $searchRender = $this->search->render();
+
+            // 高级搜索
+            $advancedSearchRender = $this->advancedSearch->render();
+
+            $items = Arr::collapse([$searchRender['items'], $advancedSearchRender['items']]);
+
+            // 解析操作符
+            $this->parseOperator($items,$searchInputs);
+        }
 
         if (method_exists($this->model->eloquent(), 'paginate')) {
             $this->model->usePaginate(true);
@@ -284,67 +181,6 @@ class Grid
         }
 
         return $this->model->buildData(false);
-    }
-
-    /**
-     * Handle get mutator column for grid.
-     *
-     * @param string $method
-     * @param string $label
-     *
-     * @return bool|Column
-     */
-    protected function handleGetMutatorColumn($method, $label)
-    {
-        if ($this->model()->eloquent()->hasGetMutator($method)) {
-            return $this->addColumn($method, $label);
-        }
-
-        return false;
-    }
-
-    /**
-     * Handle relation column for grid.
-     *
-     * @param string $method
-     * @param string $label
-     *
-     * @return bool|Column
-     */
-    protected function handleRelationColumn($method, $label)
-    {
-        $model = $this->model()->eloquent();
-
-        if (!method_exists($model, $method)) {
-            return false;
-        }
-
-        if (!($relation = $model->$method()) instanceof Relations\Relation) {
-            return false;
-        }
-
-        if ($relation instanceof Relations\HasOne ||
-            $relation instanceof Relations\BelongsTo ||
-            $relation instanceof Relations\MorphOne
-        ) {
-            $this->model()->with($method);
-
-            return $this->addColumn($method, $label)->setRelation(
-                $this->shouldSnakeAttributes() ? Str::snake($method) : $method
-            );
-        }
-
-        if ($relation instanceof Relations\HasMany
-            || $relation instanceof Relations\BelongsToMany
-            || $relation instanceof Relations\MorphToMany
-            || $relation instanceof Relations\HasManyThrough
-        ) {
-            $this->model()->with($method);
-
-            return $this->addColumn($this->shouldSnakeAttributes() ? Str::snake($method) : $method, $label);
-        }
-
-        return false;
     }
 
     /**
@@ -357,25 +193,12 @@ class Grid
      */
     public function __call($method, $arguments)
     {
-        if (static::hasMacro($method)) {
-            return $this->macroCall($method, $arguments);
-        }
-
         $label = $arguments[0] ?? null;
+        $column = new Column($method, $label);
 
-        if ($this->model()->eloquent() instanceof MongodbModel) {
-            return $this->addColumn($method, $label);
-        }
-
-        if ($column = $this->handleGetMutatorColumn($method, $label)) {
-            return $column;
-        }
-
-        if ($column = $this->handleRelationColumn($method, $label)) {
-            return $column;
-        }
-
-        return $this->addColumn($method, $label);
+        return tap($column, function ($value) {
+            $this->columns->push($value);
+        });
     }
 
     /**
@@ -393,17 +216,23 @@ class Grid
     }
 
     /**
-     * Set relation for grid.
+     * 搜索
      *
-     * @param Relations\Relation $relation
-     *
-     * @return $this
+     * @return bool
      */
-    public function setRelation(Relations\Relation $relation)
+    public function search(Closure $callback = null)
     {
-        $this->model()->setRelation($relation);
+        $callback($this->search);
+    }
 
-        return $this;
+    /**
+     * 高级搜索
+     *
+     * @return bool
+     */
+    public function advancedSearch(Closure $callback = null)
+    {
+        $callback($this->advancedSearch);
     }
 
     /**
@@ -413,21 +242,44 @@ class Grid
      */
     public function render()
     {
-        $collection = $this->applyQuery();
+        // 普通搜索
+        $this->table['search'] = $this->search->render();
+
+        // 高级搜索
+        $this->table['advancedSearch'] = $this->advancedSearch->render();
+
+        // 表格数据
+        $this->data = $this->applyQuery();
 
         $this->columns->map(function (Column $column) {
-            $getColumn['title'] = $column->getLabel();
-            $getColumn['dataIndex'] = $column->getName();
-            $getColumn['key'] = $column->getName();
+
+            $getColumn['title'] = $column->label;
+            $getColumn['dataIndex'] = $column->name;
+            $getColumn['key'] = $column->name;
             $getColumn['width'] = $column->width;
+            $getColumn['using'] = $column->using;
+            $getColumn['tag'] = $column->tag;
+            $getColumn['link'] = $column->link;
+            $getColumn['image'] = $column->image;
+            $getColumn['qrcode'] = $column->qrcode;
             $this->table['columns'][] = $getColumn;
+
+            if (Str::contains($column->name, '.')) {
+                list($relation, $relationColumn) = explode('.', $column->name);
+                foreach ($this->data as $key => $value) {
+                    $value[$column->name] = '';
+                    if($value[$relation]) {
+                        $value[$column->name] = $value[$relation]->$relationColumn;
+                    }
+                    $this->data[$key] = $value;
+                }
+            }
         });
 
-        // dataSource
-        $model = $this->model()->eloquent();
-        $this->table['dataSource'] = $collection->toArray();
+        $this->table['dataSource'] = $this->data->toArray();
 
-        // pagination
+        $model = $this->model()->eloquent();
+        // 表格分页
         $pagination['defaultCurrent'] = 1;
         $pagination['current'] = $model->currentPage();
         $pagination['pageSize'] = $model->perPage();

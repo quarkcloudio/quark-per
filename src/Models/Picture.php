@@ -19,6 +19,7 @@ class Picture extends Model
      * @var array
      */
     protected $fillable = [
+        'id',
         'obj_type',
         'obj_id',
         'picture_category_id',

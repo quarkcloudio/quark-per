@@ -65,6 +65,18 @@ class Input extends Item
     }
 
     /**
+     * placeholder
+     *
+     * @param  string $placeholder
+     * @return object
+     */
+    public function placeholder($placeholder = '')
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    /**
      * 带标签的 input，设置后置标签。例如：'http://'
      *
      * @param  string $addonAfter

@@ -25,13 +25,24 @@ class AdminController extends QuarkController
     protected function table()
     {
         $grid = Quark::grid(new Admin)->title($this->title);
-        $grid->column('username','用户名');
+        $grid->column('picture.path','头像')->image();
+        $grid->column('username','用户名')->link();
         $grid->column('nickname','昵称');
-        $grid->column('email','邮箱');
+        $grid->column('email','邮箱')->qrcode();
+        $grid->column('status','状态')->using(['1' => '正常', '2' => '已禁用'])->tag(['1'=>'default','2'=>'warning']);
         $grid->column('actions','操作')->width(100);
+
+        $grid->search(function($search){
+            $search->equal('status', '所选状态')->select([''=>'全部',1=>'正常',2=>'已禁用'])->placeholder('请选择状态')->width(120);
+            $search->equal('username', '用户名');
+        });
+
+        $grid->advancedSearch(function($search){
+            $search->between('created_at', '创建时间')->datetime();
+        });
+
         $grid->model()
-        ->where('status',1)
-        ->select('id as key','id','username','nickname','email')
+        ->select('id as key','admins.*')
         ->orderBy('id','desc')
         ->paginate(10);
 
@@ -63,7 +74,7 @@ class AdminController extends QuarkController
         ->width(200)
         ->rules(['required','max:20'],['required'=>'昵称必须填写','max'=>'昵称不能超过20个字符']);
 
-        $form->radio('sex','性别')->options(['1' => '男', '2'=> '女'])->default('1');
+        $form->radio('sex','性别')->options(['1' => '男', '2'=> '女'])->default(1);
 
         $form->text('email','邮箱')
         ->width(200)
@@ -90,5 +101,30 @@ class AdminController extends QuarkController
         });
 
         return $form;
+    }
+
+    /**
+     * 详情页面
+     * 
+     * @param  Request  $request
+     * @return Response
+     */
+    protected function detail($id)
+    {
+        $show = Quark::show(Admin::findOrFail($id))->title('详情页');
+
+        $show->field('id','ID');
+        $show->field('username','用户名');
+        $show->field('nickname','昵称');
+        $show->field('sex','性别');
+        $show->field('status','状态');
+
+        //渲染前回调
+        $show->rendering(function ($show) {
+            $show->data['sex'] == 1 ? $show->data['sex'] = '男' : $show->data['sex'] = '女';
+            $show->data['status'] == 1 ? $show->data['status'] = '正常' : $show->data['status'] = '已禁用';
+        });
+
+        return $show;
     }
 }
