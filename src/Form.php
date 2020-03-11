@@ -35,7 +35,7 @@ class Form
      * @param $model
      * @param \Closure $callback
      */
-    public function __construct($model)
+    public function __construct($model = null)
     {
         $this->model = $model;
         $layout['labelCol']['span'] = 3;
@@ -108,13 +108,12 @@ class Form
         $action = \request()->route()->getName();
         $action = Str::replaceFirst('api/','',$action);
         if($this->isCreating()) {
-            $action = Str::replaceLast('/create','',$action);
-            $this->form['action'] = $action.'/store';
+            $this->form['action'] = Str::replaceLast('/create','/store',$action);
         }
 
         if($this->isEditing()) {
-            $action = Str::replaceLast('/edit','',$action);
-            $this->form['action'] = $action.'/update';
+            $action = 
+            $this->form['action'] = Str::replaceLast('/edit','/update',$action);
         }
     }
 
@@ -204,6 +203,67 @@ class Form
         $this->form['data'] = $data;
 
         return $this;
+    }
+
+    /**
+     * form action.
+     *
+     * @return bool
+     */
+    public function action()
+    {
+        $data = $this->request;
+
+        foreach ($this->form['items'] as $key => $value) {
+            if($value->rules) {
+
+                foreach ($value->rules as &$rule) {
+                    if (is_string($rule)) {
+                        $rule = str_replace('{{id}}', $data['id'], $rule);
+                    }
+                }
+
+                $rules[$value->name] = $value->rules;
+                $validator = Validator::make($data,$rules,$value->ruleMessages);
+                if ($validator->fails()) {
+
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+
+                    return Helper::error($errorMsg);
+                }
+            }
+
+            if($value->updateRules) {
+
+                foreach ($value->updateRules as &$rule) {
+                    if (is_string($rule)) {
+                        $rule = str_replace('{{id}}', $data['id'], $rule);
+                    }
+                }
+
+                $updateRules[$value->name] = $value->updateRules;
+                $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+                    
+                    return Helper::error($errorMsg);
+                }
+            }
+        }
+
+        $result = $this->model->where('id',$data['id'])->update($data);
+
+        if($result) {
+            return Helper::success('操作成功！','',$result);
+        } else {
+            return Helper::error('操作失败！');
+        }
     }
 
     /**

@@ -6,8 +6,10 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Closure;
 
-class Search
+class BatchActions
 {
+    // 批量操作
+
     public $search;
 
     protected $expand = false;

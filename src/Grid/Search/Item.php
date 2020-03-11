@@ -14,6 +14,7 @@ class Item
             $style,
             $component,
             $operator,
+            $advanced,
             $placeholder;
 
     function __construct() {
@@ -178,6 +179,19 @@ class Item
     {
         $this->component = 'datetime';
         $this->options = $options;
+
+        return $this;
+    }
+
+    /**
+     * advanced
+     *
+     * @param  bool $advanced
+     * @return object
+     */
+    public function advanced($advanced = true)
+    {
+        $this->advanced = $advanced;
 
         return $this;
     }

@@ -206,6 +206,30 @@ class QuarkController extends Controller
     }
 
     /**
+     * 更新字段数据方法
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function action(Request $request)
+    {
+        $id = $request->json('id');
+
+        if(empty($id)) {
+            return $this->error('参数错误！');
+        }
+
+        // 定义对象
+        $result = $this->form()->action($id);
+
+        if ($result) {
+            return $this->success('已启用！');
+        } else {
+            return $this->error('操作失败！');
+        }
+    }
+
+    /**
      * 启用数据方法
      *
      * @param  Request  $request

@@ -5,6 +5,7 @@ namespace QuarkCMS\QuarkAdmin;
 use Closure;
 use QuarkCMS\QuarkAdmin\Grid\Column;
 use QuarkCMS\QuarkAdmin\Grid\Search;
+use QuarkCMS\QuarkAdmin\Grid\Actions;
 use QuarkCMS\QuarkAdmin\Grid\Model;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations;
@@ -30,11 +31,11 @@ class Grid
     protected $search;
 
     /**
-     * The grid advancedSearch.
+     * The grid actions.
      *
      * @var
      */
-    protected $advancedSearch;
+    protected $actions;
 
     /**
      * Collection of all grid columns.
@@ -67,7 +68,7 @@ class Grid
         $this->model = new Model($model, $this);
         $this->columns = Collection::make();
         $this->search = new Search;
-        $this->advancedSearch = new Search;
+        $this->actions = new Actions;
     }
 
     /**
@@ -116,7 +117,7 @@ class Grid
     protected function parseOperator($items,$inputs)
     {
         foreach ($items as $key => $item) {
-            if(isset($inputs[$item->name])) {
+            if(isset($inputs[$item->name]) || (isset($inputs[$item->name.'_start']) && isset($inputs[$item->name.'_end']))) {
                 switch ($item->operator) {
                     case 'equal':
                         $this->model->where($item->name,$inputs[$item->name]);
@@ -135,7 +136,11 @@ class Grid
                         break;
 
                     case 'between':
-                        $this->model->whereBetween($item->name, [$inputs[$item->name][0], $inputs[$item->name][1]]);
+                        if($item->component == 'input') {
+                            $this->model->whereBetween($item->name, [$inputs[$item->name.'_start'], $inputs[$item->name.'_end']]);
+                        } else {
+                            $this->model->whereBetween($item->name, [$inputs[$item->name][0], $inputs[$item->name][1]]);
+                        }
                         break;
 
                     case 'in':
@@ -144,6 +149,69 @@ class Grid
 
                     case 'notIn':
                         $this->model->whereNotIn($item->name, $inputs[$item->name]);
+                        break;
+
+                    case 'scope':
+                        foreach ($item->options as $optionKey => $option) {
+                            if($option['value'] == $inputs[$item->name]) {
+                                if(isset($option['method'])) {
+                                    foreach ($option['method'] as $methodKey => $method) {
+                                        $methodName = array_key_first($method);
+                                        $params = $method[$methodName];
+                                        $this->model->$methodName(...$params);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+
+                    case 'where':
+                        foreach ($item->methods as $methodKey => $method) {
+                            $methodName = array_key_first($method);
+                            $params = $method[$methodName];
+                            $params = json_decode(str_replace('{input}', $inputs[$item->name], json_encode($params)),true);
+                            $this->model->$methodName(...$params);
+                        }
+                        break;
+
+                    case 'group':
+                        foreach ($item->options as $optionKey => $option) {
+                            $operator = $inputs[$item->name.'_start'];
+                            $value = $inputs[$item->name.'_end'];
+                            switch ($operator) {
+                                case 'equal':
+                                    $this->model->where($item->name,$value);
+                                    break;
+
+                                case 'notEqual':
+                                    $this->model->where($item->name,'<>',$value);
+                                    break;
+
+                                case 'gt':
+                                    $this->model->where($item->name,'>',$value);
+                                    break;
+
+                                case 'lt':
+                                    $this->model->where($item->name,'<',$value);
+                                    break;
+
+                                case 'nlt':
+                                    $this->model->where($item->name,'>=',$value);
+                                    break;
+
+                                case 'ngt':
+                                    $this->model->where($item->name,'<=',$value);
+                                    break;
+
+                                case 'like':
+                                    $this->model->where($item->name,'like','%'.$value.'%');
+                                    break;
+
+                                default:
+
+                                    break;
+                            }
+                        }
                         break;
 
                     default:
@@ -157,21 +225,14 @@ class Grid
     /**
      * @return array|Collection|mixed
      */
-    protected function applyQuery()
+    protected function query()
     {
         if(request()->has('search')) {
             $searchInputs = request('search');
-
-            // 普通搜索
+            // 搜索
             $searchRender = $this->search->render();
-
-            // 高级搜索
-            $advancedSearchRender = $this->advancedSearch->render();
-
-            $items = Arr::collapse([$searchRender['items'], $advancedSearchRender['items']]);
-
             // 解析操作符
-            $this->parseOperator($items,$searchInputs);
+            $this->parseOperator($searchRender['items'],$searchInputs);
         }
 
         if (method_exists($this->model->eloquent(), 'paginate')) {
@@ -223,16 +284,20 @@ class Grid
     public function search(Closure $callback = null)
     {
         $callback($this->search);
+
+        return $this->search;
     }
 
     /**
-     * 高级搜索
+     * actions
      *
      * @return bool
      */
-    public function advancedSearch(Closure $callback = null)
+    public function actions(Closure $callback = null)
     {
-        $callback($this->advancedSearch);
+        $callback($this->actions);
+
+        return $this->actions;
     }
 
     /**
@@ -242,14 +307,14 @@ class Grid
      */
     public function render()
     {
-        // 普通搜索
+        // 搜索
+        $this->table['actions'] = $this->actions->render();
+
+        // 搜索
         $this->table['search'] = $this->search->render();
 
-        // 高级搜索
-        $this->table['advancedSearch'] = $this->advancedSearch->render();
-
         // 表格数据
-        $this->data = $this->applyQuery();
+        $this->data = $this->query();
 
         $this->columns->map(function (Column $column) {
 
