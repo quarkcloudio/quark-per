@@ -206,67 +206,6 @@ class Form
     }
 
     /**
-     * form action.
-     *
-     * @return bool
-     */
-    public function action()
-    {
-        $data = $this->request;
-
-        foreach ($this->form['items'] as $key => $value) {
-            if($value->rules) {
-
-                foreach ($value->rules as &$rule) {
-                    if (is_string($rule)) {
-                        $rule = str_replace('{{id}}', $data['id'], $rule);
-                    }
-                }
-
-                $rules[$value->name] = $value->rules;
-                $validator = Validator::make($data,$rules,$value->ruleMessages);
-                if ($validator->fails()) {
-
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
-
-                    return Helper::error($errorMsg);
-                }
-            }
-
-            if($value->updateRules) {
-
-                foreach ($value->updateRules as &$rule) {
-                    if (is_string($rule)) {
-                        $rule = str_replace('{{id}}', $data['id'], $rule);
-                    }
-                }
-
-                $updateRules[$value->name] = $value->updateRules;
-                $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
-                    
-                    return Helper::error($errorMsg);
-                }
-            }
-        }
-
-        $result = $this->model->where('id',$data['id'])->update($data);
-
-        if($result) {
-            return Helper::success('操作成功！','',$result);
-        } else {
-            return Helper::error('操作失败！');
-        }
-    }
-
-    /**
      * form update.
      *
      * @return bool
@@ -328,42 +267,38 @@ class Form
     }
 
     /**
-     * form resume.
+     * form action.
      *
      * @return bool
      */
-    public function resume($id)
+    public function action()
     {
-        $model = $this->model;
+        $request = new Request;
+        $data = json_decode($request->getContent(),true);
 
-        if(is_array($id)) {
-            $query = $model->whereIn('id',$id);
-        } else {
-            $query = $model->where('id',$id);
+        $id = $data['id'];
+
+        if(empty($id)) {
+            return Helper::error('请选择数据！');
         }
 
-        $result = $query->update(['status'=>1]);
-        return $result;
-    }
-
-    /**
-     * form forbid.
-     *
-     * @return bool
-     */
-    public function forbid($id)
-    {
-        $model = $this->model;
+        // 删除不必要的字段
+        unset($data['actionUrl']);
+        unset($data['id']);
 
         if(is_array($id)) {
-            $query = $model->whereIn('id',$id);
+            $query = $this->model->whereIn('id',$id);
         } else {
-            $query = $model->where('id',$id);
+            $query = $this->model->where('id',$id);
         }
 
-        $result = $query->update(['status'=>2]);
+        $result = $query->update($data);
 
-        return $result;
+        if($result) {
+            return Helper::success('操作成功！','',$result);
+        } else {
+            return Helper::error('操作失败！');
+        }
     }
 
     /**
@@ -371,8 +306,16 @@ class Form
      *
      * @return bool
      */
-    public function destroy($id)
+    public function destroy()
     {
+        $request = new Request;
+
+        $id = $request->json('id');
+
+        if(empty($id)) {
+            return $this->error('参数错误！');
+        }
+
         $result = $this->model->destroy($id);
         return $result;
     }

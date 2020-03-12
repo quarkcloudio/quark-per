@@ -206,74 +206,20 @@ class QuarkController extends Controller
     }
 
     /**
-     * 更新字段数据方法
+     * action方法
      *
      * @param  Request  $request
      * @return Response
      */
     public function action(Request $request)
     {
-        $id = $request->json('id');
-
-        if(empty($id)) {
-            return $this->error('参数错误！');
-        }
-
         // 定义对象
-        $result = $this->form()->action($id);
+        $result = $this->form()->action();
 
-        if ($result) {
-            return $this->success('已启用！');
+        if($result['status'] == 'success') {
+            return $this->success('操作成功！');
         } else {
-            return $this->error('操作失败！');
-        }
-    }
-
-    /**
-     * 启用数据方法
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function resume(Request $request)
-    {
-        $id = $request->json('id');
-
-        if(empty($id)) {
-            return $this->error('参数错误！');
-        }
-
-        // 定义对象
-        $result = $this->form()->resume($id);
-
-        if ($result) {
-            return $this->success('已启用！');
-        } else {
-            return $this->error('操作失败！');
-        }
-    }
-
-    /**
-     * 禁用数据方法
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function forbid(Request $request)
-    {
-        $id = $request->json('id');
-
-        if(empty($id)) {
-            return $this->error('参数错误！');
-        }
-
-        // 定义对象
-        $result = $this->form()->forbid($id);
-
-        if ($result) {
-            return $this->success('已禁用！');
-        } else {
-            return $this->error('操作失败！');
+            return $this->error($result['msg']);
         }
     }
 
@@ -286,18 +232,12 @@ class QuarkController extends Controller
      */
     public function destroy(Request $request)
     {
-        $id = $request->json('id');
-
-        if(empty($id)) {
-            return $this->error('参数错误！');
-        }
-
         $result = $this->form()->destroy($id);
 
-        if ($result) {
+        if($result['status'] == 'success') {
             return $this->success('删除成功！');
         } else {
-            return $this->error('删除失败！');
+            return $this->error($result['msg']);
         }
     }
 }

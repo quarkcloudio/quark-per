@@ -38,6 +38,13 @@ class Grid
     protected $actions;
 
     /**
+     * The grid batchActions.
+     *
+     * @var
+     */
+    protected $batchActions;
+
+    /**
      * Collection of all grid columns.
      *
      * @var \Illuminate\Support\Collection
@@ -69,6 +76,7 @@ class Grid
         $this->columns = Collection::make();
         $this->search = new Search;
         $this->actions = new Actions;
+        $this->batchActions = new Actions;
     }
 
     /**
@@ -301,14 +309,29 @@ class Grid
     }
 
     /**
+     * batchActions
+     *
+     * @return bool
+     */
+    public function batchActions(Closure $callback = null)
+    {
+        $callback($this->batchActions);
+
+        return $this->batchActions;
+    }
+
+    /**
      * Get the string contents of the grid view.
      *
      * @return string
      */
     public function render()
     {
-        // 搜索
+        // 头部操作
         $this->table['actions'] = $this->actions->render();
+
+        // 批量操作
+        $this->table['batchActions'] = $this->batchActions->render();
 
         // 搜索
         $this->table['search'] = $this->search->render();

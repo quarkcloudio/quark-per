@@ -3,6 +3,7 @@
 namespace QuarkCMS\QuarkAdmin\Grid\Actions;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Form;
 use Exception;
 
@@ -37,12 +38,15 @@ class Add
     public function create($url = null)
     {
         $this->url = $url;
+        $this->icon = 'plusCircle';
+        $this->type = 'primary';
         $this->actionType = 'create';
         return $this;
     }
 
     public function refresh()
     {
+        $this->icon = 'redo';
         $this->actionType = 'refresh';
         return $this;
     }
@@ -91,7 +95,7 @@ class Add
         $action = Str::replaceFirst('api/','',$action);
         $action = Str::replaceLast('/index','/action',$action);
 
-        $this->form->setAction();
+        $this->form->setAction($action);
 
         $formRender = $this->form->render();
         $this->modal['form'] = $formRender['form'];

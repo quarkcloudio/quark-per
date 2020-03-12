@@ -36,28 +36,52 @@ class AdminController extends QuarkController
 
         // 头部操作
         $grid->actions(function($action) {
-            $action->add('create', '新增')->type('primary')->icon('plusCircle')->create();
-            $action->add('refresh', '刷新')->icon('redo')->refresh();
-            $action->add('import', '导入')->icon('import')->modal('导入用户',function($modal) {
-                $form = $modal->form;
-                $form->text('username','用户名');
-                $form->text('nickname','昵称');
-            });
+            $action->button('create', '新增')->create();
+            $action->button('refresh', '刷新')->refresh();
         });
 
-        // // select样式的批量操作
-        // $grid->batchActions(function($batch) {
-        //     $batch->add('review', '审核')->modal('审核用户',function($form) {
-        //         $form->text('username','用户名');
-        //     });
-        //     $batch->add('export', '导出')->link('https://www.baidu.com');
-        // })->selectStyle();
- 
-        // // button样式的批量操作
-        // $grid->batchActions(function($batch) {
-        //     $batch->add('resume', '启用')->update(['status'=>1]);
-        //     $batch->add('forbid', '禁用')->update(['status'=>2]);
-        // })->buttonStyle();
+        // button样式的批量操作
+        $grid->batchActions(function($batch) {
+            
+            $batch->button('review', '审核')->withModal('审核用户',function($modal) {
+                $form = $modal->form;
+                $form->text('username','用户名');
+            });
+            
+            $batch->button('resume', '启用',function($model) {
+                $model->update(['status'=>1]);
+            });
+
+            $batch->button('forbid', '禁用',function($model) {
+                $model->update(['status'=>2]);
+            });
+
+            $batch->button('delete', '删除',function($model) {
+                $model->delete();
+            })->withConfirm();
+
+        })->buttonStyle();
+
+        // select样式的批量操作
+        $grid->batchActions(function($batch) {
+            $batch->option('review', '审核')->withModal('审核用户',function($modal) {
+                $form = $modal->form;
+                $form->text('username','用户名');
+            });
+            
+            $batch->option('resume', '启用',function($model) {
+                $model->update(['status'=>1]);
+            });
+
+            $batch->option('forbid', '禁用',function($model) {
+                $model->update(['status'=>2]);
+            });
+
+            $batch->option('delete', '删除',function($model) {
+                $model->delete();
+            })->withConfirm();
+
+        })->selectStyle();
 
         // $grid->rowActions('switchActions',function($rowAction) {
         //     $rowAction->add('review', '审核')->switch(['1'=>'审核','2'=>'禁用'])->update(['status'=>'{input}']);
