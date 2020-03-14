@@ -126,8 +126,7 @@ class Form
     protected function initRequestData()
     {
         if(Str::endsWith(\request()->route()->getName(), ['/store', '/update'])) {
-            $request = new Request;
-            $data = json_decode($request->getContent(),true);
+            $data = request()->all();
             unset($data['actionUrl']);
             $this->request = $data;
         }
@@ -267,50 +266,13 @@ class Form
     }
 
     /**
-     * form action.
-     *
-     * @return bool
-     */
-    public function action()
-    {
-        $request = new Request;
-        $data = json_decode($request->getContent(),true);
-
-        $id = $data['id'];
-
-        if(empty($id)) {
-            return Helper::error('请选择数据！');
-        }
-
-        // 删除不必要的字段
-        unset($data['actionUrl']);
-        unset($data['id']);
-
-        if(is_array($id)) {
-            $query = $this->model->whereIn('id',$id);
-        } else {
-            $query = $this->model->where('id',$id);
-        }
-
-        $result = $query->update($data);
-
-        if($result) {
-            return Helper::success('操作成功！','',$result);
-        } else {
-            return Helper::error('操作失败！');
-        }
-    }
-
-    /**
      * form destroy.
      *
      * @return bool
      */
     public function destroy()
     {
-        $request = new Request;
-
-        $id = $request->json('id');
+        $id = request('id');
 
         if(empty($id)) {
             return $this->error('参数错误！');
@@ -509,7 +471,7 @@ class Form
                 $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
             }
 
-            $item->rules = $frontendRules;
+            $item->frontendRules = $frontendRules;
             $this->form['items'][$key] = $item;
         }
     }
@@ -538,7 +500,6 @@ class Form
         // 设置表单默认值
         $this->initialValues();
 
-        $data['form'] = $this->form;
-        return $data;
+        return $this->form;
     }
 }

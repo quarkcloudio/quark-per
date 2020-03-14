@@ -125,7 +125,7 @@ class QuarkController extends Controller
         ->subTitle($this->subTitle())
         ->description($this->description())
         ->breadcrumb($this->breadcrumb())
-        ->body($form->render());
+        ->body(['form'=>$form->render()]);
 
         return $this->success('获取成功！','',$content);
     }
@@ -176,7 +176,7 @@ class QuarkController extends Controller
         ->subTitle($this->subTitle())
         ->description($this->description())
         ->breadcrumb($this->breadcrumb())
-        ->body($form->render());
+        ->body(['form'=>$form->render()]);
 
         return $this->success('获取成功！','',$content);
     }
@@ -206,7 +206,7 @@ class QuarkController extends Controller
     }
 
     /**
-     * action方法
+     * 列表action方法
      *
      * @param  Request  $request
      * @return Response
@@ -214,7 +214,7 @@ class QuarkController extends Controller
     public function action(Request $request)
     {
         // 定义对象
-        $result = $this->form()->action();
+        $result = $this->table()->action();
 
         if($result['status'] == 'success') {
             return $this->success('操作成功！');

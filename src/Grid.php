@@ -13,6 +13,7 @@ use Illuminate\Support\Collection;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Traits\Macroable;
+use Validator;
 
 class Grid
 {
@@ -43,6 +44,20 @@ class Grid
      * @var
      */
     protected $batchActions;
+
+    /**
+     * The grid extendActions.
+     *
+     * @var
+     */
+    protected $extendActions;
+
+    /**
+     * The grid rowActions.
+     *
+     * @var
+     */
+    protected $rowActions;
 
     /**
      * Collection of all grid columns.
@@ -77,6 +92,8 @@ class Grid
         $this->search = new Search;
         $this->actions = new Actions;
         $this->batchActions = new Actions;
+        $this->extendActions = new Actions;
+        $this->rowActions = new Actions;
     }
 
     /**
@@ -297,12 +314,181 @@ class Grid
     }
 
     /**
+     * action自动验证
+     *
+     * @return bool
+     */
+    public function actionValidator($id,$data,$items)
+    {
+        if(is_array($id)) {
+            foreach ($id as $key => $value) {
+                foreach ($items as $itemKey => $item) {
+                    if($item->rules) {
+        
+                        foreach ($item->rules as &$rule) {
+                            if (is_string($rule)) {
+                                $rule = str_replace('{{id}}', $value, $rule);
+                            }
+                        }
+        
+                        $rules[$item->name] = $item->rules;
+                        $validator = Validator::make($data,$rules,$item->ruleMessages);
+                        if ($validator->fails()) {
+        
+                            $errors = $validator->errors()->getMessages();
+                            foreach($errors as $errorKey => $error) {
+                                $errorMsg = $error[0];
+                            }
+        
+                            return $errorMsg;
+                        }
+                    }
+                }
+            }
+        } else {
+            foreach ($items as $itemKey => $item) {
+                if($item->rules) {
+    
+                    foreach ($item->rules as &$rule) {
+                        if (is_string($rule)) {
+                            $rule = str_replace('{{id}}', $id, $rule);
+                        }
+                    }
+    
+                    $rules[$item->name] = $item->rules;
+                    $validator = Validator::make($data,$rules,$item->ruleMessages);
+                    if ($validator->fails()) {
+    
+                        $errors = $validator->errors()->getMessages();
+                        foreach($errors as $errorKey => $error) {
+                            $errorMsg = $error[0];
+                        }
+    
+                        return $errorMsg;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 列表所有action的数据操作
+     *
+     * @return bool
+     */
+    public function action()
+    {
+        $data = request()->all();
+
+        $id = $data['id'];
+        $actionName = $data['actionName'];
+
+        if(empty($id)) {
+            return Helper::error('请选择数据！');
+        }
+
+        // 删除不必要的字段
+        unset($data['actionName']);
+        unset($data['actionUrl']);
+        unset($data['id']);
+
+        $model = $this->model()->eloquent();
+
+        if(is_array($id)) {
+            $query = $model->whereIn('id',$id);
+        } else {
+            $query = $model->where('id',$id);
+        }
+
+        if(!empty($this->actions->items)) {
+            foreach ($this->actions->items as $key => $value) {
+                if($value->name == $actionName) {
+                    if(isset($value->modal['form']['items'])) {
+                        $errorMsg = $this->actionValidator($id,$data,$value->modal['form']['items']);
+                        if($errorMsg) {
+                            return Helper::error($errorMsg);
+                        }
+                
+                        $query = $query->update($data);
+                    }
+
+                    if(!empty($value->model->methods)) {
+                        foreach ($value->model->methods as $methodKey => $method) {
+                            $methodName = array_key_first($method);
+                            $params = $method[$methodName];
+    
+                            $query = $query->$methodName(...$params);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(!empty($this->batchActions->items)) {
+            foreach ($this->batchActions->items as $batchKey => $batchValue) {
+                if($batchValue->name == $actionName) {
+                    if(isset($batchValue->modal['form']['items'])) {
+                        $errorMsg = $this->actionValidator($id,$data,$batchValue->modal['form']['items']);
+
+                        if($errorMsg) {
+                            return Helper::error($errorMsg);
+                        }
+                
+                        $query = $query->update($data);
+                    }
+
+                    if(!empty($batchValue->model->methods)) {
+                        foreach ($batchValue->model->methods as $methodKey => $method) {
+                            $methodName = array_key_first($method);
+                            $params = $method[$methodName];
+    
+                            $query = $query->$methodName(...$params);
+                        }
+                    }
+                }
+            }
+        }
+
+        if(!empty($this->rowActions->items)) {
+            foreach ($this->rowActions->items as $rowhKey => $rowValue) {
+                if($rowValue->name == $actionName) {
+                    if(isset($rowValue->modal['form']['items'])) {
+                        $errorMsg = $this->actionValidator($id,$data,$rowValue->modal['form']['items']);
+                        if($errorMsg) {
+                            return Helper::error($errorMsg);
+                        }
+                
+                        $query = $query->update($data);
+                    }
+
+                    if(!empty($rowValue->model->methods)) {
+                        foreach ($rowValue->model->methods as $methodKey => $method) {
+                            $methodName = array_key_first($method);
+                            $params = $method[$methodName];
+    
+                            $query = $query->$methodName(...$params);
+                        }
+                    }
+                }
+            }
+        }
+
+        if($query) {
+            return Helper::success('操作成功！');
+        } else {
+            return Helper::error('操作失败！');
+        }
+    }
+
+    /**
      * actions
      *
      * @return bool
      */
     public function actions(Closure $callback = null)
     {
+        $this->actions->prefix('action');
+
         $callback($this->actions);
 
         return $this->actions;
@@ -315,9 +501,39 @@ class Grid
      */
     public function batchActions(Closure $callback = null)
     {
+        $this->batchActions->prefix('batchAction');
+
         $callback($this->batchActions);
 
         return $this->batchActions;
+    }
+
+    /**
+     * extendActions
+     *
+     * @return bool
+     */
+    public function extendActions(Closure $callback = null)
+    {
+        $this->extendActions->prefix('extendAction');
+
+        $callback($this->extendActions);
+
+        return $this->extendActions;
+    }
+
+    /**
+     * rowActions
+     *
+     * @return bool
+     */
+    public function rowActions(Closure $callback = null)
+    {
+        $this->rowActions->prefix('rowAction');
+
+        $callback($this->rowActions);
+
+        return $this->rowActions;
     }
 
     /**
@@ -332,6 +548,12 @@ class Grid
 
         // 批量操作
         $this->table['batchActions'] = $this->batchActions->render();
+
+        // 扩展操作
+        $this->table['extendActions'] = $this->extendActions->render();
+
+        // 行内操作
+        $this->table['rowActions'] = $this->rowActions->render();
 
         // 搜索
         $this->table['search'] = $this->search->render();
@@ -350,6 +572,7 @@ class Grid
             $getColumn['link'] = $column->link;
             $getColumn['image'] = $column->image;
             $getColumn['qrcode'] = $column->qrcode;
+            $getColumn['editable'] = $column->editable;
             $this->table['columns'][] = $getColumn;
 
             if (Str::contains($column->name, '.')) {

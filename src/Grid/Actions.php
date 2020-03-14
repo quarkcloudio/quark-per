@@ -8,11 +8,19 @@ use Closure;
 
 class Actions
 {
-    // ??
+    // 
 
-    public $action;
+    public $prefix = '';
 
-    protected $style = 'button';
+    protected $action;
+
+    public $items = [];
+
+    protected $style = [];
+
+    protected $showStyle = 'button';
+
+    protected $placeholder;
 
     /**
      * Available fields.
@@ -20,8 +28,38 @@ class Actions
      * @var array
      */
     public static $availableFields = [
-        'add' => Actions\Add::class,
+        'button' => Actions\Button::class,
+        'option' => Actions\Option::class,
+        'menu' => Actions\Menu::class,
     ];
+
+    public function prefix($prefix)
+    {
+        $this->prefix = $prefix;
+        return $this;
+    }
+
+    public function style($showStyle,$style = [])
+    {
+        $this->style = $style;
+        $this->showStyle = $showStyle;
+        return $this;
+    }
+
+    public function placeholder($placeholder)
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    public function render()
+    {
+        $this->action['items'] = $this->items;
+        $this->action['style'] = $this->style;
+        $this->action['showStyle'] = $this->showStyle;
+        $this->action['placeholder'] = $this->placeholder;
+        return $this->action;
+    }
 
     /**
      * Find field class.
@@ -46,31 +84,15 @@ class Actions
         if ($className = static::findFieldClass($method)) {
 
             $column = Arr::get($arguments, 0, ''); //[0];
-            $element = new $className($column, array_slice($arguments, 1));
-            $this->action['items'][] = $element;
 
+            if($method == 'button' || $method == 'menu' || $method == 'option') {
+                $element = new $className($column, array_slice($arguments, 1), $this->prefix);
+            } else {
+                $element = new $className($column, array_slice($arguments, 1));
+            }
+
+            $this->items[] = $element;
             return $element;
         }
-    }
-
-    public function buttonStyle()
-    {
-        $this->style = 'button';
-    }
-
-    public function selectStyle()
-    {
-        $this->style = 'select';
-    }
-
-    public function dropdownStyle()
-    {
-        $this->style = 'dropdown';
-    }
-
-    public function render()
-    {
-        $this->action['style'] = $this->style;
-        return $this->action;
     }
 }

@@ -27,7 +27,7 @@ class AdminController extends QuarkController
         $grid = Quark::grid(new Admin)->title($this->title);
         $grid->column('picture.path','头像')->image();
         $grid->column('username','用户名')->link();
-        $grid->column('nickname','昵称');
+        $grid->column('nickname','昵称')->editable()->width('15%');
         $grid->column('email','邮箱');
         $grid->column('phone','手机号');
         $grid->column('last_login_time','最后登录时间');
@@ -36,94 +36,43 @@ class AdminController extends QuarkController
 
         // 头部操作
         $grid->actions(function($action) {
-            $action->button('create', '新增')->create();
-            $action->button('refresh', '刷新')->refresh();
+            $action->button('create', '新增');
+            $action->button('refresh', '刷新');
         });
-
-        // button样式的批量操作
-        $grid->batchActions(function($batch) {
-            
-            $batch->button('review', '审核')->withModal('审核用户',function($modal) {
-                $form = $modal->form;
-                $form->text('username','用户名');
-            });
-            
-            $batch->button('resume', '启用',function($model) {
-                $model->update(['status'=>1]);
-            });
-
-            $batch->button('forbid', '禁用',function($model) {
-                $model->update(['status'=>2]);
-            });
-
-            $batch->button('delete', '删除',function($model) {
-                $model->delete();
-            })->withConfirm();
-
-        })->buttonStyle();
 
         // select样式的批量操作
         $grid->batchActions(function($batch) {
-            $batch->option('review', '审核')->withModal('审核用户',function($modal) {
-                $form = $modal->form;
-                $form->text('username','用户名');
-            });
             
-            $batch->option('resume', '启用',function($model) {
+            $batch->option('', '批量操作');
+
+            $batch->option('resume', '启用')->model(function($model) {
                 $model->update(['status'=>1]);
             });
 
-            $batch->option('forbid', '禁用',function($model) {
+            $batch->option('forbid', '禁用')->model(function($model) {
                 $model->update(['status'=>2]);
             });
 
-            $batch->option('delete', '删除',function($model) {
+            $batch->option('delete', '删除')->model(function($model) {
                 $model->delete();
-            })->withConfirm();
+            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
 
-        })->selectStyle();
+        })->style('select',['width'=>120]);
 
-        // $grid->rowActions('switchActions',function($rowAction) {
-        //     $rowAction->add('review', '审核')->switch(['1'=>'审核','2'=>'禁用'])->update(['status'=>'{input}']);
-        // })->buttonStyle();
-
-        // $grid->rowActions('actions',function($rowAction) {
-        //     $rowAction->add('review', '审核')->modal('审核用户',function($form) {
-        //         $form->text('username','用户名');
-        //         $form->setAction('admin/admin/review');
-        //     });
-        //     $rowAction->add('export', '导出')->link('https://www.baidu.com');
-        // })->dropdownStyle();
+        $grid->rowActions(function($rowAction) {
+            $rowAction->menu('edit', '编辑');
+            $rowAction->menu('show', '显示');
+            $rowAction->menu('delete', '删除')->model(function($model) {
+                $model->delete();
+            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+        })->style('dropdown');
 
         $grid->search(function($search) {
             $search->equal('status', '所选状态')->select([''=>'全部',1=>'正常',2=>'已禁用'])->placeholder('选择状态')->width(100);
-            // $search->like('username', '用户名');
 
             $search->where('usernameOrNickname', '搜索内容',function ($query) {
                 $query->where('username', 'like', "%{input}%")->orWhere('nickname', 'like', "%{input}%")->orWhere('phone', 'like', "%{input}%");
             })->placeholder('用户名/手机号/昵称');
-
-            // $search->scope('scope', '查询范围', function($scope) {
-            //     $scope->option('', '全部');
-            //     $scope->option('male', '男性')->where('sex', '1');
-            //     $scope->option('new', '最近修改')
-            //     ->whereDate('created_at', date('Y-m-d'))
-            //     ->orWhere('updated_at', date('Y-m-d'));
-            //     $scope->option('trashed', '回收站')->onlyTrashed();
-            // })
-            // ->placeholder('请选择范围')
-            // ->width(160)
-            // ->advanced();
-
-            // $search->group('status', '状态', function($group) {
-            //     $group->all('全部数据');
-            //     $group->gt('大于');
-            //     $group->lt('小于');
-            //     $group->equal('等于');
-            // })
-            // ->placeholder('请选择输入数据')
-            // ->width([100,160])
-            // ->advanced();
 
             $search->between('last_login_time', '登录时间')->datetime()->advanced();
         })->expand(false);

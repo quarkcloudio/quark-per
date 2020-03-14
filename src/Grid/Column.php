@@ -56,6 +56,11 @@ class Column
     public $qrcode;
 
     /**
+     * @var editable
+     */
+    public $editable = false;
+
+    /**
      * @param string $name
      * @param string $label
      */
@@ -134,6 +139,27 @@ class Column
         $qrcode['width'] = $width;
         $qrcode['height'] = $height;
         $this->qrcode = $qrcode;
+        return $this;
+    }
+
+    /**
+     * editable.
+     *
+     * @return mixed
+     */
+    public function editable($name='text',$option=false,$action='')
+    {
+        if(empty($action)) {
+            $action = \request()->route()->getName();
+            $action = Str::replaceFirst('api/','',$action);
+            $action = Str::replaceLast('/index','/action',$action);
+        }
+
+        $editable['name'] = $name;
+        $editable['option'] = $option;
+        $editable['action'] = $action;
+        
+        $this->editable = $editable;
         return $this;
     }
 }
