@@ -400,73 +400,77 @@ class Grid
             $query = $model->where('id',$id);
         }
 
-        if(!empty($this->actions->items)) {
-            foreach ($this->actions->items as $key => $value) {
-                if($value->name == $actionName) {
-                    if(isset($value->modal['form']['items'])) {
-                        $errorMsg = $this->actionValidator($id,$data,$value->modal['form']['items']);
-                        if($errorMsg) {
-                            return Helper::error($errorMsg);
+        if($actionName == 'editable') {
+            $query = $query->update($data);
+        } else {
+            if(!empty($this->actions->items)) {
+                foreach ($this->actions->items as $key => $value) {
+                    if($value->name == $actionName) {
+                        if(isset($value->modal['form']['items'])) {
+                            $errorMsg = $this->actionValidator($id,$data,$value->modal['form']['items']);
+                            if($errorMsg) {
+                                return Helper::error($errorMsg);
+                            }
+                    
+                            $query = $query->update($data);
                         }
-                
-                        $query = $query->update($data);
-                    }
-
-                    if(!empty($value->model->methods)) {
-                        foreach ($value->model->methods as $methodKey => $method) {
-                            $methodName = array_key_first($method);
-                            $params = $method[$methodName];
     
-                            $query = $query->$methodName(...$params);
+                        if(!empty($value->model->methods)) {
+                            foreach ($value->model->methods as $methodKey => $method) {
+                                $methodName = array_key_first($method);
+                                $params = $method[$methodName];
+        
+                                $query = $query->$methodName(...$params);
+                            }
                         }
                     }
                 }
             }
-        }
-
-        if(!empty($this->batchActions->items)) {
-            foreach ($this->batchActions->items as $batchKey => $batchValue) {
-                if($batchValue->name == $actionName) {
-                    if(isset($batchValue->modal['form']['items'])) {
-                        $errorMsg = $this->actionValidator($id,$data,$batchValue->modal['form']['items']);
-
-                        if($errorMsg) {
-                            return Helper::error($errorMsg);
-                        }
-                
-                        $query = $query->update($data);
-                    }
-
-                    if(!empty($batchValue->model->methods)) {
-                        foreach ($batchValue->model->methods as $methodKey => $method) {
-                            $methodName = array_key_first($method);
-                            $params = $method[$methodName];
     
-                            $query = $query->$methodName(...$params);
+            if(!empty($this->batchActions->items)) {
+                foreach ($this->batchActions->items as $batchKey => $batchValue) {
+                    if($batchValue->name == $actionName) {
+                        if(isset($batchValue->modal['form']['items'])) {
+                            $errorMsg = $this->actionValidator($id,$data,$batchValue->modal['form']['items']);
+    
+                            if($errorMsg) {
+                                return Helper::error($errorMsg);
+                            }
+                    
+                            $query = $query->update($data);
+                        }
+    
+                        if(!empty($batchValue->model->methods)) {
+                            foreach ($batchValue->model->methods as $methodKey => $method) {
+                                $methodName = array_key_first($method);
+                                $params = $method[$methodName];
+        
+                                $query = $query->$methodName(...$params);
+                            }
                         }
                     }
                 }
             }
-        }
-
-        if(!empty($this->rowActions->items)) {
-            foreach ($this->rowActions->items as $rowhKey => $rowValue) {
-                if($rowValue->name == $actionName) {
-                    if(isset($rowValue->modal['form']['items'])) {
-                        $errorMsg = $this->actionValidator($id,$data,$rowValue->modal['form']['items']);
-                        if($errorMsg) {
-                            return Helper::error($errorMsg);
-                        }
-                
-                        $query = $query->update($data);
-                    }
-
-                    if(!empty($rowValue->model->methods)) {
-                        foreach ($rowValue->model->methods as $methodKey => $method) {
-                            $methodName = array_key_first($method);
-                            $params = $method[$methodName];
     
-                            $query = $query->$methodName(...$params);
+            if(!empty($this->rowActions->items)) {
+                foreach ($this->rowActions->items as $rowhKey => $rowValue) {
+                    if($rowValue->name == $actionName) {
+                        if(isset($rowValue->modal['form']['items'])) {
+                            $errorMsg = $this->actionValidator($id,$data,$rowValue->modal['form']['items']);
+                            if($errorMsg) {
+                                return Helper::error($errorMsg);
+                            }
+                    
+                            $query = $query->update($data);
+                        }
+    
+                        if(!empty($rowValue->model->methods)) {
+                            foreach ($rowValue->model->methods as $methodKey => $method) {
+                                $methodName = array_key_first($method);
+                                $params = $method[$methodName];
+        
+                                $query = $query->$methodName(...$params);
+                            }
                         }
                     }
                 }
