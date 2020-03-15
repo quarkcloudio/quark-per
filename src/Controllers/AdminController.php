@@ -31,7 +31,8 @@ class AdminController extends QuarkController
         $grid->column('email','邮箱');
         $grid->column('phone','手机号');
         $grid->column('last_login_time','最后登录时间');
-        $grid->column('status','状态')->using(['1' => '正常', '2' => '已禁用'])->tag(['1'=>'default','2'=>'warning']);
+        //$grid->column('status','状态')->using(['1' => '正常', '2' => '已禁用'])->tag(['1'=>'default','2'=>'warning']);
+        $grid->column('status','状态')->editable('switch',['1' => '正常', '2' => '已禁用'])->width(100);
         $grid->column('actions','操作')->width(100);
 
         // 头部操作
