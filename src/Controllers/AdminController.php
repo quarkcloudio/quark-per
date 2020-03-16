@@ -27,14 +27,16 @@ class AdminController extends QuarkController
         $grid = Quark::grid(new Admin)->title($this->title);
         $grid->column('picture.path','头像')->image();
         $grid->column('username','用户名')->link();
-        $grid->column('nickname','昵称')->editable()->width('15%');
-        $grid->column('email','邮箱')->editable()->width('15%');
-        $grid->column('phone','手机号');
+        $grid->column('nickname','昵称')->editable()->width('12%');
+        $grid->column('email','邮箱')->editable()->width('12%');
+        $grid->column('sex','性别')->using(['1'=>'男','2'=>'女'])->filters(['1'=>'男','2'=>'女'])->width(80);
+        $grid->column('phone','手机号')->sorter()->width(100);
         $grid->column('last_login_time','最后登录时间');
         $grid->column('status','状态')->editable('switch',[
             'on'  => ['value' => 1, 'text' => '正常'],
             'off' => ['value' => 2, 'text' => '禁用']
         ])->width(100);
+
         $grid->column('actions','操作')->width(100);
 
         // 头部操作
@@ -82,7 +84,6 @@ class AdminController extends QuarkController
 
         $grid->model()
         ->select('id as key','admins.*')
-        ->orderBy('id','desc')
         ->paginate(10);
 
         return $grid;

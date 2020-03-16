@@ -61,6 +61,16 @@ class Column
     public $editable = false;
 
     /**
+     * @var sorter
+     */
+    public $sorter = false;
+
+    /**
+     * @var filters
+     */
+    public $filters = null;
+
+    /**
      * @param string $name
      * @param string $label
      */
@@ -147,7 +157,7 @@ class Column
      *
      * @return mixed
      */
-    public function editable($name='text',$option=false,$action='')
+    public function editable($name='text',$options=false,$action='')
     {
         if(empty($action)) {
             $action = \request()->route()->getName();
@@ -155,11 +165,41 @@ class Column
             $action = Str::replaceLast('/index','/action',$action);
         }
 
+        if($name == 'select') {
+            $getOptions = [];
+            foreach ($options as $key => $value) {
+                $option['label'] = $value;
+                $option['value'] = $key;
+                $getOptions[] = $option;
+            }
+
+            $options = $getOptions;
+        }
+
         $editable['name'] = $name;
-        $editable['option'] = $option;
+        $editable['options'] = $options;
         $editable['action'] = $action;
         
         $this->editable = $editable;
+        return $this;
+    }
+
+    public function filters($filters = [])
+    {
+        $getFilters = [];
+        foreach ($filters as $key => $value) {
+            $filter['text'] = $value;
+            $filter['value'] = $key;
+            $getFilters[] = $filter;
+        }
+
+        $this->filters = $getFilters;
+        return $this;
+    }
+
+    public function sorter($sorter = true)
+    {
+        $this->sorter = $sorter;
         return $this;
     }
 }

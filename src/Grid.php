@@ -260,6 +260,31 @@ class Grid
             $this->parseOperator($searchRender['items'],$searchInputs);
         }
 
+        if(request()->has('sorter')) {
+            $sorterInputs = request('sorter');
+            if(isset($sorterInputs['order'])) {
+                $sorterInputs['order'] == 'descend' ? $order = 'desc' : $order='asc';
+                $this->model->orderBy($sorterInputs['field'],$order);
+            }
+        } else {
+            $this->model->orderBy('id','desc');
+        }
+
+        if(request()->has('filters')) {
+            $filterInputs = request('filters');
+            foreach ($filterInputs as $filterKey => $filterValue) {
+                if(isset($filterValue)) {
+                    foreach ($filterValue as $key => $value) {
+                        if($key == 0) {
+                            $this->model->where($filterKey,$value);
+                        } else {
+                            $this->model->orWhere($filterKey,$value);
+                        }
+                    }
+                }
+            }
+        }
+
         if (method_exists($this->model->eloquent(), 'paginate')) {
             $this->model->usePaginate(true);
 
@@ -577,6 +602,10 @@ class Grid
             $getColumn['image'] = $column->image;
             $getColumn['qrcode'] = $column->qrcode;
             $getColumn['editable'] = $column->editable;
+            if($column->filters) {
+                $getColumn['filters'] = $column->filters;
+            }
+            $getColumn['sorter'] = $column->sorter;
             $this->table['columns'][] = $getColumn;
 
             if (Str::contains($column->name, '.')) {
