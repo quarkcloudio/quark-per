@@ -37,6 +37,9 @@ class Input extends Item
         }
 
         $this->placeholder = '请输入'.$this->label;
+
+        $style['width'] = 200;
+        $this->style = $style;
     }
 
     /**
