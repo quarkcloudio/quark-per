@@ -6,17 +6,15 @@ use QuarkCMS\QuarkAdmin\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
-class Image extends Item
+class Number extends Item
 {
-    public  $mode,
-            $list,
-            $button,
-            $limitSize,
-            $limitType,
-            $limitNum;
+    public  $min,
+            $max,
+            $step;
 
     function __construct($name,$label = '') {
-        $this->component = 'image';
+        $this->component = 'input';
+        $this->type = 'text';
         $this->name = $name;
 
         if(empty($label) || !count($label)) {
@@ -26,11 +24,10 @@ class Image extends Item
             $this->label = $label;
         }
 
-        $this->mode = 'single';
-        $this->button = '上传图片';
-        $this->limitNum = 3; // 默认上传个数
-        $this->limitSize = 2; // 默认文件大小2M
-        $this->limitType = ['image/jpeg','image/png'];
+        $this->placeholder = '请输入'.$this->label;
+
+        $style['width'] = 200;
+        $this->style = $style;
     }
 
     /**
@@ -58,39 +55,34 @@ class Image extends Item
         return $self;
     }
 
-    public function mode($mode)
+    public function min($min)
     {
-        $this->mode = $mode;
+        $this->min = $min;
         return $this;
     }
 
-    public function value($value)
+    /**
+     * 输入框宽度
+     * 
+     * @param  number|string $value
+     * @return object
+     */
+    public function width($value = '100%')
     {
-        $this->value = $value;
+        $style['width'] = $value;
+        $this->style = $style;
         return $this;
     }
 
-    public function limitSize($limitSize)
+    public function max($max)
     {
-        $this->limitSize = $limitSize;
+        $this->max = $max;
         return $this;
     }
 
-    public function limitType($limitType)
+    public function step($step)
     {
-        $this->limitType = $limitType;
-        return $this;
-    }
-
-    public function limitNum($limitNum)
-    {
-        $this->limitNum = $limitNum;
-        return $this;
-    }
-
-    public function button($text)
-    {
-        $this->button = $text;
+        $this->step = $step;
         return $this;
     }
 }

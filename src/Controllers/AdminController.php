@@ -95,6 +95,8 @@ class AdminController extends QuarkController
         
         $form->id('id','ID');
 
+        $form->image('avatar','头像');
+
         $form->text('username','用户名')
         ->rules(['required','min:6','max:20'],['required'=>'用户名必须填写','min'=>'用户名不能少于6个字符','max'=>'用户名不能超过20个字符'])
         ->creationRules(["unique:admins"],['unique'=>'用户名已经存在'])
@@ -118,7 +120,6 @@ class AdminController extends QuarkController
         ->updateRules(["unique:admins,phone,{{id}}"],['unique'=>'手机号已经存在']);
 
         $form->text('password','密码')
-        ->rules(['min:6','max:255'],['min'=>'密码不能少于6个字符','max'=>'密码不能超过255个字符'])
         ->creationRules(["required"],['required'=>'密码不能为空']);
 
         //保存前回调
