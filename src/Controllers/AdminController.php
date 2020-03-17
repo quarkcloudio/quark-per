@@ -39,10 +39,6 @@ class AdminController extends QuarkController
 
         $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
             $rowAction->menu('edit', '编辑');
-            $rowAction->menu('editWithModal', '编辑')->withModal('编辑用户',function($modal) {
-                $modal->width(550)->disableFooter();
-                $modal->form->url('admin/admin/edit');
-            });
             $rowAction->menu('show', '显示');
             $rowAction->menu('delete', '删除')->model(function($model) {
                 $model->delete();
@@ -53,10 +49,6 @@ class AdminController extends QuarkController
         $grid->actions(function($action) {
             $action->button('create', '新增');
             $action->button('refresh', '刷新');
-            $action->button('createWithModal', '新增用户')->withModal('新增用户',function($modal) {
-                $modal->width(550)->disableFooter();
-                $modal->form->url('admin/admin/create');
-            });
         });
 
         // select样式的批量操作

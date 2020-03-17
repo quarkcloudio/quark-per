@@ -133,13 +133,13 @@ class Form
     }
 
     /**
-     * form url.
+     * form ajax.
      *
-     * @param string $url
+     * @param string $ajax
      *
      * @return bool|mixed
      */
-    public function url($url)
+    public function ajax($url)
     {
         $this->form['url'] = $url;
         return $this;
