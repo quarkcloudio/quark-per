@@ -133,6 +133,19 @@ class Form
     }
 
     /**
+     * form url.
+     *
+     * @param string $url
+     *
+     * @return bool|mixed
+     */
+    public function url($url)
+    {
+        $this->form['url'] = $url;
+        return $this;
+    }
+
+    /**
      * form action.
      *
      * @param string $url
@@ -441,38 +454,40 @@ class Form
      */
     protected function setFrontendRules()
     {
-        foreach ($this->form['items'] as $key => $item) {
-            $frontendRules = [];
-            $rules = false;
-            $creationRules = false;
-            $updateRules = false;
-
-            if(!empty($item->rules)) {
-                $rules = $this->parseRules($item->rules,$item->ruleMessages);
+        if(isset($this->form['items'])) {
+            foreach ($this->form['items'] as $key => $item) {
+                $frontendRules = [];
+                $rules = false;
+                $creationRules = false;
+                $updateRules = false;
+    
+                if(!empty($item->rules)) {
+                    $rules = $this->parseRules($item->rules,$item->ruleMessages);
+                }
+    
+                if($this->isCreating() && !empty($item->creationRules)) {
+                    $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
+                }
+    
+                if($this->isEditing() && !empty($item->updateRules)) {
+                    $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
+                }
+    
+                if($rules) {
+                    $frontendRules = Arr::collapse([$frontendRules, $rules]);
+                }
+    
+                if($creationRules) {
+                    $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
+                }
+    
+                if($updateRules) {
+                    $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
+                }
+    
+                $item->frontendRules = $frontendRules;
+                $this->form['items'][$key] = $item;
             }
-
-            if($this->isCreating() && !empty($item->creationRules)) {
-                $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
-            }
-
-            if($this->isEditing() && !empty($item->updateRules)) {
-                $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
-            }
-
-            if($rules) {
-                $frontendRules = Arr::collapse([$frontendRules, $rules]);
-            }
-
-            if($creationRules) {
-                $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
-            }
-
-            if($updateRules) {
-                $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
-            }
-
-            $item->frontendRules = $frontendRules;
-            $this->form['items'][$key] = $item;
         }
     }
 
@@ -485,11 +500,13 @@ class Form
      */
     protected function initialValues()
     {
-        foreach ($this->form['items'] as $key => $item) {
-            $data[$item->name] = $item->defaultValue;
+        if(isset($this->form['items'])) {
+            foreach ($this->form['items'] as $key => $item) {
+                $data[$item->name] = $item->defaultValue;
+            }
+    
+            $this->form['initialValues'] = $data;
         }
-
-        $this->form['initialValues'] = $data;
     }
 
     public function render()

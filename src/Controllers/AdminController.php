@@ -37,12 +37,26 @@ class AdminController extends QuarkController
             'off' => ['value' => 2, 'text' => '禁用']
         ])->width(100);
 
-        $grid->column('actions','操作')->width(100);
+        $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
+            $rowAction->menu('edit', '编辑');
+            $rowAction->menu('editWithModal', '编辑')->withModal('编辑用户',function($modal) {
+                $modal->width(550)->disableFooter();
+                $modal->form->url('admin/admin/edit');
+            });
+            $rowAction->menu('show', '显示');
+            $rowAction->menu('delete', '删除')->model(function($model) {
+                $model->delete();
+            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+        });
 
         // 头部操作
         $grid->actions(function($action) {
             $action->button('create', '新增');
             $action->button('refresh', '刷新');
+            $action->button('createWithModal', '新增用户')->withModal('新增用户',function($modal) {
+                $modal->width(550)->disableFooter();
+                $modal->form->url('admin/admin/create');
+            });
         });
 
         // select样式的批量操作
@@ -63,14 +77,6 @@ class AdminController extends QuarkController
             })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
 
         })->style('select',['width'=>120]);
-
-        $grid->rowActions(function($rowAction) {
-            $rowAction->menu('edit', '编辑');
-            $rowAction->menu('show', '显示');
-            $rowAction->menu('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
-        })->style('dropdown');
 
         $grid->search(function($search) {
             $search->equal('status', '所选状态')->select([''=>'全部',1=>'正常',2=>'已禁用'])->placeholder('选择状态')->width(100);

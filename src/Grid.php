@@ -476,25 +476,29 @@ class Grid
                     }
                 }
             }
-    
-            if(!empty($this->rowActions->items)) {
-                foreach ($this->rowActions->items as $rowhKey => $rowValue) {
-                    if($rowValue->name == $actionName) {
-                        if(isset($rowValue->modal['form']['items'])) {
-                            $errorMsg = $this->actionValidator($id,$data,$rowValue->modal['form']['items']);
-                            if($errorMsg) {
-                                return Helper::error($errorMsg);
-                            }
-                    
-                            $query = $query->update($data);
-                        }
-    
-                        if(!empty($rowValue->model->methods)) {
-                            foreach ($rowValue->model->methods as $methodKey => $method) {
-                                $methodName = array_key_first($method);
-                                $params = $method[$methodName];
-        
-                                $query = $query->$methodName(...$params);
+
+            foreach ($this->columns as $columnKey => $column) {
+                if($column->rowActions) {
+                    if(!empty($column->rowActions->items)) {
+                        foreach ($column->rowActions->items as $rowhKey => $rowValue) {
+                            if($rowValue->name == $actionName) {
+                                if(isset($rowValue->modal['form']['items'])) {
+                                    $errorMsg = $this->actionValidator($id,$data,$rowValue->modal['form']['items']);
+                                    if($errorMsg) {
+                                        return Helper::error($errorMsg);
+                                    }
+                            
+                                    $query = $query->update($data);
+                                }
+            
+                                if(!empty($rowValue->model->methods)) {
+                                    foreach ($rowValue->model->methods as $methodKey => $method) {
+                                        $methodName = array_key_first($method);
+                                        $params = $method[$methodName];
+                
+                                        $query = $query->$methodName(...$params);
+                                    }
+                                }
                             }
                         }
                     }
@@ -581,9 +585,6 @@ class Grid
         // 扩展操作
         $this->table['extendActions'] = $this->extendActions->render();
 
-        // 行内操作
-        $this->table['rowActions'] = $this->rowActions->render();
-
         // 搜索
         $this->table['search'] = $this->search->render();
 
@@ -602,9 +603,15 @@ class Grid
             $getColumn['image'] = $column->image;
             $getColumn['qrcode'] = $column->qrcode;
             $getColumn['editable'] = $column->editable;
+
             if($column->filters) {
                 $getColumn['filters'] = $column->filters;
             }
+
+            if($column->rowActions) {
+                $getColumn['rowActions'] = $column->rowActions->render();
+            }
+
             $getColumn['sorter'] = $column->sorter;
             $this->table['columns'][] = $getColumn;
 

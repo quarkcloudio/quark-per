@@ -46,6 +46,12 @@ class Modal
         return $this;
     }
 
+    public function disableFooter()
+    {
+        $this->modal['disableFooter'] = true;
+        return $this;
+    }
+
     // render
     public function render()
     {

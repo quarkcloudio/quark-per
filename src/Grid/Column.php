@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Grid;
 
 use Closure;
 use Illuminate\Support\Str;
+use QuarkCMS\QuarkAdmin\Grid\Actions;
 
 /**
  * Class Column.
@@ -69,6 +70,13 @@ class Column
      * @var filters
      */
     public $filters = null;
+
+    /**
+     * The grid rowActions.
+     *
+     * @var
+     */
+    public $rowActions = null;
 
     /**
      * @param string $name
@@ -200,6 +208,21 @@ class Column
     public function sorter($sorter = true)
     {
         $this->sorter = $sorter;
+        return $this;
+    }
+
+    /**
+     * rowActions
+     *
+     * @return bool
+     */
+    public function rowActions(Closure $callback = null,$showStyle = 'dropdown',$style = [])
+    {
+        $this->rowActions = new Actions;
+        $this->rowActions->prefix('rowAction');
+        $this->rowActions->style($showStyle,$style);
+
+        $callback($this->rowActions);
         return $this;
     }
 }
