@@ -176,7 +176,7 @@ class Helper
             return $result;
         }
         
-        return '//'.$_SERVER['HTTP_HOST'].'/images/default.png';
+        return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';
     }
 
     /**
