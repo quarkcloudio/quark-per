@@ -141,14 +141,12 @@ class Quark
                 $router->post('admin/actionLog/changeStatus', 'ActionLogController@changeStatus')->name('api/admin/actionLog/changeStatus');
                 $router->get('admin/actionLog/export', 'ActionLogController@export')->name('api/admin/actionLog/export');
             
-                $router->any('admin/picture/index', 'PictureController@index')->name('api/admin/picture/index');
+                $router->get('admin/picture/index', 'PictureController@index')->name('api/admin/picture/index');
                 $router->post('admin/picture/upload', 'PictureController@upload')->name('api/admin/picture/upload');
                 $router->get('admin/picture/download', 'PictureController@download')->name('api/admin/picture/download');
-                $router->post('admin/picture/update', 'PictureController@update')->name('api/admin/picture/update');
-                $router->get('admin/picture/edit', 'PictureController@edit')->name('api/admin/picture/edit');
-                $router->post('admin/picture/save', 'PictureController@save')->name('api/admin/picture/save');
-                $router->post('admin/picture/changeStatus', 'PictureController@changeStatus')->name('api/admin/picture/changeStatus');
-            
+                $router->any('admin/picture/action', 'PictureController@action')->name('api/admin/picture/action');
+                $router->post('admin/picture/delete', 'PictureController@delete')->name('api/admin/picture/delete');
+
                 $router->any('admin/file/index', 'FileController@index')->name('api/admin/file/index');
                 $router->post('admin/file/upload', 'FileController@upload')->name('api/admin/file/upload');
                 $router->get('admin/file/download', 'FileController@download')->name('api/admin/file/download');

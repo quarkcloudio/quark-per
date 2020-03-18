@@ -7,6 +7,7 @@ use QuarkCMS\QuarkAdmin\Grid\Column;
 use QuarkCMS\QuarkAdmin\Grid\Search;
 use QuarkCMS\QuarkAdmin\Grid\Actions;
 use QuarkCMS\QuarkAdmin\Grid\Model;
+use QuarkCMS\QuarkAdmin\Helper;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations;
 use Illuminate\Support\Collection;
@@ -622,6 +623,13 @@ class Grid
                     if($value[$relation]) {
                         $value[$column->name] = $value[$relation]->$relationColumn;
                     }
+                    $this->data[$key] = $value;
+                }
+            }
+
+            if($column->image) {
+                foreach ($this->data as $key => $value) {
+                    $value[$column->name] = Helper::getPicture($value[$column->name]);
                     $this->data[$key] = $value;
                 }
             }

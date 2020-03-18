@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Admin;
-use QuarkCMS\QuarkAdmin\Form;
 use Spatie\Permission\Models\Role;
 use Quark;
 use Validator;
@@ -66,7 +65,7 @@ class AdminController extends QuarkController
         })->style('select',['width'=>120]);
 
         $grid->search(function($search) {
-            $search->equal('status', '所选状态')->select([''=>'全部',1=>'正常',2=>'已禁用'])->placeholder('选择状态')->width(100);
+            $search->equal('status', '所选状态')->select([''=>'全部',1=>'正常',2=>'已禁用'])->placeholder('选择状态')->width(110);
             $search->where('usernameOrNickname', '搜索内容',function ($query) {
                 $query->where('username', 'like', "%{input}%")->orWhere('nickname', 'like', "%{input}%")->orWhere('phone', 'like', "%{input}%");
             })->placeholder('用户名/手机号/昵称');
@@ -95,7 +94,7 @@ class AdminController extends QuarkController
         
         $form->id('id','ID');
 
-        $form->image('avatar','头像');
+        $form->image('avatar','头像')->button('上传头像');
 
         $form->text('username','用户名')
         ->rules(['required','min:6','max:20'],['required'=>'用户名必须填写','min'=>'用户名不能少于6个字符','max'=>'用户名不能超过20个字符'])
@@ -124,6 +123,9 @@ class AdminController extends QuarkController
 
         //保存前回调
         $form->saving(function ($form) {
+            if(isset($form->request['avatar'])) {
+                $form->request['avatar'] = $form->request['avatar']['id'];
+            }
             if(isset($form->request['password'])) {
                 $form->request['password'] = bcrypt($form->request['password']);
             }

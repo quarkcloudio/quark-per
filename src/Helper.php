@@ -141,11 +141,11 @@ class Helper
                 if(isset($ids[$key][$field])) {
                     return $ids[$key][$field];
                 } else {
-                    return '//'.$_SERVER['HTTP_HOST'].'/images/default.png';
+                    return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';
                 }
 
             } else {
-                return '//'.$_SERVER['HTTP_HOST'].'/images/default.png';
+                return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';
             }
         }
 
