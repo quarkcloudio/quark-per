@@ -213,6 +213,17 @@ class Form
     public function edit($id)
     {
         $data = $this->model->findOrFail($id);
+
+        foreach ($this->form['items'] as $key => $item) {
+            if($item->component == 'image') {
+                $image['id'] = $data[$item->name];
+                $image['name'] = Helper::getPicture($data[$item->name],0,'name');
+                $image['size'] = Helper::getPicture($data[$item->name],0,'size');
+                $image['url'] = Helper::getPicture($data[$item->name],0,'path');
+                $data[$item->name] = $image;
+            }
+        }
+
         $this->form['data'] = $data;
 
         return $this;
@@ -267,6 +278,13 @@ class Form
                     
                     return Helper::error($errorMsg);
                 }
+            }
+        }
+
+        // 清除空数据
+        foreach($data as $key => $value) {
+            if($value == '') {
+                unset($data[$key]);
             }
         }
 
@@ -505,7 +523,6 @@ class Form
             foreach ($this->form['items'] as $key => $item) {
                 $data[$item->name] = $item->defaultValue;
             }
-    
             $this->form['initialValues'] = $data;
         }
     }

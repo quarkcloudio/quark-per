@@ -123,9 +123,11 @@ class AdminController extends QuarkController
 
         //保存前回调
         $form->saving(function ($form) {
-            if(isset($form->request['avatar'])) {
+
+            if(isset($form->request['avatar']['id'])) {
                 $form->request['avatar'] = $form->request['avatar']['id'];
             }
+
             if(isset($form->request['password'])) {
                 $form->request['password'] = bcrypt($form->request['password']);
             }
