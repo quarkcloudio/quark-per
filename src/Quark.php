@@ -108,12 +108,10 @@ class Quark
                 $router->post('admin/admin/destroy', 'AdminController@destroy')->name('api/admin/admin/destroy');
             
                 $router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');
-                $router->get('admin/permission/create', 'PermissionController@create')->name('api/admin/permission/create');
-                $router->post('admin/permission/store', 'PermissionController@store')->name('api/admin/permission/store');
-                $router->get('admin/permission/edit', 'PermissionController@edit')->name('api/admin/permission/edit');
-                $router->post('admin/permission/save', 'PermissionController@save')->name('api/admin/permission/save');
-                $router->post('admin/permission/changeStatus', 'PermissionController@changeStatus')->name('api/admin/permission/changeStatus');
-            
+                $router->post('admin/permission/sync', 'PermissionController@sync')->name('api/admin/permission/sync');
+                $router->any('admin/admin/action', 'AdminController@action')->name('api/admin/admin/action');
+                $router->post('admin/admin/destroy', 'AdminController@destroy')->name('api/admin/admin/destroy');
+
                 $router->get('admin/role/index', 'RoleController@index')->name('api/admin/role/index');
                 $router->get('admin/role/create', 'RoleController@create')->name('api/admin/role/create');
                 $router->post('admin/role/store', 'RoleController@store')->name('api/admin/role/store');

@@ -3,43 +3,16 @@
 namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
-use App\Builder\Forms\Controls\ID;
-use App\Builder\Forms\Controls\Input;
-use App\Builder\Forms\Controls\Text;
-use App\Builder\Forms\Controls\TextArea;
-use App\Builder\Forms\Controls\InputNumber;
-use App\Builder\Forms\Controls\Checkbox;
-use App\Builder\Forms\Controls\Radio;
-use App\Builder\Forms\Controls\Select;
-use App\Builder\Forms\Controls\SwitchButton;
-use App\Builder\Forms\Controls\DatePicker;
-use App\Builder\Forms\Controls\RangePicker;
-use App\Builder\Forms\Controls\Editor;
-use App\Builder\Forms\Controls\Image;
-use App\Builder\Forms\Controls\File;
-use App\Builder\Forms\Controls\Button;
-use App\Builder\Forms\Controls\Popconfirm;
-use App\Builder\Forms\Controls\Tree;
-use App\Builder\Forms\FormBuilder;
-use App\Builder\Lists\Tables\Table;
-use App\Builder\Lists\Tables\Column;
-use App\Builder\Lists\ListBuilder;
-use Illuminate\Validation\Rule;
 use App\Services\Helper;
-use App\Models\Admin;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\Menu;
-use Validator;
+use Quark;
 use DB;
-use Cache;
 
-class RoleController extends QuarkAdminController
+class RoleController extends QuarkController
 {
-    public function __construct()
-    {
-        $this->pageTitle = '角色';
-    }
+    public $title = '角色';
 
     /**
      * 列表页面
@@ -47,132 +20,79 @@ class RoleController extends QuarkAdminController
      * @param  Request  $request
      * @return Response
      */
-    public function index(Request $request)
+    protected function table()
     {
-        // 获取参数
-        $guardName = $request->get('guardName','admin');
-        $current   = intval($request->get('current',1));
-        $pageSize  = intval($request->get('pageSize',10));
-        $search    = $request->get('search');
-            
-        // 定义对象
-        $query = Role::query()->where('guard_name',$guardName);
+        $grid = Quark::grid(new Role)->title($this->title);
+        $grid->column('name','名称');
+        $grid->column('guard_name','guard名称');
+        $grid->column('created_at','创建时间');
 
-        // 查询
-        if(!empty($search)) {
+        $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
+            $rowAction->menu('delete', '删除')->model(function($model) {
+                $model->delete();
+            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+        });
 
-            // 名称
-            if(isset($search['query'])) {
-                $query->where('name','like','%'.$search['query'].'%');
-            }
-        }
+        // 头部操作
+        $grid->actions(function($action) {
+            $action->button('create', '创建');
+            $action->button('refresh', '刷新');
+        });
 
-        // 查询数量
-        $total = $query
-        ->count();
+        // select样式的批量操作
+        $grid->batchActions(function($batch) {
+            $batch->option('', '批量操作');
+            $batch->option('delete', '删除')->model(function($model) {
+                $model->delete();
+            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+        })->style('select',['width'=>120]);
 
-        // 查询列表
-        $lists = $query
-        ->skip(($current-1)*$pageSize)
-        ->take($pageSize)
-        ->orderBy('id', 'desc')
-        ->get()
-        ->toArray();
+        $grid->search(function($search) {
+            $search->where('name', '搜索内容',function ($query) {
+                $query->where('name', 'like', "%{input}%");
+            })->placeholder('名称');
+        })->expand(false);
 
-        foreach ($lists as $key => $list) {
-            $menu = Menu::where('path',$list['name'])->where('guard_name','admin')->first();
-            if(isset($menu->name)) {
-                $lists[$key]['title'] = $menu->name;
-            }
-        }
+        $grid->disableAdvancedSearch();
 
-        // 默认页码
-        $pagination['defaultCurrent'] = 1;
-        // 当前页码
-        $pagination['current'] = $current;
-        // 分页数量
-        $pagination['pageSize'] = $pageSize;
-        // 总数量
-        $pagination['total'] = $total;
+        $grid->model()->paginate(10);
 
-        $searchs = [
-            Input::make('搜索内容','name'),
-            Button::make('搜索')->onClick('search'),
-        ];
-
-        $columns = [
-            Column::make('ID','id'),
-            Column::make('名称','name')->withA('admin/admin/'.$this->controllerName().'/edit'),
-            Column::make('guard名称','guard_name'),
-            Column::make('创建时间','created_at'),
-        ];
-
-        $headerButtons = [
-            Button::make('新增'.$this->pageTitle)->icon('plus-circle')->type('primary')->href('admin/admin/'.$this->controllerName().'/create'),
-        ];
-
-        $toolbarButtons = [
-            Button::make('删除')->type('danger')->onClick('multiChangeStatus','-1','admin/'.$this->controllerName().'/changeStatus'),
-        ];
-
-        $actions = [
-            Button::make('编辑')->type('link')->href('admin/admin/'.$this->controllerName().'/edit'),
-            Popconfirm::make('删除')->type('link')->title('确定删除吗？')->onConfirm('changeStatus','-1','admin/'.$this->controllerName().'/changeStatus'),
-        ];
-
-        $data = $this->listBuilder($columns,$lists,$pagination,$searchs,[],$headerButtons,$toolbarButtons,$actions);
-        
-        if(!empty($data)) {
-            return $this->success('获取成功！','',$data);
-        } else {
-            return $this->success('获取失败！');
-        }
+        return $grid;
     }
 
     /**
-     * Form页面模板
+     * 表单页面
      * 
      * @param  Request  $request
      * @return Response
      */
-    public function form($data = [])
+    protected function form()
     {
-        if(isset($data['id'])) {
-            $action = 'admin/'.$this->controllerName().'/save';
-        } else {
-            $action = 'admin/'.$this->controllerName().'/store';
-        }
+        $form = Quark::form(new Role);
+
+        $title = $form->isCreating() ? '创建'.$this->title : '编辑'.$this->title;
+        $form->title($title);
+        
+        $form->id('id','ID');
+
+        $form->text('name','名称')
+        ->rules(['required','max:20'],['required'=>'名称必须填写','max'=>'名称不能超过20个字符'])
+        ->creationRules(["unique:roles"],['unique'=>'名称已经存在'])
+        ->updateRules(["unique:roles,name,{{id}}"],['unique'=>'名称已经存在']);
 
         // 查询列表
         $menus = Menu::where('status',1)->where('guard_name','admin')->select('name as title','id as key','pid')->get()->toArray();
 
         $menus = Helper::listToTree($menus,'key','pid','children',0);
 
-        $controls = [
-            ID::make('ID','id'),
-            Input::make('名称','name')->style(['width'=>200]),
-            Tree::make('权限','menuIds')->list($menus),
-            $controls[] = Button::make('提交')
-            ->type('primary')
-            ->style(['width'=>100,'float'=>'left','marginLeft'=>200])
-            ->onClick('submit',null,$action)
-        ];
+        $form->tree('menu_ids','权限')
+        ->rules(['required'],['required'=>'必须选择权限'])
+        ->data($menus);
 
-        $result = $this->formBuilder($controls,$data);
+        //保存前回调
+        $form->setAction(url('api/admin/role/store'));
 
-        return $result;
-    }
-
-    /**
-     * 添加页面
-     * 
-     * @param  Request  $request
-     * @return Response
-     */
-    public function create(Request $request)
-    {
-        $data = $this->form();
-        return $this->success('获取成功！','',$data);
+        return $form;
     }
 
     /**

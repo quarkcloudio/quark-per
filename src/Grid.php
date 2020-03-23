@@ -33,6 +33,20 @@ class Grid
     protected $search;
 
     /**
+     * The grid disableSearch.
+     *
+     * @var
+     */
+    protected $disableSearch = false;
+
+    /**
+     * The grid disableAdvancedSearch.
+     *
+     * @var
+     */
+    protected $disableAdvancedSearch = false;
+
+    /**
      * The grid actions.
      *
      * @var
@@ -515,6 +529,28 @@ class Grid
     }
 
     /**
+     * disableSearch
+     *
+     * @return bool
+     */
+    public function disableSearch($disableSearch = true)
+    {
+        $this->disableSearch = $disableSearch;
+        return $this;
+    }
+
+    /**
+     * disableAdvancedSearch
+     *
+     * @return bool
+     */
+    public function disableAdvancedSearch($disableAdvancedSearch = true)
+    {
+        $this->disableAdvancedSearch = $disableAdvancedSearch;
+        return $this;
+    }
+
+    /**
      * actions
      *
      * @return bool
@@ -588,6 +624,12 @@ class Grid
 
         // 搜索
         $this->table['search'] = $this->search->render();
+
+        $this->table['search'] = $this->search->render();
+
+        $this->table['disableSearch'] = $this->disableSearch;
+        
+        $this->table['disableAdvancedSearch'] = $this->disableAdvancedSearch;
 
         // 表格数据
         $this->data = $this->query();

@@ -152,6 +152,13 @@ class Helper
         // 本身为图片地址，直接返回
         if(strpos($id,'http') !== false) {
             return $id;
+        } else if(strpos($id,'public') !== false) {
+            // 存在http，本身为图片地址
+            $baseUrl = 'http://';
+            if(self::config('SSL_OPEN') == 1) {
+                $baseUrl = 'https://';
+            }
+            return $baseUrl.$_SERVER['HTTP_HOST'].Storage::url($id);
         }
 
         $picture = Picture::where('id',$id)->first();

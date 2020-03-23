@@ -3,13 +3,10 @@
 namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Validation\Rule;
 use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use Spatie\Permission\Models\Role;
 use Quark;
-use Validator;
-use DB;
 
 class AdminController extends QuarkController
 {
