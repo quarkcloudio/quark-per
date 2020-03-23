@@ -28,6 +28,7 @@ class Form
         'text' => Form\Fields\Text::class,
         'radio' => Form\Fields\Radio::class,
         'image' => Form\Fields\Image::class,
+        'tree' => Form\Fields\Tree::class,
     ];
 
     /**

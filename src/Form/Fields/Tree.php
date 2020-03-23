@@ -11,8 +11,7 @@ class Tree extends Item
     public  $treeData;
 
     function __construct($name,$label = '') {
-        $this->component = 'input';
-        $this->type = 'text';
+        $this->component = 'tree';
         $this->name = $name;
 
         if(empty($label) || !count($label)) {
