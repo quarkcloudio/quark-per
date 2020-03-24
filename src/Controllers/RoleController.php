@@ -23,8 +23,8 @@ class RoleController extends QuarkController
     protected function table()
     {
         $grid = Quark::grid(new Role)->title($this->title);
-        $grid->column('name','名称');
-        $grid->column('guard_name','guard名称');
+        $grid->column('name','名称')->link();
+        $grid->column('guard_name','guard名称')->link();
         $grid->column('created_at','创建时间');
 
         $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
@@ -111,9 +111,6 @@ class RoleController extends QuarkController
         ->data($menus)
         ->default($checkedMenus);
 
-        //保存前回调
-        $form->setAction('admin/role/store');
-
         return $form;
     }
 
@@ -157,11 +154,11 @@ class RoleController extends QuarkController
      * @param  Request  $request
      * @return Response
      */
-    public function save(Request $request)
+    public function update(Request $request)
     {
         $id            =   $request->json('id','');
         $name          =   $request->json('name','');
-        $menuIds       =   $request->json('menuIds');
+        $menuIds       =   $request->json('menu_ids');
         
         if (empty($id)) {
             return $this->error('参数错误！');
@@ -184,10 +181,9 @@ class RoleController extends QuarkController
         $result1 = Role::where('id',$id)->first()->syncPermissions(array_filter(array_unique($permissions)));
 
         if ($result && $result1) {
-            return $this->success('操作成功！','/admin/role/index');
+            return $this->success('操作成功！','/quark/engine?api=/admin/role/index&component=table');
         } else {
             return $this->error('操作失败！');
         }
     }
-
 }

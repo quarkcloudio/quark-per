@@ -43,10 +43,6 @@ class Button
             $this->icon = 'redo';
         }
 
-        if($name == 'createWithModal') {
-            
-        }
-
         $action = \request()->route()->getName();
         $action = Str::replaceFirst('api/','',$action);
         $action = Str::replaceLast('/index','/action',$action);

@@ -19,6 +19,13 @@ use Validator;
 class Grid
 {
     /**
+     * Show grid as tree.
+     *
+     * @var
+     */
+    protected $tree = false;
+
+    /**
      * The grid data model instance.
      *
      * @var \QuarkCMS\QuarkAdmin\Grid\Model|\Illuminate\Database\Eloquent\Builder
@@ -607,6 +614,21 @@ class Grid
     }
 
     /**
+     * tree
+     *
+     * @return bool
+     */
+    public function tree($pk='id',$pid = 'pid',$root=0)
+    {
+        $tree['pk'] = $pk;
+        $tree['pid'] = $pid;
+        $tree['root'] = $root;
+
+        $this->tree = $tree;
+        return $this;
+    }
+
+    /**
      * Get the string contents of the grid view.
      *
      * @return string
@@ -677,7 +699,14 @@ class Grid
             }
         });
 
-        $this->table['dataSource'] = $this->data->toArray();
+        if($this->tree) {
+
+            $dataSource = Helper::listToTree($this->data->toArray(),'id','pid','children',0);
+
+            $this->table['dataSource'] = $dataSource;
+        } else {
+            $this->table['dataSource'] = $this->data->toArray();
+        }
 
         $model = $this->model()->eloquent();
         // 表格分页

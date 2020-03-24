@@ -109,15 +109,15 @@ class Quark
             
                 $router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');
                 $router->post('admin/permission/sync', 'PermissionController@sync')->name('api/admin/permission/sync');
-                $router->any('admin/admin/action', 'AdminController@action')->name('api/admin/admin/action');
-                $router->post('admin/admin/destroy', 'AdminController@destroy')->name('api/admin/admin/destroy');
+                $router->any('admin/permission/action', 'PermissionController@action')->name('api/admin/permission/action');
+                $router->post('admin/permission/destroy', 'PermissionController@destroy')->name('api/admin/permission/destroy');
 
                 $router->get('admin/role/index', 'RoleController@index')->name('api/admin/role/index');
                 $router->get('admin/role/create', 'RoleController@create')->name('api/admin/role/create');
                 $router->post('admin/role/store', 'RoleController@store')->name('api/admin/role/store');
                 $router->get('admin/role/edit', 'RoleController@edit')->name('api/admin/role/edit');
-                $router->post('admin/role/save', 'RoleController@save')->name('api/admin/role/save');
-                $router->post('admin/role/changeStatus', 'RoleController@changeStatus')->name('api/admin/role/changeStatus');
+                $router->post('admin/role/update', 'RoleController@update')->name('api/admin/role/update');
+                $router->post('admin/role/destroy', 'RoleController@destroy')->name('api/admin/role/destroy');
             
                 $router->any('admin/config/website', 'ConfigController@website')->name('api/admin/config/website');
                 $router->any('admin/config/saveWebsite', 'ConfigController@saveWebsite')->name('api/admin/config/saveWebsite');
@@ -132,8 +132,9 @@ class Quark
                 $router->get('admin/menu/create', 'MenuController@create')->name('api/admin/menu/create');
                 $router->post('admin/menu/store', 'MenuController@store')->name('api/admin/menu/store');
                 $router->get('admin/menu/edit', 'MenuController@edit')->name('api/admin/menu/edit');
-                $router->post('admin/menu/save', 'MenuController@save')->name('api/admin/menu/save');
-                $router->post('admin/menu/changeStatus', 'MenuController@changeStatus')->name('api/admin/menu/changeStatus');
+                $router->post('admin/menu/update', 'MenuController@update')->name('api/admin/menu/update');
+                $router->any('admin/menu/action', 'MenuController@action')->name('api/admin/menu/action');
+                $router->post('admin/menu/destroy', 'MenuController@destroy')->name('api/admin/menu/destroy');
             
                 $router->get('admin/actionLog/index', 'ActionLogController@index')->name('api/admin/actionLog/index');
                 $router->post('admin/actionLog/changeStatus', 'ActionLogController@changeStatus')->name('api/admin/actionLog/changeStatus');
