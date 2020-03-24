@@ -10,7 +10,6 @@ class Text extends Item
 {
     public  $addonAfter,
             $addonBefore,
-            $defaultValue,
             $disabled,
             $id,
             $maxLength,
@@ -18,7 +17,6 @@ class Text extends Item
             $size,
             $suffix,
             $type,
-            $value,
             $onChange,
             $onPressEnter,
             $placeholder,
@@ -100,18 +98,6 @@ class Text extends Item
     public function addonBefore($addonBefore = '')
     {
         $this->addonBefore = $addonBefore;
-        return $this;
-    }
-
-    /**
-     * 输入框默认内容
-     *
-     * @param  string $value
-     * @return object
-     */
-    public function defaultValue($value = '')
-    {
-        $this->defaultValue = $value;
         return $this;
     }
 

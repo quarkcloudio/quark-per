@@ -27,7 +27,7 @@ class MenuController extends QuarkController
         $grid->column('name','名称')->link()->width(200);
         $grid->column('sort','排序')->editable()->width('12%');
         $grid->column('icon','图标');
-        $grid->column('path','路由');
+        $grid->column('path','路由')->editable()->width('18%');
         $grid->column('show','显示')->editable('switch',[
             'on'  => ['value' => 1, 'text' => '显示'],
             'off' => ['value' => 0, 'text' => '隐藏']
@@ -45,7 +45,7 @@ class MenuController extends QuarkController
 
         // 头部操作
         $grid->actions(function($action) {
-            $action->button('createWithModal', '创建')->withModal('创建菜单',function($modal) {
+            $action->button('createWithModal', '创建')->type('primary')->withModal('创建菜单',function($modal) {
                 $modal->disableFooter();
                 $modal->form->ajax('admin/menu/create');
             });
@@ -88,113 +88,70 @@ class MenuController extends QuarkController
         $title = $form->isCreating() ? '创建'.$this->title : '编辑'.$this->title;
         $form->title($title);
         
+        $layout['labelCol']['span'] = 4;
+        $layout['wrapperCol']['span'] = 20;
+        $form->layout($layout);
+
         $form->id('id','ID');
 
         $form->text('name','名称')
         ->rules(['required','max:20'],['required'=>'名称必须填写','max'=>'名称不能超过20个字符']);
 
+        // 查询列表
+        $menus = Menu::query()->where('guard_name','admin')
+        ->orderBy('sort', 'asc')
+        ->orderBy('id', 'asc')
+        ->get()
+        ->toArray();
+
+        $menuTrees = Helper::listToTree($menus,'id','pid','children',0);
+
+        $menuTreeLists = Helper::treeToOrderList($menuTrees,0,'name','children');
+
+        $list = [];
+        foreach ($menuTreeLists as $key => $menuTreeList) {
+            $list[$menuTreeList['id']] = $menuTreeList['name'];
+        }
+
         $form->select('pid','父节点')
-        ->options(['1' => '男', '2'=> '女'])
+        ->width(200)
+        ->options($list)
         ->default(1);
 
-        $form->radio('sex','性别')
-        ->options(['1' => '男', '2'=> '女'])
-        ->default(1);
+        $form->number('sort','排序')->default(0);
 
-        $form->text('email','邮箱')
-        ->rules(['required','email','max:255'],['required'=>'邮箱必须填写','email'=>'邮箱格式错误','max'=>'邮箱不能超过255个字符'])
-        ->creationRules(["unique:admins"],['unique'=>'邮箱已经存在',])
-        ->updateRules(["unique:admins,email,{{id}}"],['unique'=>'邮箱已经存在']);
+        $form->icon('icon','图标')->width(200);
 
-        $form->text('phone','手机号')
-        ->rules(['required','max:11'],['required'=>'手机号必须填写','max'=>'手机号不能超过11个字符'])
-        ->creationRules(["unique:admins"],['unique'=>'手机号已经存在'])
-        ->updateRules(["unique:admins,phone,{{id}}"],['unique'=>'手机号已经存在']);
+        $form->select('type','渲染组件')
+        ->width(200)
+        ->options(['default'=>'无组件','table'=>'列表组件','form'=>'表单组件','show'=>'详情组件'])
+        ->default('default');
 
-        $form->text('password','密码')
-        ->creationRules(["required"],['required'=>'密码不能为空']);
+        $form->text('path','路由')->help('前端路由或后端api');
 
-        //保存前回调
-        $form->saving(function ($form) {
+        $permissions = Permission::all();
 
-            if(isset($form->request['avatar']['id'])) {
-                $form->request['avatar'] = $form->request['avatar']['id'];
-            }
+        $getPermissions = [];
+        foreach ($permissions as $key => $permission) {
+            $getPermissions[$permission['id']] = $permission['name'];
+        }
 
-            if(isset($form->request['password'])) {
-                $form->request['password'] = bcrypt($form->request['password']);
-            }
-        });
+        $form->select('permission_ids','绑定权限')
+        ->mode('tags')
+        ->options($getPermissions);
+
+        $form->switch('show','显示')->options([
+            'on'  => '是',
+            'off' => '否'
+        ])->default(true);
+
+        $form->switch('status','状态')->options([
+            'on'  => '正常',
+            'off' => '禁用'
+        ])->default(false);
 
         return $form;
     }
-
-    // /**
-    //  * Form页面模板
-    //  * 
-    //  * @param  Request  $request
-    //  * @return Response
-    //  */
-    // public function form($data = [])
-    // {
-    //     if(isset($data['id'])) {
-    //         $action = 'admin/'.$this->controllerName().'/save';
-    //     } else {
-    //         $action = 'admin/'.$this->controllerName().'/store';
-    //     }
-
-    //     // 查询列表
-    //     $menus = Menu::query()->where('guard_name','admin')
-    //     ->orderBy('sort', 'asc')
-    //     ->orderBy('id', 'asc')
-    //     ->get()
-    //     ->toArray();
-
-    //     $menuTrees = Helper::listToTree($menus,'id','pid','children',0);
-
-    //     $menuTreeLists = Helper::treeToOrderList($menuTrees,0,'name','children');
-
-    //     $list = [];
-    //     foreach ($menuTreeLists as $key => $menuTreeList) {
-    //         $list[] = [
-    //             'name'=>$menuTreeList['name'],
-    //             'value'=>$menuTreeList['id'],
-    //         ];
-    //     }
-
-    //     $permissions = Permission::all();
-
-    //     $getPermissions = [];
-    //     foreach ($permissions as $key => $permission) {
-    //         $getPermissions[] = [
-    //             'name'=>$permission['name'],
-    //             'value'=>$permission['id'],
-    //         ];
-    //     }
-
-    //     $controls = [
-    //         ID::make('ID','id'),
-    //         Input::make('名称','name')->style(['width'=>200]),
-    //         Select::make('父节点','pid')->option($list)->style(['width'=>200]),
-    //         InputNumber::make('排序','sort')->style(['width'=>200])->value(0),
-    //         Icon::make('图标','icon')->style(['width'=>200]),
-    //         Input::make('路由','path')->style(['width'=>200]),
-    //         Select::make('绑定权限','permission_ids')->mode('tags')->option($getPermissions)->style(['width'=>350]),
-    //         SwitchButton::make('显示','show')->checkedText('是')->unCheckedText('否')->value(true),
-    //         SwitchButton::make('状态','status')->checkedText('正常')->unCheckedText('禁用')->value(true),
-    //         Button::make('提交')
-    //         ->type('primary')
-    //         ->style(['width'=>100,'float'=>'left','marginLeft'=>350])
-    //         ->onClick('submit',null,$action)
-    //     ];
-
-    //     $labelCol['sm'] = ['span'=>4];
-    //     $wrapperCol['sm'] = ['span'=>20];
-
-    //     $result = $this->formBuilder($controls,$data,$labelCol,$wrapperCol);
-
-    //     return $result;
-    // }
 
     /**
      * 保存方法

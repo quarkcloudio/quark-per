@@ -1,26 +1,44 @@
 <?php
 
-namespace App\Planet\Form\Fields;
+namespace QuarkCMS\QuarkAdmin\Form\Fields;
 
-use App\Planet\Form\Item;
+use QuarkCMS\QuarkAdmin\Form\Item;
+use Illuminate\Support\Arr;
+use Exception;
 
 class Select extends Item
 {
-    public  $options,
-            $mode;
+    public  $options,$mode;
 
-    function __construct() {
-        $this->componentName = 'select';
+    function __construct($name,$label = '') {
+        $this->component = 'select';
+        $this->name = $name;
+
+        if(empty($label) || !count($label)) {
+            $this->label = $name;
+        } else {
+            $label = Arr::get($label, 0, ''); //[0];
+            $this->label = $label;
+        }
     }
 
-    static function make($labelName,$name)
+    /**
+     * 创建组件
+     *
+     * @param  string $name
+     * @param  string $label
+     * @return object
+     */
+    static function make($name,$label = '')
     {
         $self = new self();
 
-        $self->labelName = $labelName;
         $self->name = $name;
-
-        $self->placeholder = '请选择'.$labelName;
+        if(empty($label)) {
+            $self->label = $name;
+        } else {
+            $self->label = $label;
+        }
 
         // 删除空属性
         $self->unsetNullProperty();
@@ -29,13 +47,34 @@ class Select extends Item
 
     public function options($options)
     {
-        $this->options = $options;
+        $data = [];
+        foreach ($options as $key => $value) {
+            $option['label'] = $value;
+            $option['value'] = $key;
+            $data[] = $option;
+        }
+        $this->options = $data;
+
         return $this;
     }
 
     public function mode($mode)
     {
         $this->mode = $mode;
+        $this->defaultValue = [];
+        return $this;
+    }
+
+    /**
+     * 输入框宽度
+     * 
+     * @param  number|string $value
+     * @return object
+     */
+    public function width($value = '100%')
+    {
+        $style['width'] = $value;
+        $this->style = $style;
         return $this;
     }
 }

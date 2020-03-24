@@ -6,14 +6,12 @@ use QuarkCMS\QuarkAdmin\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
-class Number extends Item
+class SwitchField extends Item
 {
-    public  $min = -100000000,
-            $max = 100000000,
-            $step = 1;
+    public  $options;
 
     function __construct($name,$label = '') {
-        $this->component = 'inputNumber';
+        $this->component = 'switch';
         $this->name = $name;
 
         if(empty($label) || !count($label)) {
@@ -22,11 +20,6 @@ class Number extends Item
             $label = Arr::get($label, 0, ''); //[0];
             $this->label = $label;
         }
-
-        $this->placeholder = '请输入'.$this->label;
-
-        $style['width'] = 200;
-        $this->style = $style;
     }
 
     /**
@@ -47,41 +40,15 @@ class Number extends Item
             $self->label = $label;
         }
 
-        $self->placeholder = '请输入'.$label;
-
         // 删除空属性
         $self->unsetNullProperty();
         return $self;
     }
 
-    public function min($min)
+    public function options($options)
     {
-        $this->min = $min;
-        return $this;
-    }
+        $this->options = $options;
 
-    /**
-     * 输入框宽度
-     * 
-     * @param  number|string $value
-     * @return object
-     */
-    public function width($value = '100%')
-    {
-        $style['width'] = $value;
-        $this->style = $style;
-        return $this;
-    }
-
-    public function max($max)
-    {
-        $this->max = $max;
-        return $this;
-    }
-
-    public function step($step)
-    {
-        $this->step = $step;
         return $this;
     }
 }

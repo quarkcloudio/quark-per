@@ -1,27 +1,27 @@
 <?php
 
-namespace App\Planet\Form\Fields;
+namespace QuarkCMS\QuarkAdmin\Form\Fields;
 
-use App\Planet\Form\Item;
+use QuarkCMS\QuarkAdmin\Form\Item;
+use Illuminate\Support\Arr;
+use Exception;
 
 class Icon extends Item
 {
     public  $options;
 
-    function __construct() {
-        $this->componentName = 'icon';
-    }
+    function __construct($name,$label = '') {
+        $this->component = 'icon';
+        $this->name = $name;
 
-    static function make($labelName,$name)
-    {
-        $self = new self();
+        if(empty($label) || !count($label)) {
+            $this->label = $name;
+        } else {
+            $label = Arr::get($label, 0, ''); //[0];
+            $this->label = $label;
+        }
 
-        $self->labelName = $labelName;
-        $self->name = $name;
-
-        $self->placeholder = '请选择'.$labelName;
-
-        $self->options = [
+        $this->options = [
             'lock','unlock','bars','book','calendar','cloud','cloud-download',
             'code','copy','credit-card','delete','desktop','download','ellipsis',
             'more','file','file-text','file-unknown','file-pdf','file-word',
@@ -45,16 +45,49 @@ class Icon extends Item
             'read','reconciliation','rest','security-scan','insurance','interation','safety-certificate',
             'project','thunderbolt','block','cluster','deployment-unit','dollar','euro','pound',
             'file-done','file-exclamation','file-protect','file-search','file-sync','gateway',
-            'gold','robot','shopping'];
+            'gold','robot','shopping'
+        ];
+    }
+
+    /**
+     * 创建组件
+     *
+     * @param  string $name
+     * @param  string $label
+     * @return object
+     */
+    static function make($name,$label = '')
+    {
+        $self = new self();
+
+        $self->name = $name;
+        if(empty($label)) {
+            $self->label = $name;
+        } else {
+            $self->label = $label;
+        }
 
         // 删除空属性
         $self->unsetNullProperty();
         return $self;
     }
 
-    public function option($options)
+    public function options($options)
     {
         $this->options = $options;
+        return $this;
+    }
+
+    /**
+     * 输入框宽度
+     * 
+     * @param  number|string $value
+     * @return object
+     */
+    public function width($value = '100%')
+    {
+        $style['width'] = $value;
+        $this->style = $style;
         return $this;
     }
 }
