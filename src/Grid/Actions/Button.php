@@ -35,12 +35,12 @@ class Button
         }
 
         if($name == 'create') {
-            $this->icon = 'plusCircle';
+            $this->icon = 'icon-plus-circle';
             $this->type = 'primary';
         }
 
         if($name == 'refresh') {
-            $this->icon = 'redo';
+            $this->icon = 'icon-redo';
         }
 
         $action = \request()->route()->getName();
@@ -58,7 +58,7 @@ class Button
 
     public function icon($icon = null)
     {
-        $this->icon = $icon;
+        $this->icon = 'icon-'.$icon;
         return $this;
     }
 
