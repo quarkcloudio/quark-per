@@ -37,7 +37,10 @@ class MenuController extends QuarkController
             'off' => ['value' => 2, 'text' => '禁用']
         ])->width(100);
         $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
-            $rowAction->menu('edit', '编辑');
+            $rowAction->menu('editWithModal', '编辑')->withModal('编辑菜单',function($modal) {
+                $modal->disableFooter();
+                $modal->form->ajax('admin/menu/edit');
+            });
             $rowAction->menu('delete', '删除')->model(function($model) {
                 $model->delete();
             })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
@@ -45,7 +48,10 @@ class MenuController extends QuarkController
 
         // 头部操作
         $grid->actions(function($action) {
-            $action->button('createWithModal', '创建')->type('primary')->withModal('创建菜单',function($modal) {
+            $action->button('createWithModal', '创建')
+            ->type('primary')
+            ->icon('plus-circle')
+            ->withModal('创建菜单',function($modal) {
                 $modal->disableFooter();
                 $modal->form->ajax('admin/menu/create');
             });
@@ -83,6 +89,8 @@ class MenuController extends QuarkController
      */
     protected function form()
     {
+        $id = request('id');
+
         $form = Quark::form(new Menu);
 
         $title = $form->isCreating() ? '创建'.$this->title : '编辑'.$this->title;
@@ -136,9 +144,16 @@ class MenuController extends QuarkController
             $getPermissions[$permission['id']] = $permission['name'];
         }
 
+        $permissionIds = [];
+
+        if($id) {
+            $permissionIds= Permission::where('menu_id',$id)->pluck('id');
+        }
+
         $form->select('permission_ids','绑定权限')
         ->mode('tags')
-        ->options($getPermissions);
+        ->options($getPermissions)
+        ->default($permissionIds);
 
         $form->switch('show','显示')->options([
             'on'  => '是',
@@ -165,6 +180,7 @@ class MenuController extends QuarkController
         $pid           =   $request->json('pid',0);
         $sort          =   $request->json('sort',0);
         $icon          =   $request->json('icon','');
+        $type          =   $request->json('type','');
         $path          =   $request->json('path');
         $permissionIds =   $request->json('permission_ids','');
         $show          =   $request->json('show');
@@ -172,6 +188,28 @@ class MenuController extends QuarkController
         
         if (empty($name)) {
             return $this->error('名称必须填写！');
+        }
+
+        switch ($type) {
+            case 'default':
+                $getPath = $path;
+                break;
+
+            case 'table':
+                $getPath = '/quark/engine?api='.$path.'&component=table';
+                break;
+
+            case 'form':
+                $getPath = '/quark/engine?api='.$path.'&component=form';
+                break;
+
+            case 'show':
+                $getPath = '/quark/engine?api='.$path.'&component=show';
+                break;
+
+            default:
+                $getPath = $path;
+                break;
         }
 
         if ($show == true) {
@@ -191,7 +229,7 @@ class MenuController extends QuarkController
         $data['pid'] = $pid;
         $data['sort'] = $sort;
         $data['icon'] = $icon;
-        $data['path'] = $path;
+        $data['path'] = $getPath;
         $data['show'] = $show;
         $data['status'] = $status;
 
@@ -209,45 +247,19 @@ class MenuController extends QuarkController
     }
 
     /**
-     * 编辑页面
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function edit(Request $request)
-    {
-        $id = $request->get('id');
-
-        if(empty($id)) {
-            return $this->error('参数错误！');
-        }
-
-        $data = Menu::find($id)->toArray();
-
-        $permissionIds= Permission::where('menu_id',$id)->pluck('id');
-
-        foreach ($permissionIds as $key => $value) {
-            $data['permission_ids'][] = strval($value);
-        }
-
-        $data = $this->form($data);
-        
-        return $this->success('获取成功！','',$data);
-    }
-
-    /**
      * 保存编辑数据
      *
      * @param  Request  $request
      * @return Response
      */
-    public function save(Request $request)
+    public function update(Request $request)
     {
         $id            =   $request->json('id');
         $name          =   $request->json('name','');
         $pid           =   $request->json('pid',0);
         $sort          =   $request->json('sort',0);
         $icon          =   $request->json('icon','');
+        $type          =   $request->json('type','');
         $path          =   $request->json('path');
         $permissionIds =   $request->json('permission_ids','');
         $show          =   $request->json('show');
@@ -259,6 +271,28 @@ class MenuController extends QuarkController
         
         if (empty($name)) {
             return $this->error('名称必须填写！');
+        }
+        
+        switch ($type) {
+            case 'default':
+                $getPath = $path;
+                break;
+
+            case 'table':
+                $getPath = '/quark/engine?api='.$path.'&component=table';
+                break;
+
+            case 'form':
+                $getPath = '/quark/engine?api='.$path.'&component=form';
+                break;
+
+            case 'show':
+                $getPath = '/quark/engine?api='.$path.'&component=show';
+                break;
+
+            default:
+                $getPath = $path;
+                break;
         }
 
         if ($show == true) {
@@ -278,7 +312,7 @@ class MenuController extends QuarkController
         $data['pid'] = $pid;
         $data['sort'] = $sort;
         $data['icon'] = $icon;
-        $data['path'] = $path;
+        $data['path'] = $getPath;
         $data['show'] = $show;
         $data['status'] = $status;
 

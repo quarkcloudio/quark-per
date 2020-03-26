@@ -33,7 +33,10 @@ class PermissionController extends QuarkController
 
         // 头部操作
         $grid->actions(function($action) {
-            $action->button('sync', '同步')->type('primary')->setAction('admin/permission/sync');
+            $action->button('sync', '同步')
+            ->type('primary')
+            ->icon('sync')
+            ->setAction('admin/permission/sync');
             $action->button('refresh', '刷新');
         });
 

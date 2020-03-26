@@ -69,7 +69,7 @@ class RoleController extends QuarkController
      */
     protected function form()
     {
-        $search = request('search');
+        $id = request('id');
 
         $form = Quark::form(new Role);
 
@@ -87,7 +87,7 @@ class RoleController extends QuarkController
         $menus = Menu::where('status',1)->where('guard_name','admin')->select('name as title','id as key','pid')->get()->toArray();
 
         $checkedMenus = [];
-        if(isset($search['id'])) {
+        if(isset($id)) {
             foreach ($menus as $key => $menu) {
                 $permissionIds = Permission::where('menu_id',$menu['key'])->pluck('id');
     
