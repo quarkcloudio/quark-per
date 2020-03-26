@@ -76,6 +76,7 @@ class PermissionController extends QuarkController
             if(strpos($route->uri,'api/admin') !== false) {
                 $hasPermission = Permission::where('name',$route->uri)->first();
                 if(empty($hasPermission)) {
+                    $data['menu_id'] = 0;
                     $data['name'] = $route->uri;
                     $data['guard_name'] = 'admin';
                     $result = Permission::create($data);

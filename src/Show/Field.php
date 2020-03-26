@@ -9,6 +9,7 @@ class Field
 {
     public  $name,
             $label,
+            $image = false,
             $component;
 
     function __construct($name,$label = '') {
@@ -21,5 +22,15 @@ class Field
             $label = Arr::get($label, 0, ''); //[0];
             $this->label = $label;
         }
+    }
+
+    public function image($width = 100,$height = 100)
+    {
+        $this->component = 'image';
+
+        $image['width'] = $width;
+        $image['height'] = $height;
+        $this->image = $image;
+        return $this;
     }
 }

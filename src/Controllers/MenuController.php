@@ -153,7 +153,7 @@ class MenuController extends QuarkController
         $form->select('permission_ids','绑定权限')
         ->mode('tags')
         ->options($getPermissions)
-        ->default($permissionIds);
+        ->value($permissionIds);
 
         $form->switch('show','显示')->options([
             'on'  => '是',
@@ -163,7 +163,7 @@ class MenuController extends QuarkController
         $form->switch('status','状态')->options([
             'on'  => '正常',
             'off' => '禁用'
-        ])->default(false);
+        ])->default(true);
 
         return $form;
     }

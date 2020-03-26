@@ -31,6 +31,7 @@ class Form
         'image' => Form\Fields\Image::class,
         'tree' => Form\Fields\Tree::class,
         'select' => Form\Fields\Select::class,
+        'checkbox' => Form\Fields\Checkbox::class,
         'icon' => Form\Fields\Icon::class,
         'switch' => Form\Fields\SwitchField::class,
     ];
@@ -525,8 +526,15 @@ class Form
     protected function initialValues()
     {
         if(isset($this->form['items'])) {
+            $data = [];
             foreach ($this->form['items'] as $key => $item) {
-                $data[$item->name] = $item->defaultValue;
+                if($item->defaultValue) {
+                    $data[$item->name] = $item->defaultValue;
+                }
+
+                if($item->value) {
+                    $this->form['data'][$item->name] = $item->value;
+                }
             }
             $this->form['initialValues'] = $data;
         }

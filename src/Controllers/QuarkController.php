@@ -232,12 +232,12 @@ class QuarkController extends Controller
      */
     public function destroy(Request $request)
     {
-        $result = $this->form()->destroy($id);
+        $result = $this->form()->destroy();
 
-        if($result['status'] == 'success') {
+        if($result) {
             return $this->success('删除成功！');
         } else {
-            return $this->error($result['msg']);
+            return $this->error('删除失败！');
         }
     }
 }

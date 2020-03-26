@@ -107,9 +107,8 @@ class RoleController extends QuarkController
         $menus = Helper::listToTree($menus,'key','pid','children',0);
 
         $form->tree('menu_ids','权限')
-        ->rules(['required'],['required'=>'必须选择权限'])
         ->data($menus)
-        ->default($checkedMenus);
+        ->value($checkedMenus);
 
         return $form;
     }
