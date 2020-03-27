@@ -63,24 +63,35 @@ class Show
     }
 
     /**
-     * show disableSubmit.
+     * show disableEdit.
      *
      * @return bool
      */
-    public function disableSubmit()
+    public function disableEdit()
     {
-        $this->show['disableSubmit'] = true;
+        $this->show['disableEdit'] = true;
         return $this;
     }
 
     /**
-     * show disableReset.
+     * show disableDelete.
      *
      * @return bool
      */
-    public function disableReset()
+    public function disableDelete()
     {
-        $this->show['disableReset'] = true;
+        $this->show['disableDelete'] = true;
+        return $this;
+    }
+
+    /**
+     * show disableReturnList.
+     *
+     * @return bool
+     */
+    public function disableReturnList()
+    {
+        $this->show['disableReturnList'] = true;
         return $this;
     }
 

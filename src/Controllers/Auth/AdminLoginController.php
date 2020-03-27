@@ -54,17 +54,10 @@ class AdminLoginController extends QuarkController
             $data['last_login_time'] = date('Y-m-d H:i:s');
             Admin::where('id',$user->id)->update($data);
 
-            // 记录日志
-            $log['action'] = '管理员登录';
-            $log['type'] = 'ADMIN';
-            $log['remark'] = Auth::guard('admin')->user()->username.'登录后台';
-            Helper::actionLog($log);
-
             $result['id'] = $user->id;
             $result['username'] = $user->username;
             $result['nickname'] = $user->nickname;
             $result['token'] = Helper::makeRand(950,true);
-
 
             // 将认证信息写入缓存，这里用hack方法做后台api登录认证
             cache([$result['token'] => $result],60*60*3);

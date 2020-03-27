@@ -9,6 +9,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use Illuminate\Support\Facades\Route;
+use QuarkCMS\QuarkAdmin\Helper;
 
 class AdminMiddleware
 {
@@ -46,6 +47,9 @@ class AdminMiddleware
         }
 
         define('ADMINID',$admin['id']);
+
+        // 记录所有行为日志
+        Helper::actionLog($admin['id'],'','ADMIN');
 
         if($admin['id'] !== 1) {
 

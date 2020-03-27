@@ -17,7 +17,6 @@ class CreateActionLogsTable extends Migration
             $table->engine='innodb';
             $table->increments('id')->unsigned();
             $table->integer('object_id')->nullable();
-            $table->string('action');
             $table->string('url');
             $table->longText('remark');
             $table->string('ip');

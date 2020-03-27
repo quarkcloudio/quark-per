@@ -109,16 +109,20 @@ class Helper
     * 记录日志
     * @author tangtanglove <dai_hang_love@126.com>
     */
-	static function actionLog($data)
+	static function actionLog($objectId = 0,$remark = '',$type='USER')
     {
         if (empty($data['url'])) {
             $data['url'] = $_SERVER['REQUEST_URI'];
         }
-        
+
+        $data['type'] = $type;
+        $data['object_id'] = $objectId;
+
         if (!empty(auth()->user())) {
             $data['object_id'] = auth()->user()->id;
         }
 
+        $data['remark'] = $remark;
         $data['ip'] = $_SERVER["REMOTE_ADDR"];
         ActionLog::create($data);
     }

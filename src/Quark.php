@@ -137,8 +137,8 @@ class Quark
                 $router->post('admin/menu/destroy', 'MenuController@destroy')->name('api/admin/menu/destroy');
             
                 $router->get('admin/actionLog/index', 'ActionLogController@index')->name('api/admin/actionLog/index');
-                $router->post('admin/actionLog/changeStatus', 'ActionLogController@changeStatus')->name('api/admin/actionLog/changeStatus');
-                $router->get('admin/actionLog/export', 'ActionLogController@export')->name('api/admin/actionLog/export');
+                $router->post('admin/actionLog/destroy', 'ActionLogController@destroy')->name('api/admin/actionLog/destroy');
+                $router->get('admin/actionLog/show', 'ActionLogController@show')->name('api/admin/actionLog/show');
             
                 $router->get('admin/picture/index', 'PictureController@index')->name('api/admin/picture/index');
                 $router->post('admin/picture/upload', 'PictureController@upload')->name('api/admin/picture/upload');
@@ -149,8 +149,8 @@ class Quark
                 $router->any('admin/file/index', 'FileController@index')->name('api/admin/file/index');
                 $router->post('admin/file/upload', 'FileController@upload')->name('api/admin/file/upload');
                 $router->get('admin/file/download', 'FileController@download')->name('api/admin/file/download');
-                $router->post('admin/file/update', 'FileController@update')->name('api/admin/file/update');
-                $router->post('admin/file/changeStatus', 'FileController@changeStatus')->name('api/admin/file/changeStatus');
+                $router->post('admin/file/action', 'FileController@action')->name('api/admin/file/action');
+                $router->post('admin/file/delete', 'FileController@delete')->name('api/admin/file/delete');
             });
 
             Route::get('admin/captcha', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@captcha')->name('api/admin/captcha');
