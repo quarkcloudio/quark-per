@@ -45,6 +45,7 @@ class AccountController extends QuarkController
     {
         $requestJson    =   $request->getContent();
         $requestData    =   json_decode($requestJson,true);
+        unset($requestData['actionUrl']);
 
         // 表单验证错误提示信息
         $messages = [
@@ -96,6 +97,7 @@ class AccountController extends QuarkController
     {
         $requestJson    =   $request->getContent();
         $requestData    =   json_decode($requestJson,true);
+        unset($requestData['actionUrl']);
 
         // 表单验证错误提示信息
         $messages = [
