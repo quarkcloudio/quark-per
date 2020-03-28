@@ -125,8 +125,9 @@ class Quark
                 $router->get('admin/config/create', 'ConfigController@create')->name('api/admin/config/create');
                 $router->post('admin/config/store', 'ConfigController@store')->name('api/admin/config/store');
                 $router->get('admin/config/edit', 'ConfigController@edit')->name('api/admin/config/edit');
-                $router->post('admin/config/save', 'ConfigController@save')->name('api/admin/config/save');
-                $router->post('admin/config/changeStatus', 'ConfigController@changeStatus')->name('api/admin/config/changeStatus');
+                $router->post('admin/config/update', 'ConfigController@update')->name('api/admin/config/update');
+                $router->any('admin/config/action', 'ConfigController@action')->name('api/admin/config/action');
+                $router->post('admin/config/destroy', 'ConfigController@destroy')->name('api/admin/config/destroy');
             
                 $router->get('admin/menu/index', 'MenuController@index')->name('api/admin/menu/index');
                 $router->get('admin/menu/create', 'MenuController@create')->name('api/admin/menu/create');

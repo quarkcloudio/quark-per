@@ -26,6 +26,7 @@ class Form
     public static $availableFields = [
         'id' => Form\Fields\ID::class,
         'text' => Form\Fields\Text::class,
+        'textArea' => Form\Fields\TextArea::class,
         'number' => Form\Fields\Number::class,
         'radio' => Form\Fields\Radio::class,
         'image' => Form\Fields\Image::class,
@@ -339,6 +340,25 @@ class Form
     {
         return Str::endsWith(\request()->route()->getName(), '/edit', '/update');
     }
+
+    /**
+     * tab布局的form
+     *
+     * @return bool
+     */
+    public function tab($title,Closure $callback = null)
+    {
+        $callback($this);
+
+        $tab['title'] = $title;
+        if(isset($this->form['items'])) {
+            $tab['items'] = $this->form['items'];
+        }
+        $this->form['tab'][] = $tab;
+
+        return $this;
+    }
+
 
     /**
      * 保存前回调

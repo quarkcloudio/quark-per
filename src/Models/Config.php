@@ -22,7 +22,7 @@ class Config extends Model
      * @var array
      */
      protected $fillable = [
-        'title', 'type','name','group_name','value','remark','status'
+        'id', 'title', 'type','name','group_name','value','remark','status'
     ];
      
     protected $dates = ['delete_at'];
