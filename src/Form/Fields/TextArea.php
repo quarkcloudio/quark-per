@@ -73,4 +73,17 @@ class TextArea extends Item
         $this->rows = $rows;
         return $this;
     }
+
+    /**
+     * 输入框宽度
+     * 
+     * @param  number|string $value
+     * @return object
+     */
+    public function width($value = '100%')
+    {
+        $style['width'] = $value;
+        $this->style = $style;
+        return $this;
+    }
 }

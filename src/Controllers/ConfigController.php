@@ -24,19 +24,71 @@ class ConfigController extends QuarkController
     public function websiteForm()
     {
         $groupNames = Config::where('status', 1)
-        ->select('group_name')
         ->distinct()
-        ->get();
+        ->pluck('group_name');
 
         $form = Quark::form()->setAction('admin/config/saveWebsite');
 
-        $form->tab('Basic info', function ($form) {
-            $form->text('title','标题');
-        })->tab('Profile', function ($form) {
-            $form->text('name','名称');
-            $form->text('group_name','分组名称');
-            $form->textArea('remark','备注');
-        });
+        foreach ($groupNames as $key => $groupName) {
+            if($groupName) {
+                $configs = Config::where('status', 1)
+                ->where('group_name',$groupName)
+                ->get()
+                ->toArray();
+    
+                $form->tab($groupName, function ($form) use ($configs) {
+                    foreach ($configs as $key => $config) {
+                        switch ($config['type']) {
+                            case 'text':
+                                $form->text($config['name'],$config['title'])
+                                ->extra($config['remark'])
+                                ->value($config['value']);
+                                break;
+                            case 'file':
+                                $form->file($config['name'],$config['title'])
+                                ->extra($config['remark'])
+                                ->button('上传'.$config['title']);
+
+                                break;
+                            case 'textarea':
+                                $form->textArea($config['name'],$config['title'])
+                                ->extra($config['remark'])
+                                ->width(400)
+                                ->value($config['value']);
+                                break;
+                            case 'switch':
+        
+                                if($config['value'] == 1) {
+                                    $config['value'] = true;
+                                } else {
+                                    $config['value'] = false;
+                                }
+        
+                                $form->switch($config['name'],$config['title'])
+                                ->extra($config['remark'])
+                                ->options([
+                                    'on'  => '开启',
+                                    'off' => '关闭'
+                                ])->value($config['value']);
+
+                                break;
+                            case 'picture':
+
+                                $form->image($config['name'],$config['title'])
+                                ->extra($config['remark'])
+                                ->button('上传'.$config['name']);
+
+                                break;
+                            default:
+                                $form->text($config['name'],$config['title'])
+                                ->extra($config['remark'])
+                                ->value($config['value']);
+                                break;
+                        }
+                    }
+                });
+            }
+        }
 
         return $form;
     }

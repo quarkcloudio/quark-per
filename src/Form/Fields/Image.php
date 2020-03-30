@@ -9,7 +9,6 @@ use Exception;
 class Image extends Item
 {
     public  $mode,
-            $list,
             $button,
             $limitSize,
             $limitType,

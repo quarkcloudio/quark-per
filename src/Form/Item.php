@@ -76,12 +76,8 @@ class Item
      * @param  string $extra
      * @return $this
      */
-    public function extra($extra)
+    public function extra($extra = '')
     {
-        if(empty($extra)) {
-            throw new Exception('argument cannot be empty!');
-        }
-
         $this->extra = $extra;
         return $this;
     }
@@ -106,10 +102,6 @@ class Item
      */
     public function help($help = '')
     {
-        if(empty($help)) {
-            throw new Exception('argument cannot be empty!');
-        }
-
         $this->help = $help;
         return $this;
     }

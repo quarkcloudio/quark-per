@@ -30,11 +30,15 @@ class Form
         'number' => Form\Fields\Number::class,
         'radio' => Form\Fields\Radio::class,
         'image' => Form\Fields\Image::class,
+        'file' => Form\Fields\File::class,
         'tree' => Form\Fields\Tree::class,
         'select' => Form\Fields\Select::class,
         'checkbox' => Form\Fields\Checkbox::class,
         'icon' => Form\Fields\Icon::class,
         'switch' => Form\Fields\SwitchField::class,
+        'icon' => Form\Fields\Icon::class,
+        'datePicker' => Form\Fields\DatePicker::class,
+        'rangePicker' => Form\Fields\RangePicker::class,
     ];
 
     /**
@@ -353,6 +357,7 @@ class Form
         $tab['title'] = $title;
         if(isset($this->form['items'])) {
             $tab['items'] = $this->form['items'];
+            $this->form['items'] = [];
         }
         $this->form['tab'][] = $tab;
 
@@ -545,18 +550,36 @@ class Form
      */
     protected function initialValues()
     {
-        if(isset($this->form['items'])) {
+        if(isset($this->form['tab'])) {
             $data = [];
-            foreach ($this->form['items'] as $key => $item) {
-                if($item->defaultValue) {
-                    $data[$item->name] = $item->defaultValue;
-                }
-
-                if($item->value) {
-                    $this->form['data'][$item->name] = $item->value;
+            foreach ($this->form['tab'] as $key => $tab) {
+                if(isset($tab['items'])) {
+                    foreach ($tab['items'] as $key => $item) {
+                        if($item->defaultValue) {
+                            $data[$item->name] = $item->defaultValue;
+                        }
+        
+                        if($item->value) {
+                            $this->form['data'][$item->name] = $item->value;
+                        }
+                    }
                 }
             }
             $this->form['initialValues'] = $data;
+        } else {
+            if(isset($this->form['items'])) {
+                $data = [];
+                foreach ($this->form['items'] as $key => $item) {
+                    if($item->defaultValue) {
+                        $data[$item->name] = $item->defaultValue;
+                    }
+    
+                    if($item->value) {
+                        $this->form['data'][$item->name] = $item->value;
+                    }
+                }
+                $this->form['initialValues'] = $data;
+            }
         }
     }
 

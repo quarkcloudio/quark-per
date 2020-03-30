@@ -14,5 +14,5 @@ class Menu extends Model
      */
     public $timestamps = true;
     
-    protected $fillable=['name','guard_name','icon','pid','sort','path','show','status'];   //允许批量赋值的字段
+    protected $fillable=['name','guard_name','icon','type','pid','sort','path','show','status'];   //允许批量赋值的字段
 }
