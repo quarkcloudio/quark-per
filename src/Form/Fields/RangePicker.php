@@ -22,7 +22,9 @@ class RangePicker extends Item
             $this->label = $label;
         }
 
-        $this->showTime = true;
+        $this->format = 'YYYY-MM-DD HH:mm:ss';
+        $showTime['format'] = 'HH:mm:ss';
+        $this->showTime = $showTime;
         $this->value = [null,null];
     }
 

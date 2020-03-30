@@ -95,6 +95,8 @@ class AdminController extends QuarkController
         
         $form->id('id','ID');
 
+        $form->editor('content','内容');
+
         $form->image('avatar','头像')->button('上传头像');
 
         $form->text('username','用户名')

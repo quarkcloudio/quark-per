@@ -1,24 +1,50 @@
 <?php
 
-namespace App\Planet\Form\Fields;
+namespace QuarkCMS\QuarkAdmin\Form\Fields;
 
-use App\Planet\Form\Item;
+use QuarkCMS\QuarkAdmin\Form\Item;
+use Illuminate\Support\Arr;
+use Exception;
 
 class Editor extends Item
 {
-    function __construct() {
-        $this->componentName = 'editor';
-        $this->style = ['height' => 400, 'boxShadow' => 'inset 0 1px 3px rgba(0,0,0,.1)'];
+    function __construct($name,$label = '') {
+        $this->component = 'editor';
+        $this->name = $name;
+
+        if(empty($label) || !count($label)) {
+            $this->label = $name;
+        } else {
+            $label = Arr::get($label, 0, ''); //[0];
+            $this->label = $label;
+        }
+
+        $this->placeholder = '请输入'.$this->label;
+
+        $style = ['height' => 400, 'boxShadow' => 'inset 0 1px 3px rgba(0,0,0,.1)'];
+
+        $this->style = $style;
     }
 
-    static function make($labelName,$name)
+    /**
+     * 创建组件
+     *
+     * @param  string $name
+     * @param  string $label
+     * @return object
+     */
+    static function make($name,$label = '')
     {
         $self = new self();
 
-        $self->labelName = $labelName;
         $self->name = $name;
+        if(empty($label)) {
+            $self->label = $name;
+        } else {
+            $self->label = $label;
+        }
 
-        $self->placeholder = '请输入'.$labelName;
+        $self->placeholder = '请输入'.$label;
 
         // 删除空属性
         $self->unsetNullProperty();

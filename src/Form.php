@@ -39,6 +39,7 @@ class Form
         'icon' => Form\Fields\Icon::class,
         'datePicker' => Form\Fields\DatePicker::class,
         'rangePicker' => Form\Fields\RangePicker::class,
+        'editor' => Form\Fields\Editor::class,
     ];
 
     /**
