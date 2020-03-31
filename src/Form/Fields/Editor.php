@@ -50,4 +50,28 @@ class Editor extends Item
         $self->unsetNullProperty();
         return $self;
     }
+
+    /**
+     * 宽度
+     * 
+     * @param  number|string $value
+     * @return object
+     */
+    public function width($value = '100%')
+    {
+        $this->style['width'] = $value;
+        return $this;
+    }
+
+    /**
+     * 高度
+     * 
+     * @param  number|string $value
+     * @return object
+     */
+    public function height($value = 500)
+    {
+        $this->style['height'] = $value;
+        return $this;
+    }
 }

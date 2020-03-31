@@ -2,9 +2,9 @@
 
 namespace DummyNamespace;
 
-use QuarkCMS\QuarkAdmin\QuarkController;
 use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Admin;
+use QuarkCMS\QuarkAdmin\Controllers\QuarkController;
 use Quark;
 
 class ExampleController extends QuarkController

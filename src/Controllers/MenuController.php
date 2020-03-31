@@ -116,7 +116,7 @@ class MenuController extends QuarkController
 
         $menuTreeLists = Helper::treeToOrderList($menuTrees,0,'name','children');
 
-        $list = [];
+        $list[0] = '根节点';
         foreach ($menuTreeLists as $key => $menuTreeList) {
             $list[$menuTreeList['id']] = $menuTreeList['name'];
         }
