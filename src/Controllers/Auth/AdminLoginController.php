@@ -69,15 +69,9 @@ class AdminLoginController extends QuarkController
             return $result;
         } else {
 
-            // 记录登录日志
-            $log['action'] = $username.'LOGIN_ERROR';
-            $log['type'] = 'ADMIN';
-            $log['remark'] = '管理员'.$username.'尝试登录出错！';
-            Helper::actionLog($log);
-
             // 清除验证码
             cache(['adminCaptcha'=>null],60*10);
-
+            
             return $this->error('用户名或密码错误！');
         }
     }
