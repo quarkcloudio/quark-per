@@ -228,7 +228,7 @@ class Form
 
         foreach ($this->form['items'] as $key => $item) {
             if($item->component == 'image') {
-                if($item->component == 'single') {
+                if($item->mode == 'single') {
                     $image['id'] = $data[$item->name];
                     $image['name'] = Helper::getPicture($data[$item->name],0,'name');
                     $image['size'] = Helper::getPicture($data[$item->name],0,'size');
