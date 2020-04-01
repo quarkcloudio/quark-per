@@ -249,24 +249,25 @@ class Form
             }
 
             if($item->component == 'file') {
+                $files = [];
                 if(count(explode('[',$data[$item->name]))>1) {
                     $getFiles = json_decode($data[$item->name],true);
-                    $files = [];
                     foreach ($getFiles as $key => $value) {
                         $file['id'] = $value;
-                        $file['name'] = Helper::getFile($value,0,'name');
-                        $file['size'] = Helper::getFile($value,0,'size');
-                        $file['url'] = Helper::getFile($value,0,'path');
+                        $file['name'] = Helper::getFile($value,'name');
+                        $file['size'] = Helper::getFile($value,'size');
+                        $file['url'] = Helper::getFile($value,'path');
                         $files[] = $file;
                     }
-                    $data[$item->name] = $files;
                 } else {
                     $file['id'] = $data[$item->name];
-                    $file['name'] = Helper::getFile($data[$item->name],0,'name');
-                    $file['size'] = Helper::getFile($data[$item->name],0,'size');
-                    $file['url'] = Helper::getFile($data[$item->name],0,'path');
-                    $data[$item->name] = $file;
+                    $file['name'] = Helper::getFile($data[$item->name],'name');
+                    $file['size'] = Helper::getFile($data[$item->name],'size');
+                    $file['url'] = Helper::getFile($data[$item->name],'path');
+                    $files[] = $file;
                 }
+
+                $data[$item->name] = $files;
             }
         }
 
