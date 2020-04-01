@@ -228,11 +228,45 @@ class Form
 
         foreach ($this->form['items'] as $key => $item) {
             if($item->component == 'image') {
-                $image['id'] = $data[$item->name];
-                $image['name'] = Helper::getPicture($data[$item->name],0,'name');
-                $image['size'] = Helper::getPicture($data[$item->name],0,'size');
-                $image['url'] = Helper::getPicture($data[$item->name],0,'path');
-                $data[$item->name] = $image;
+                if($item->component == 'single') {
+                    $image['id'] = $data[$item->name];
+                    $image['name'] = Helper::getPicture($data[$item->name],0,'name');
+                    $image['size'] = Helper::getPicture($data[$item->name],0,'size');
+                    $image['url'] = Helper::getPicture($data[$item->name],0,'path');
+                    $data[$item->name] = $image;
+                } else {
+                    $getImages = json_decode($data[$item->name],true);
+                    $images = [];
+                    foreach ($getImages as $key => $value) {
+                        $image['id'] = $value;
+                        $image['name'] = Helper::getPicture($value,0,'name');
+                        $image['size'] = Helper::getPicture($value,0,'size');
+                        $image['url'] = Helper::getPicture($value,0,'path');
+                        $images[] = $image;
+                    }
+                    $data[$item->name] = $images;
+                }
+            }
+
+            if($item->component == 'file') {
+                if(count(explode('[',$data[$item->name]))>1) {
+                    $getFiles = json_decode($data[$item->name],true);
+                    $files = [];
+                    foreach ($getFiles as $key => $value) {
+                        $file['id'] = $value;
+                        $file['name'] = Helper::getFile($value,0,'name');
+                        $file['size'] = Helper::getFile($value,0,'size');
+                        $file['url'] = Helper::getFile($value,0,'path');
+                        $files[] = $file;
+                    }
+                    $data[$item->name] = $files;
+                } else {
+                    $file['id'] = $data[$item->name];
+                    $file['name'] = Helper::getFile($data[$item->name],0,'name');
+                    $file['size'] = Helper::getFile($data[$item->name],0,'size');
+                    $file['url'] = Helper::getFile($data[$item->name],0,'path');
+                    $data[$item->name] = $file;
+                }
             }
         }
 
