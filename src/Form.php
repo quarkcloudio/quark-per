@@ -239,6 +239,7 @@ class Form
                     $images = [];
                     foreach ($getImages as $key => $value) {
                         $image['id'] = $value;
+                        $image['uid'] = $value;
                         $image['name'] = Helper::getPicture($value,0,'name');
                         $image['size'] = Helper::getPicture($value,0,'size');
                         $image['url'] = Helper::getPicture($value,0,'path');
@@ -254,6 +255,7 @@ class Form
                     $getFiles = json_decode($data[$item->name],true);
                     foreach ($getFiles as $key => $value) {
                         $file['id'] = $value;
+                        $file['uid'] = $value;
                         $file['name'] = Helper::getFile($value,'name');
                         $file['size'] = Helper::getFile($value,'size');
                         $file['url'] = Helper::getFile($value,'path');
@@ -261,6 +263,7 @@ class Form
                     }
                 } else {
                     $file['id'] = $data[$item->name];
+                    $file['uid'] = $data[$item->name];
                     $file['name'] = Helper::getFile($data[$item->name],'name');
                     $file['size'] = Helper::getFile($data[$item->name],'size');
                     $file['url'] = Helper::getFile($data[$item->name],'path');
