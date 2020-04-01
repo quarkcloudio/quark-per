@@ -259,7 +259,7 @@ class Form
             }
 
             if($item->component == 'file') {
-                $files = [];
+                $files = null;
                 if(count(explode('[',$data[$item->name]))>1) {
                     $getFiles = json_decode($data[$item->name],true);
                     foreach ($getFiles as $key => $value) {
