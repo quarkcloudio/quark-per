@@ -181,6 +181,15 @@ class Form
         $data = $this->request;
 
         foreach ($this->form['items'] as $key => $value) {
+
+            if($value->component == 'image' || $value->component == 'file') {
+                if(isset($data[$value->name])) {
+                    if(is_array($data[$value->name])) {
+                        $data[$value->name] = json_encode($data[$value->name]);
+                    }
+                }
+            }
+
             if($value->rules) {
                 $rules[$value->name] = $value->rules;
                 $validator = Validator::make($data,$rules,$value->ruleMessages);
@@ -228,13 +237,7 @@ class Form
 
         foreach ($this->form['items'] as $key => $item) {
             if($item->component == 'image') {
-                if($item->mode == 'single') {
-                    $image['id'] = $data[$item->name];
-                    $image['name'] = Helper::getPicture($data[$item->name],0,'name');
-                    $image['size'] = Helper::getPicture($data[$item->name],0,'size');
-                    $image['url'] = Helper::getPicture($data[$item->name],0,'path');
-                    $data[$item->name] = $image;
-                } else {
+                if(count(explode('[',$data[$item->name]))>1) {
                     $getImages = json_decode($data[$item->name],true);
                     $images = [];
                     foreach ($getImages as $key => $value) {
@@ -246,6 +249,12 @@ class Form
                         $images[] = $image;
                     }
                     $data[$item->name] = $images;
+                } else {
+                    $image['id'] = $data[$item->name];
+                    $image['name'] = Helper::getPicture($data[$item->name],0,'name');
+                    $image['size'] = Helper::getPicture($data[$item->name],0,'size');
+                    $image['url'] = Helper::getPicture($data[$item->name],0,'path');
+                    $data[$item->name] = $image;
                 }
             }
 
@@ -289,6 +298,15 @@ class Form
         $data = $this->request;
 
         foreach ($this->form['items'] as $key => $value) {
+
+            if($value->component == 'image' || $value->component == 'file') {
+                if(isset($data[$value->name])) {
+                    if(is_array($data[$value->name])) {
+                        $data[$value->name] = json_encode($data[$value->name]);
+                    }
+                }
+            }
+
             if($value->rules) {
 
                 foreach ($value->rules as &$rule) {

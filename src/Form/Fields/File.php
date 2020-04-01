@@ -21,8 +21,9 @@ class File extends Item
             $this->label = $label;
         }
 
+        $this->mode = 'single';
         $this->button = '上传文件';
-        $this->limitNum = 3; // 默认上传个数
+        $this->limitNum = 1; // 默认上传个数
         $this->limitSize = 2; // 默认文件大小2M
         $this->limitType = ['image/jpeg','image/png'];
     }
@@ -50,6 +51,16 @@ class File extends Item
         // 删除空属性
         $self->unsetNullProperty();
         return $self;
+    }
+
+    public function mode($mode)
+    {
+        if($mode == 'multiple') {
+            $this->limitNum = 3; // 默认多文件上传个数
+        }
+
+        $this->mode = $mode;
+        return $this;
     }
 
     public function value($value)
