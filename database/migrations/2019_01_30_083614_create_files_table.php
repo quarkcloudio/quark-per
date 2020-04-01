@@ -25,7 +25,7 @@ class CreateFilesTable extends Migration
             $table->string('ext')->default(0)->nullable()->comment('文件扩展名');
             $table->text('path')->comment('路径');
             $table->longText('md5')->comment('md5唯一标识');
-            $table->tinyInteger('status')->default(1);
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }

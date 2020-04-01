@@ -37,7 +37,7 @@ class Form
         'icon' => Form\Fields\Icon::class,
         'switch' => Form\Fields\SwitchField::class,
         'icon' => Form\Fields\Icon::class,
-        'datePicker' => Form\Fields\DatePicker::class,
+        'datetime' => Form\Fields\Datetime::class,
         'rangePicker' => Form\Fields\RangePicker::class,
         'editor' => Form\Fields\Editor::class,
     ];
@@ -556,11 +556,11 @@ class Form
             foreach ($this->form['tab'] as $key => $tab) {
                 if(isset($tab['items'])) {
                     foreach ($tab['items'] as $key => $item) {
-                        if($item->defaultValue) {
+                        if(isset($item->defaultValue)) {
                             $data[$item->name] = $item->defaultValue;
                         }
         
-                        if($item->value) {
+                        if(isset($item->value)) {
                             $this->form['data'][$item->name] = $item->value;
                         }
                     }
@@ -571,11 +571,11 @@ class Form
             if(isset($this->form['items'])) {
                 $data = [];
                 foreach ($this->form['items'] as $key => $item) {
-                    if($item->defaultValue) {
+                    if(isset($item->defaultValue)) {
                         $data[$item->name] = $item->defaultValue;
                     }
     
-                    if($item->value) {
+                    if(isset($item->value)) {
                         $this->form['data'][$item->name] = $item->value;
                     }
                 }

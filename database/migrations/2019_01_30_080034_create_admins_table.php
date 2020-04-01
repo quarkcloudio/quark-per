@@ -28,7 +28,7 @@ class CreateAdminsTable extends Migration
             $table->string('weibo_uid')->nullable()->default('');
             $table->string('last_login_ip')->nullable()->default('');
             $table->timestamp('last_login_time')->nullable();
-            $table->tinyInteger('status')->default(1);
+            $table->boolean('status')->default(1);
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

@@ -21,7 +21,7 @@ class CreateConfigsTable extends Migration
             $table->string('group_name');
             $table->longText('value')->nullable();
             $table->longText('remark')->nullable();
-            $table->tinyInteger('status')->default(1);
+            $table->boolean('status')->default(1);
             $table->timestamps();
             $table->softDeletes();
         });

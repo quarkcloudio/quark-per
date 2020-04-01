@@ -34,7 +34,7 @@ class MenuController extends QuarkController
         ])->width(100);
         $grid->column('status','状态')->editable('switch',[
             'on'  => ['value' => 1, 'text' => '正常'],
-            'off' => ['value' => 2, 'text' => '禁用']
+            'off' => ['value' => 0, 'text' => '禁用']
         ])->width(100);
         $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
             $rowAction->menu('editWithModal', '编辑')->withModal('编辑菜单',function($modal) {
@@ -210,18 +210,6 @@ class MenuController extends QuarkController
             default:
                 $getPath = $path;
                 break;
-        }
-
-        if ($show == true) {
-            $show = 1;
-        } else {
-            $show = 0; //隐藏
-        }
-
-        if ($status == true) {
-            $status = 1;
-        } else {
-            $status = 2; //禁用
         }
 
         $data['name'] = $name;

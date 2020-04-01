@@ -32,7 +32,7 @@ class AdminController extends QuarkController
         $grid->column('last_login_time','最后登录时间');
         $grid->column('status','状态')->editable('switch',[
             'on'  => ['value' => 1, 'text' => '正常'],
-            'off' => ['value' => 2, 'text' => '禁用']
+            'off' => ['value' => 0, 'text' => '禁用']
         ])->width(100);
 
         $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
@@ -56,7 +56,7 @@ class AdminController extends QuarkController
                 $model->update(['status'=>1]);
             });
             $batch->option('forbid', '禁用')->model(function($model) {
-                $model->update(['status'=>2]);
+                $model->update(['status'=>0]);
             });
             $batch->option('delete', '删除')->model(function($model) {
                 $model->delete();
@@ -173,12 +173,6 @@ class AdminController extends QuarkController
 
         $roleIds =   $requestData['role_ids'];
 
-        if(isset($requestData['avatar']['id'])) {
-            $requestData['avatar'] = $requestData['avatar']['id'];
-        } else {
-            unset($requestData['avatar']);
-        }
-
         // 删除modelName
         unset($requestData['id']);
         unset($requestData['actionUrl']);
@@ -223,12 +217,6 @@ class AdminController extends QuarkController
             $requestData['password'] = bcrypt($requestData['password']);
         }
 
-        if ($requestData['status'] == true) {
-            $requestData['status'] = 1;
-        } else {
-            $requestData['status'] = 2;
-        }
-
         $admin = Admin::create($requestData);
 
         // You may also pass an array
@@ -257,12 +245,6 @@ class AdminController extends QuarkController
         }
 
         $roleIds = $requestData['role_ids'];
-
-        if(isset($requestData['avatar']['id'])) {
-            $requestData['avatar'] = $requestData['avatar']['id'];
-        } else {
-            unset($requestData['avatar']);
-        }
 
         // 删除modelName
         unset($requestData['actionUrl']);
@@ -305,12 +287,6 @@ class AdminController extends QuarkController
 
         if (!empty($requestData['password'])) {
             $requestData['password'] = bcrypt($requestData['password']);
-        }
-
-        if ($requestData['status'] == true) {
-            $requestData['status'] = 1;
-        } else {
-            $requestData['status'] = 2;
         }
 
         $result = Admin::where('id',$requestData['id'])->update($requestData);
@@ -357,8 +333,6 @@ class AdminController extends QuarkController
             if(empty($show->data['last_login_ip'])) {
                 $show->data['last_login_ip'] = '暂无';
             }
-
-            $show->data['status'] == 1 ? $show->data['status'] = '正常' : $show->data['status'] = '已禁用';
         });
 
         return $show;

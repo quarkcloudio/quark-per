@@ -57,13 +57,6 @@ class ConfigController extends QuarkController
                                 ->value($config['value']);
                                 break;
                             case 'switch':
-        
-                                if($config['value'] == 1) {
-                                    $config['value'] = true;
-                                } else {
-                                    $config['value'] = false;
-                                }
-        
                                 $form->switch($config['name'],$config['title'])
                                 ->extra($config['remark'])
                                 ->options([
@@ -137,9 +130,9 @@ class ConfigController extends QuarkController
 
             $config = Config::where('name',$key)->first();
 
-            if(($config['type'] == 'file') || ($config['type'] == 'picture')) {
+            if(($config['type'] == 'file')) {
                 if($value) {
-                    $value = $value[0]['id'];
+                    $value = $value[0];
                 } else {
                     $value = null;
                 }
@@ -189,7 +182,7 @@ class ConfigController extends QuarkController
         $grid->column('remark','备注');
         $grid->column('status','状态')->editable('switch',[
             'on'  => ['value' => 1, 'text' => '正常'],
-            'off' => ['value' => 2, 'text' => '禁用']
+            'off' => ['value' => 0, 'text' => '禁用']
         ])->width(100);
         $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
             $rowAction->menu('edit', '编辑');
@@ -211,7 +204,7 @@ class ConfigController extends QuarkController
                 $model->update(['status'=>1]);
             });
             $batch->option('forbid', '禁用')->model(function($model) {
-                $model->update(['status'=>2]);
+                $model->update(['status'=>0]);
             });
             $batch->option('delete', '删除')->model(function($model) {
                 $model->delete();

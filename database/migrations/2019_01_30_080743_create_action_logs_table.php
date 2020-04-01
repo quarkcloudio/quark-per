@@ -21,7 +21,7 @@ class CreateActionLogsTable extends Migration
             $table->longText('remark');
             $table->string('ip');
             $table->string('type');
-            $table->tinyInteger('status')->default(1);
+            $table->boolean('status')->default(1);
             $table->timestamps();
         });
     }
