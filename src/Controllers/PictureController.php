@@ -87,25 +87,48 @@ class PictureController extends QuarkController
      */
     public function getLists(Request $request)
     {
-
-        $searchInputs = request('search');
+        $pictureCategoryId = request('pictureCategoryId');
+        $pictureSearchName = request('pictureSearchName');
+        $pictureSearchDate = request('pictureSearchDate');
 
         $query = Picture::query();
 
-        if($searchInputs['pictureSearchDate']) {
-            $query->whereBetween('created_at', [$searchInputs['pictureSearchDate'][0], $searchInputs['pictureSearchDate'][1]]);
+        if($pictureCategoryId) {
+            $query->where('picture_category_id',$pictureCategoryId);
         }
 
-        $pictures = $query->where('status',1)->paginate(10);
+        if($pictureSearchName) {
+            $query->where('name','like',"%$pictureSearchName%");
+        }
 
-        $pagination['defaultCurrent'] = 1;
-        $pagination['current'] = $pictures->currentPage();
-        $pagination['pageSize'] = $pictures->perPage();
-        $pagination['total'] = $pictures->total();
+        if($pictureSearchDate) {
+            $query->whereBetween('created_at', [$pictureSearchDate[0], $pictureSearchDate[1]]);
+        }
+
+        $pictures = $query->where('status',1)->orderBy('id','desc')->paginate(12);
+
+        $pagination = [];
+        $data = [];
+
+        if($pictures) {
+            $getPictures = $pictures->toArray();
+
+            $data = $getPictures['data'];
+
+            foreach ($data as $key => $value) {
+                $value['path'] = Helper::getPicture($value['id']);
+                $data[$key] = $value;
+            }
+
+            $pagination['defaultCurrent'] = 1;
+            $pagination['current'] = $getPictures['current_page'];
+            $pagination['pageSize'] = $getPictures['per_page'];
+            $pagination['total'] = $getPictures['total'];
+        }
 
         $categorys = PictureCategory::where('obj_type','ADMINID')->where('obj_id',ADMINID)->get();
 
-        $picture['lists'] = $pictures->data;
+        $picture['lists'] = $data;
         $picture['pagination'] = $pagination;
         $picture['categorys'] = $categorys;
 
