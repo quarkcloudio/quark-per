@@ -87,20 +87,29 @@ class PictureController extends QuarkController
      */
     public function getLists(Request $request)
     {
-        $lists = Picture::where('status',1)->paginate(10);
+
+        $searchInputs = request('search');
+
+        $query = Picture::query();
+
+        if($searchInputs['pictureSearchDate']) {
+            $query->whereBetween('created_at', [$searchInputs['pictureSearchDate'][0], $searchInputs['pictureSearchDate'][1]]);
+        }
+
+        $pictures = $query->where('status',1)->paginate(10);
 
         $pagination['defaultCurrent'] = 1;
-        $pagination['current'] = $lists->currentPage();
-        $pagination['pageSize'] = $lists->perPage();
-        $pagination['total'] = $lists->total();
+        $pagination['current'] = $pictures->currentPage();
+        $pagination['pageSize'] = $pictures->perPage();
+        $pagination['total'] = $pictures->total();
 
         $categorys = PictureCategory::where('obj_type','ADMINID')->where('obj_id',ADMINID)->get();
 
-        $picture['lists'] = $lists;
+        $picture['lists'] = $pictures->data;
         $picture['pagination'] = $pagination;
         $picture['categorys'] = $categorys;
 
-        return $this->success('参数错误！','',$picture);
+        return $this->success('获取成功！','',$picture);
     }
 
     /**
