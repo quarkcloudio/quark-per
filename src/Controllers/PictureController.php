@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Input;
 use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Picture;
+use QuarkCMS\QuarkAdmin\Models\PictureCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
 use Session;
@@ -76,6 +77,30 @@ class PictureController extends QuarkController
         $grid->model()->select('id as picture_id','pictures.*')->paginate(10);
 
         return $grid;
+    }
+
+    /**
+     * 编辑器图片选择
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function getLists(Request $request)
+    {
+        $lists = Picture::where('status',1)->paginate(10);
+
+        $pagination['defaultCurrent'] = 1;
+        $pagination['current'] = $lists->currentPage();
+        $pagination['pageSize'] = $lists->perPage();
+        $pagination['total'] = $lists->total();
+
+        $categorys = PictureCategory::where('obj_type','ADMINID')->where('obj_id',ADMINID)->get();
+
+        $picture['lists'] = $lists;
+        $picture['pagination'] = $pagination;
+        $picture['categorys'] = $categorys;
+
+        return $this->success('参数错误！','',$picture);
     }
 
     /**

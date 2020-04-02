@@ -142,6 +142,7 @@ class Quark
                 $router->get('admin/actionLog/show', 'ActionLogController@show')->name('api/admin/actionLog/show');
             
                 $router->get('admin/picture/index', 'PictureController@index')->name('api/admin/picture/index');
+                $router->get('admin/picture/getLists', 'PictureController@getLists')->name('api/admin/picture/getLists');
                 $router->post('admin/picture/upload', 'PictureController@upload')->name('api/admin/picture/upload');
                 $router->get('admin/picture/download', 'PictureController@download')->name('api/admin/picture/download');
                 $router->any('admin/picture/action', 'PictureController@action')->name('api/admin/picture/action');

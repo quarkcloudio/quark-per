@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\File;
+use QuarkCMS\QuarkAdmin\Models\FileCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
 use Quark;
