@@ -5,7 +5,7 @@ namespace QuarkCMS\QuarkAdmin\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Input;
-use QuarkCMS\QuarkAdmin\Helper;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Models\Picture;
 use QuarkCMS\QuarkAdmin\Models\PictureCategory;
 use OSS\OssClient;
@@ -116,7 +116,7 @@ class PictureController extends QuarkController
             $data = $getPictures['data'];
 
             foreach ($data as $key => $value) {
-                $value['path'] = Helper::getPicture($value['id']);
+                $value['path'] = get_picture($value['id']);
                 $data[$key] = $value;
             }
 
@@ -132,7 +132,7 @@ class PictureController extends QuarkController
         $picture['pagination'] = $pagination;
         $picture['categorys'] = $categorys;
 
-        return $this->success('获取成功！','',$picture);
+        return success('获取成功！','',$picture);
     }
 
     /**
@@ -146,7 +146,7 @@ class PictureController extends QuarkController
         $id = $request->json('id');
 
         if(empty($id)) {
-            return $this->error('参数错误！');
+            return error('参数错误！');
         }
 
         $query = Picture::query();
@@ -162,10 +162,10 @@ class PictureController extends QuarkController
         foreach ($pictures as $key => $picture) {
             // 阿里云存储
             if(strpos($picture->path,'http') !== false) {
-                $accessKeyId = Helper::getConfig('OSS_ACCESS_KEY_ID');
-                $accessKeySecret = Helper::getConfig('OSS_ACCESS_KEY_SECRET');
-                $endpoint = Helper::getConfig('OSS_ENDPOINT');
-                $bucket = Helper::getConfig('OSS_BUCKET');
+                $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
+                $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
+                $endpoint = web_config('OSS_ENDPOINT');
+                $bucket = web_config('OSS_BUCKET');
 
                 $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
 
@@ -190,9 +190,9 @@ class PictureController extends QuarkController
         $result = $query1->delete();
 
         if ($result) {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -204,7 +204,7 @@ class PictureController extends QuarkController
      */
     public function upload(Request $request)
     {
-        $ossOpen = Helper::config('OSS_OPEN');
+        $ossOpen = web_config('OSS_OPEN');
 
         if($ossOpen == 1) {
             $driver = 'oss';
@@ -242,7 +242,7 @@ class PictureController extends QuarkController
         $fileArray = explode(',',$file);
 
         if(empty($fileArray)) {
-            return $this->error('格式错误！');
+            return error('格式错误！');
         }
 
         $fileHeader = $fileArray[0];
@@ -268,14 +268,14 @@ class PictureController extends QuarkController
                 $fileType = '.bmp';
                 break;
             default:
-                return $this->error('只能上传jpg,jpeg,png,jpe,gif,bmp格式图片');
+                return error('只能上传jpg,jpeg,png,jpe,gif,bmp格式图片');
                 break;
         }
 
         // 图片名称
-        $name = Helper::makeRand(40,true).$fileType;
+        $name = Str::random(40).$fileType;
 
-        $ossOpen = Helper::config('OSS_OPEN');
+        $ossOpen = web_config('OSS_OPEN');
 
         if($ossOpen == 1) {
             $driver = 'oss';
@@ -287,12 +287,12 @@ class PictureController extends QuarkController
             case 'oss':
 
                 // 阿里云上传
-                $accessKeyId = Helper::config('OSS_ACCESS_KEY_ID');
-                $accessKeySecret = Helper::config('OSS_ACCESS_KEY_SECRET');
-                $endpoint = Helper::config('OSS_ENDPOINT');
-                $bucket = Helper::config('OSS_BUCKET');
+                $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
+                $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
+                $endpoint = web_config('OSS_ENDPOINT');
+                $bucket = web_config('OSS_BUCKET');
                 // 设置自定义域名。
-                $myDomain = Helper::config('OSS_MYDOMAIN');
+                $myDomain = web_config('OSS_MYDOMAIN');
         
                 try {
                     $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
@@ -329,7 +329,7 @@ class PictureController extends QuarkController
                 } catch (OssException $e) {
                     $ossResult = $e->getMessage();
                     // 返回数据
-                    return $this->error('上传失败！');
+                    return error('上传失败！');
                 }
     
                 // 数据
@@ -398,14 +398,14 @@ class PictureController extends QuarkController
                     $result['size'] = $size;
 
                 } else {
-                    return $this->error('上传失败！');
+                    return error('上传失败！');
                 }
 
                 break;
         }
 
         // 返回数据
-        return $this->success('上传成功！','',$result);
+        return success('上传成功！','',$result);
     }
 
     /**
@@ -464,7 +464,7 @@ class PictureController extends QuarkController
         $result['size'] = $size;
 
         // 返回数据
-        return $this->success('上传成功！','',$result);
+        return success('上传成功！','',$result);
     }
 
     /**
@@ -477,12 +477,12 @@ class PictureController extends QuarkController
     {
         $file = $request->file('file');
 
-        $accessKeyId = Helper::config('OSS_ACCESS_KEY_ID');
-        $accessKeySecret = Helper::config('OSS_ACCESS_KEY_SECRET');
-        $endpoint = Helper::config('OSS_ENDPOINT');
-        $bucket = Helper::config('OSS_BUCKET');
+        $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
+        $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
+        $endpoint = web_config('OSS_ENDPOINT');
+        $bucket = web_config('OSS_BUCKET');
         // 设置自定义域名。
-        $myDomain = Helper::config('OSS_MYDOMAIN');
+        $myDomain = web_config('OSS_MYDOMAIN');
 
         try {
             $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
@@ -510,7 +510,7 @@ class PictureController extends QuarkController
             print $e->getMessage();
         }
 
-        $object = 'pictures/'.Helper::makeRand(40,true).'.'.$file->getClientOriginalExtension();
+        $object = 'pictures/'.Str::random(40).'.'.$file->getClientOriginalExtension();
         $content = file_get_contents($file->getRealPath());
 
         $md5 = md5($content);
@@ -528,7 +528,7 @@ class PictureController extends QuarkController
             } catch (OssException $e) {
                 $ossResult = $e->getMessage();
                 // 返回数据
-                return $this->error('上传失败！');
+                return error('上传失败！');
             }
 
             // 数据
@@ -576,7 +576,7 @@ class PictureController extends QuarkController
         $result['size'] = $size;
 
         // 返回数据
-        return $this->success('上传成功！','',$result);
+        return success('上传成功！','',$result);
     }
 
     /**
@@ -590,13 +590,13 @@ class PictureController extends QuarkController
         $id = $request->get('id');
 
         if(empty($id)) {
-            return $this->error('参数错误！');
+            return error('参数错误！');
         }
 
         $picture = Picture::where('id',$id)->first();
 
         if(empty($picture)) {
-            return $this->error('文件不存在！');
+            return error('文件不存在！');
         }
 
         if(strpos($picture['path'],'http') !== false) {

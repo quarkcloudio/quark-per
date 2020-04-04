@@ -5,12 +5,12 @@ namespace QuarkCMS\QuarkAdmin\Controllers\Auth;
 use QuarkCMS\QuarkAdmin\Controllers\QuarkController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\ActionLog;
 use Gregwar\Captcha\CaptchaBuilder;
 use Gregwar\Captcha\PhraseBuilder;
 use Laravel\Passport\Client;
+use Illuminate\Support\Str;
 
 class AdminLoginController extends QuarkController
 {
@@ -28,15 +28,15 @@ class AdminLoginController extends QuarkController
 
         $getCaptcha = cache('adminCaptcha');
         if(empty($captcha) || ($captcha != $getCaptcha)) {
-            return $this->error('验证码错误！');
+            return error('验证码错误！');
         }
 
         if(empty($username)) {
-            return $this->error('用户名不能为空！');
+            return error('用户名不能为空！');
         }
 
         if(empty($password)) {
-            return $this->error('密码不能为空！');
+            return error('密码不能为空！');
         }
 
         $loginResult = Auth::guard('admin')->attempt(['username' => $username, 'password' => $password]);
@@ -46,33 +46,29 @@ class AdminLoginController extends QuarkController
             $user = Auth::guard('admin')->user();
 
             if($user['status'] !== 1) {
-                return $this->error('用户被禁用！');
+                return error('用户被禁用！');
             }
 
             // 更新登录信息
-            $data['last_login_ip'] = Helper::clientIp();
+            $data['last_login_ip'] = $request->ip();
             $data['last_login_time'] = date('Y-m-d H:i:s');
             Admin::where('id',$user->id)->update($data);
 
             $result['id'] = $user->id;
             $result['username'] = $user->username;
             $result['nickname'] = $user->nickname;
-            $result['token'] = Helper::makeRand(950,true);
+            $result['token'] = Str::random(950);
 
             // 将认证信息写入缓存，这里用hack方法做后台api登录认证
             cache([$result['token'] => $result],60*60*3);
 
-            return $this->success('登录成功！','',$result);
-
-            $result['msg'] = '登录成功';
-            $result['status'] = 'success';
-            return $result;
+            return success('登录成功！','',$result);
         } else {
 
             // 清除验证码
             cache(['adminCaptcha'=>null],60*10);
             
-            return $this->error('用户名或密码错误！');
+            return error('用户名或密码错误！');
         }
     }
 
@@ -96,9 +92,9 @@ class AdminLoginController extends QuarkController
 
         if($result !== false) {
 
-            return $this->success('已退出！');
+            return success('已退出！');
         } else {
-            return $this->error('错误！');
+            return error('错误！');
         }
     }
 
@@ -111,7 +107,7 @@ class AdminLoginController extends QuarkController
     {
         $phrase = new PhraseBuilder;
         // 设置验证码位数
-        $code = Helper::makeRand(4);
+        $code = Str::random(4);
         // 生成验证码图片的Builder对象，配置相应属性
         $builder = new CaptchaBuilder($code, $phrase);
         // 设置背景颜色

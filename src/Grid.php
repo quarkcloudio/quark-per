@@ -7,7 +7,6 @@ use QuarkCMS\QuarkAdmin\Grid\Column;
 use QuarkCMS\QuarkAdmin\Grid\Search;
 use QuarkCMS\QuarkAdmin\Grid\Actions;
 use QuarkCMS\QuarkAdmin\Grid\Model;
-use QuarkCMS\QuarkAdmin\Helper;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Database\Eloquent\Relations;
 use Illuminate\Support\Collection;
@@ -431,7 +430,7 @@ class Grid
         $actionName = $data['actionName'];
 
         if(empty($id)) {
-            return Helper::error('请选择数据！');
+            return error('请选择数据！');
         }
 
         // 删除不必要的字段
@@ -456,7 +455,7 @@ class Grid
                         if(isset($value->modal['form']['items'])) {
                             $errorMsg = $this->actionValidator($id,$data,$value->modal['form']['items']);
                             if($errorMsg) {
-                                return Helper::error($errorMsg);
+                                return error($errorMsg);
                             }
                     
                             $query = $query->update($data);
@@ -481,7 +480,7 @@ class Grid
                             $errorMsg = $this->actionValidator($id,$data,$batchValue->modal['form']['items']);
     
                             if($errorMsg) {
-                                return Helper::error($errorMsg);
+                                return error($errorMsg);
                             }
                     
                             $query = $query->update($data);
@@ -507,7 +506,7 @@ class Grid
                                 if(isset($rowValue->modal['form']['items'])) {
                                     $errorMsg = $this->actionValidator($id,$data,$rowValue->modal['form']['items']);
                                     if($errorMsg) {
-                                        return Helper::error($errorMsg);
+                                        return error($errorMsg);
                                     }
                             
                                     $query = $query->update($data);
@@ -529,9 +528,9 @@ class Grid
         }
 
         if($query) {
-            return Helper::success('操作成功！');
+            return success('操作成功！');
         } else {
-            return Helper::error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -693,7 +692,7 @@ class Grid
 
             if($column->image) {
                 foreach ($this->data as $key => $value) {
-                    $value[$column->name] = Helper::getPicture($value[$column->name]);
+                    $value[$column->name] = get_picture($value[$column->name]);
                     $this->data[$key] = $value;
                 }
             }
@@ -701,7 +700,7 @@ class Grid
 
         if($this->tree) {
 
-            $dataSource = Helper::listToTree($this->data->toArray(),'id','pid','children',0);
+            $dataSource = list_to_tree($this->data->toArray(),'id','pid','children',0);
 
             $this->table['dataSource'] = $dataSource;
         } else {

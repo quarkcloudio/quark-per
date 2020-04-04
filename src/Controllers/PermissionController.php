@@ -3,7 +3,6 @@
 namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
-use QuarkCMS\QuarkAdmin\Helper;
 use Spatie\Permission\Models\Permission;
 use Quark;
 use Route;
@@ -88,6 +87,6 @@ class PermissionController extends QuarkController
         // 清除废弃url
         Permission::whereNotIn('name',$urls)->delete();
 
-        return $this->success('操作成功！');
+        return success('操作成功！');
     }
 }

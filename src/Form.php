@@ -6,7 +6,6 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use QuarkCMS\QuarkAdmin\Helper;
 use Closure;
 use Validator;
 
@@ -199,7 +198,7 @@ class Form
                         $errorMsg = $value[0];
                     }
 
-                    return Helper::error($errorMsg);
+                    return error($errorMsg);
                 }
             }
 
@@ -212,7 +211,7 @@ class Form
                         $errorMsg = $value[0];
                     }
                     
-                    return Helper::error($errorMsg);
+                    return error($errorMsg);
                 }
             }
         }
@@ -220,9 +219,9 @@ class Form
         $result = $this->model->create($data);
 
         if($result) {
-            return Helper::success('操作成功！','',$result);
+            return success('操作成功！','',$result);
         } else {
-            return Helper::error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -243,17 +242,17 @@ class Form
                     foreach ($getImages as $key => $value) {
                         $image['id'] = $value;
                         $image['uid'] = $value;
-                        $image['name'] = Helper::getPicture($value,0,'name');
-                        $image['size'] = Helper::getPicture($value,0,'size');
-                        $image['url'] = Helper::getPicture($value,0,'path');
+                        $image['name'] = get_picture($value,0,'name');
+                        $image['size'] = get_picture($value,0,'size');
+                        $image['url'] = get_picture($value,0,'path');
                         $images[] = $image;
                     }
                     $data[$item->name] = $images;
                 } else {
                     $image['id'] = $data[$item->name];
-                    $image['name'] = Helper::getPicture($data[$item->name],0,'name');
-                    $image['size'] = Helper::getPicture($data[$item->name],0,'size');
-                    $image['url'] = Helper::getPicture($data[$item->name],0,'path');
+                    $image['name'] = get_picture($data[$item->name],0,'name');
+                    $image['size'] = get_picture($data[$item->name],0,'size');
+                    $image['url'] = get_picture($data[$item->name],0,'path');
                     $data[$item->name] = $image;
                 }
             }
@@ -265,17 +264,17 @@ class Form
                     foreach ($getFiles as $key => $value) {
                         $file['id'] = $value;
                         $file['uid'] = $value;
-                        $file['name'] = Helper::getFile($value,'name');
-                        $file['size'] = Helper::getFile($value,'size');
-                        $file['url'] = Helper::getFile($value,'path');
+                        $file['name'] = get_file($value,'name');
+                        $file['size'] = get_file($value,'size');
+                        $file['url'] = get_file($value,'path');
                         $files[] = $file;
                     }
                 } else {
                     $file['id'] = $data[$item->name];
                     $file['uid'] = $data[$item->name];
-                    $file['name'] = Helper::getFile($data[$item->name],'name');
-                    $file['size'] = Helper::getFile($data[$item->name],'size');
-                    $file['url'] = Helper::getFile($data[$item->name],'path');
+                    $file['name'] = get_file($data[$item->name],'name');
+                    $file['size'] = get_file($data[$item->name],'size');
+                    $file['url'] = get_file($data[$item->name],'path');
                     $files[] = $file;
                 }
 
@@ -324,7 +323,7 @@ class Form
                         $errorMsg = $value[0];
                     }
 
-                    return Helper::error($errorMsg);
+                    return error($errorMsg);
                 }
             }
 
@@ -344,7 +343,7 @@ class Form
                         $errorMsg = $value[0];
                     }
                     
-                    return Helper::error($errorMsg);
+                    return error($errorMsg);
                 }
             }
         }
@@ -359,9 +358,9 @@ class Form
         $result = $this->model->where('id',$data['id'])->update($data);
 
         if($result) {
-            return Helper::success('操作成功！','',$result);
+            return success('操作成功！','',$result);
         } else {
-            return Helper::error('操作失败！');
+            return error('操作失败！');
         }
     }
 

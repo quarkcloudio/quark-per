@@ -5,7 +5,6 @@ namespace QuarkCMS\QuarkAdmin\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
-use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 use Validator;
@@ -26,7 +25,7 @@ class AccountController extends QuarkController
         if(!empty($admin)) {
             // 获取用户头像
             if(!empty($admin['avatar'])) {
-                $admin['avatar'] = Helper::getPicture($admin['avatar']);
+                $admin['avatar'] = get_picture($admin['avatar']);
             } else {
                 $admin['avatar'] = '//'.$_SERVER['HTTP_HOST'].'/images/user.png';
             }
@@ -233,8 +232,8 @@ class AccountController extends QuarkController
             }
         }
 
-        $menuTrees = Helper::listToTree($data,'id','pid','children');
+        $menuTrees = list_to_tree($data,'id','pid','children');
 
-        return $this->success('获取成功！','',$menuTrees);
+        return success('获取成功！','',$menuTrees);
     }
 }

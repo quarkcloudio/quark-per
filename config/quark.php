@@ -63,6 +63,7 @@ return [
 
         // The URIs that should be excluded from authorization.
         'excepts' => [
+            'api/admin/appInfo',
             'api/admin/login',
             'api/admin/logout',
             'api/admin/captcha',

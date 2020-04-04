@@ -3,7 +3,6 @@
 namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
-use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use Spatie\Permission\Models\Role;
 use Illuminate\Validation\Rule;
@@ -166,7 +165,7 @@ class AdminController extends QuarkController
         $requestData    =   json_decode($requestJson,true);
 
         if(!isset($requestData['role_ids'])) {
-            return $this->error('请选择角色');
+            return error('请选择角色');
         }
 
         $roleIds =   $requestData['role_ids'];
@@ -208,7 +207,7 @@ class AdminController extends QuarkController
                 }
             }
 
-            return $this->error($errorMsg);
+            return error($errorMsg);
         }
 
         if (!empty($requestData['password'])) {
@@ -221,9 +220,9 @@ class AdminController extends QuarkController
         $result = $admin->syncRoles($roleIds);
 
         if ($result) {
-            return $this->success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
+            return success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -239,7 +238,7 @@ class AdminController extends QuarkController
         $requestData    =   json_decode($requestJson,true);
 
         if(!isset($requestData['role_ids'])) {
-            return $this->error('请选择角色');
+            return error('请选择角色');
         }
 
         $roleIds = $requestData['role_ids'];
@@ -280,7 +279,7 @@ class AdminController extends QuarkController
                 }
             }
 
-            return $this->error($errorMsg);
+            return error($errorMsg);
         }
 
         if (!empty($requestData['password'])) {
@@ -293,9 +292,9 @@ class AdminController extends QuarkController
         $result1 = Admin::where('id',$requestData['id'])->first()->syncRoles($roleIds);
 
         if ($result) {
-            return $this->success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
+            return success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -321,7 +320,7 @@ class AdminController extends QuarkController
 
         //渲染前回调
         $show->rendering(function ($show) {
-            $show->data['avatar'] = Helper::getPicture($show->data['avatar']);
+            $show->data['avatar'] = get_picture($show->data['avatar']);
             $show->data['sex'] == 1 ? $show->data['sex'] = '男' : $show->data['sex'] = '女';
 
             if(empty($show->data['last_login_time'])) {

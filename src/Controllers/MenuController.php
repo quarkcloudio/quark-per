@@ -3,7 +3,6 @@
 namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
-use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 use Spatie\Permission\Models\Permission;
 use Quark;
@@ -112,9 +111,8 @@ class MenuController extends QuarkController
         ->get()
         ->toArray();
 
-        $menuTrees = Helper::listToTree($menus,'id','pid','children',0);
-
-        $menuTreeLists = Helper::treeToOrderList($menuTrees,0,'name','children');
+        $menuTrees = list_to_tree($menus,'id','pid','children',0);
+        $menuTreeLists = tree_to_ordered_list($menuTrees,0,'name','children');
 
         $list[0] = '根节点';
         foreach ($menuTreeLists as $key => $menuTreeList) {
@@ -187,7 +185,7 @@ class MenuController extends QuarkController
         $status        =   $request->json('status','');
         
         if (empty($name)) {
-            return $this->error('名称必须填写！');
+            return error('名称必须填写！');
         }
 
         switch ($type) {
@@ -228,9 +226,9 @@ class MenuController extends QuarkController
         }
 
         if($result) {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -254,11 +252,11 @@ class MenuController extends QuarkController
         $status        =   $request->json('status','');
 
         if (empty($id)) {
-            return $this->error('请选择数据！');
+            return error('请选择数据！');
         }
         
         if (empty($name)) {
-            return $this->error('名称必须填写！');
+            return error('名称必须填写！');
         }
         
         switch ($type) {
@@ -316,9 +314,9 @@ class MenuController extends QuarkController
         }
 
         if ($result) {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 }

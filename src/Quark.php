@@ -80,12 +80,12 @@ class Quark
             'middleware' => config('quark.route.middleware'),
         ];
 
-        Route::get('admin/appInfo', 'QuarkCMS\\QuarkAdmin\\Controllers\\QuarkController@appInfo')->name('api/admin/quark/appInfo');
-        Route::get('admin/captcha', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@captcha')->name('api/admin/captcha');
-        Route::post('admin/login', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@login')->name('api/admin/login');
-        Route::any('admin/logout', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@logout')->name('api/admin/logout');
-
         app('router')->group($attributes, function ($router) {
+
+            Route::get('admin/appInfo', 'QuarkCMS\\QuarkAdmin\\Controllers\\QuarkController@appInfo')->name('api/admin/quark/appInfo');
+            Route::get('admin/captcha', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@captcha')->name('api/admin/captcha');
+            Route::post('admin/login', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@login')->name('api/admin/login');
+            Route::any('admin/logout', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@logout')->name('api/admin/logout');
 
             $router->namespace('\QuarkCMS\QuarkAdmin\Controllers')->group(function ($router) {
                 

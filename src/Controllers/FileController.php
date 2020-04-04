@@ -4,7 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use QuarkCMS\QuarkAdmin\Helper;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Models\File;
 use QuarkCMS\QuarkAdmin\Models\FileCategory;
 use OSS\OssClient;
@@ -85,7 +85,7 @@ class FileController extends QuarkController
         $status = $request->json('status');
 
         if(empty($id) || empty($status)) {
-            return $this->error('参数错误！');
+            return error('参数错误！');
         }
 
         $query = File::query();
@@ -102,10 +102,10 @@ class FileController extends QuarkController
             foreach ($files as $key => $file) {
                 // 阿里云存储
                 if(strpos($file->path,'http') !== false) {
-                    $accessKeyId = Helper::getConfig('OSS_ACCESS_KEY_ID');
-                    $accessKeySecret = Helper::getConfig('OSS_ACCESS_KEY_SECRET');
-                    $endpoint = Helper::getConfig('OSS_ENDPOINT');
-                    $bucket = Helper::getConfig('OSS_BUCKET');
+                    $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
+                    $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
+                    $endpoint = web_config('OSS_ENDPOINT');
+                    $bucket = web_config('OSS_BUCKET');
         
                     $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
 
@@ -131,9 +131,9 @@ class FileController extends QuarkController
         $result = $query1->update(['status'=>$status]);
 
         if ($result) {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -145,7 +145,7 @@ class FileController extends QuarkController
      */
     public function upload(Request $request)
     {
-        $ossOpen = Helper::config('OSS_OPEN');
+        $ossOpen = web_config('OSS_OPEN');
 
         if($ossOpen == 1) {
             $driver = 'oss';
@@ -184,7 +184,7 @@ class FileController extends QuarkController
         // 不存在文件，则插入数据库
         if(empty($hasFile)) {
 
-            $saveFileName = Helper::makeRand(40,true).'.'.$ext;
+            $saveFileName = Str::random(40).'.'.$ext;
 
             $path = $file->storeAs('public/uploads/files',$saveFileName);
 
@@ -226,7 +226,7 @@ class FileController extends QuarkController
         $result['size'] = $size;
 
         // 返回数据
-        return $this->success('上传成功！','',$result);
+        return success('上传成功！','',$result);
     }
 
     /**
@@ -239,12 +239,12 @@ class FileController extends QuarkController
     {
         $file = $request->file('file');
 
-        $accessKeyId = Helper::config('OSS_ACCESS_KEY_ID');
-        $accessKeySecret = Helper::config('OSS_ACCESS_KEY_SECRET');
-        $endpoint = Helper::config('OSS_ENDPOINT');
-        $bucket = Helper::config('OSS_BUCKET');
+        $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
+        $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
+        $endpoint = web_config('OSS_ENDPOINT');
+        $bucket = web_config('OSS_BUCKET');
         // 设置自定义域名。
-        $myDomain = Helper::config('OSS_MYDOMAIN');
+        $myDomain = web_config('OSS_MYDOMAIN');
 
         try {
             $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
@@ -272,7 +272,7 @@ class FileController extends QuarkController
             print $e->getMessage();
         }
 
-        $object = 'files/'.Helper::makeRand(40,true).'.'.$file->getClientOriginalExtension();
+        $object = 'files/'.Str::random(40).'.'.$file->getClientOriginalExtension();
         $content = file_get_contents($file->getRealPath());
 
         $md5 = md5($content);
@@ -290,7 +290,7 @@ class FileController extends QuarkController
             } catch (OssException $e) {
                 $ossResult = $e->getMessage();
                 // 返回数据
-                return $this->error('上传失败！');
+                return error('上传失败！');
             }
 
             // 数据
@@ -339,7 +339,7 @@ class FileController extends QuarkController
         $result['size'] = $size;
 
         // 返回数据
-        return $this->success('上传成功！','',$result);
+        return success('上传成功！','',$result);
     }
 
     /**
@@ -353,13 +353,13 @@ class FileController extends QuarkController
         $id = $request->get('id');
 
         if(empty($id)) {
-            return $this->error('参数错误！');
+            return error('参数错误！');
         }
 
         $file = File::where('id',$id)->first();
 
         if(empty($file)) {
-            return $this->error('文件不存在！');
+            return error('文件不存在！');
         }
 
         if(strpos($file['path'],'http') !== false) {

@@ -30,7 +30,7 @@ class UpgradeController extends Controller
             }
         }
 
-        return $this->success('获取成功！','',$result);
+        return success('获取成功！','',$result);
     }
 
     /**
@@ -50,9 +50,9 @@ class UpgradeController extends Controller
         $result = Storage::disk('public')->put($path,$file);
 
         if($result) {
-            return $this->success('文件下载成功！','',$path);
+            return success('文件下载成功！','',$path);
         } else {
-            return $this->error('文件下载失败！');
+            return error('文件下载失败！');
         }
     }
 
@@ -77,9 +77,9 @@ class UpgradeController extends Controller
         }
 
         if($result) {
-            return $this->success('文件解压成功！');
+            return success('文件解压成功！');
         } else {
-            return $this->error('文件解压失败！');
+            return error('文件解压失败！');
         }
     }
 
@@ -104,7 +104,7 @@ class UpgradeController extends Controller
             Helper::copyFileToDir(storage_path('app/').'public/uploads/files/fullstack-backend-'.$version.'/'.$value,base_path());
         }
 
-        return $this->success('程序更新成功！');
+        return success('程序更新成功！');
     }
 
     /**
@@ -116,9 +116,9 @@ class UpgradeController extends Controller
         $result = Artisan::call('migrate');
 
         if($result !== false) {
-            return $this->success('数据库更新成功！','',$result);
+            return success('数据库更新成功！','',$result);
         } else {
-            return $this->error('数据库更新失败！',$result);
+            return error('数据库更新失败！',$result);
         }
     }
 
@@ -139,9 +139,9 @@ class UpgradeController extends Controller
         $result = Artisan::call('config:clear');
 
         if($result !== false) {
-            return $this->success('更新成功！');
+            return success('更新成功！');
         } else {
-            return $this->error('更新失败！');
+            return error('更新失败！');
         }
     }
 }

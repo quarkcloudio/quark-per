@@ -3,7 +3,6 @@
 namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
-use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\ActionLog;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use App\User;

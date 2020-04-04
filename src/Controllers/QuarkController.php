@@ -79,7 +79,7 @@ class QuarkController extends Controller
         ->breadcrumb($this->breadcrumb())
         ->body($table->render());
 
-        return $this->success('获取成功！','',$content);
+        return success('获取成功！','',$content);
     }
 
     /**
@@ -94,7 +94,7 @@ class QuarkController extends Controller
         $id = $request->get('id');
 
         if(empty($id)) {
-            return $this->error('参数错误！');
+            return error('参数错误！');
         }
 
         $show = $this->detail($id);
@@ -106,7 +106,7 @@ class QuarkController extends Controller
         ->breadcrumb($this->breadcrumb())
         ->body($show->render());
 
-        return $this->success('获取成功！','',$content);
+        return success('获取成功！','',$content);
 
     }
 
@@ -128,7 +128,7 @@ class QuarkController extends Controller
         ->breadcrumb($this->breadcrumb())
         ->body(['form'=>$form->render()]);
 
-        return $this->success('获取成功！','',$content);
+        return success('获取成功！','',$content);
     }
 
     /**
@@ -149,9 +149,9 @@ class QuarkController extends Controller
         $url = "/quark/engine?api=".$action."&component=table";
 
         if($result['status'] == 'success') {
-            return $this->success('操作成功！',$url);
+            return success('操作成功！',$url);
         } else {
-            return $this->error($result['msg']);
+            return error($result['msg']);
         }
     }
 
@@ -167,7 +167,7 @@ class QuarkController extends Controller
         $id = $request->get('id');
 
         if(empty($id)) {
-            return $this->error('参数错误！');
+            return error('参数错误！');
         }
 
         $form = $this->form()->edit($id);
@@ -179,7 +179,7 @@ class QuarkController extends Controller
         ->breadcrumb($this->breadcrumb())
         ->body(['form'=>$form->render()]);
 
-        return $this->success('获取成功！','',$content);
+        return success('获取成功！','',$content);
     }
 
     /**
@@ -200,9 +200,9 @@ class QuarkController extends Controller
         $url = "/quark/engine?api=".$action."&component=table";
 
         if($result['status'] == 'success') {
-            return $this->success('操作成功！',$url);
+            return success('操作成功！',$url);
         } else {
-            return $this->error($result['msg']);
+            return error($result['msg']);
         }
     }
 
@@ -218,9 +218,9 @@ class QuarkController extends Controller
         $result = $this->table()->action();
 
         if($result['status'] == 'success') {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error($result['msg']);
+            return error($result['msg']);
         }
     }
 
@@ -236,9 +236,9 @@ class QuarkController extends Controller
         $result = $this->form()->destroy();
 
         if($result) {
-            return $this->success('删除成功！');
+            return success('删除成功！');
         } else {
-            return $this->error('删除失败！');
+            return error('删除失败！');
         }
     }
 
@@ -250,9 +250,9 @@ class QuarkController extends Controller
     {
 
         if($result !== false) {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 }

@@ -4,7 +4,6 @@ namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Config;
-use QuarkCMS\QuarkAdmin\Helper;
 use DB;
 use Cache;
 use Str;
@@ -100,7 +99,7 @@ class ConfigController extends QuarkController
         ->title($this->title())
         ->body(['form'=>$form->render()]);
 
-        return $this->success('获取成功！','',$content);
+        return success('获取成功！','',$content);
     }
 
     /**
@@ -119,7 +118,7 @@ class ConfigController extends QuarkController
         $envPath = base_path() . DIRECTORY_SEPARATOR . '.env';
 
         if(!is_writable($envPath)) {
-            return $this->error('操作失败，请检查.env文件是否具有写入权限');
+            return error('操作失败，请检查.env文件是否具有写入权限');
         }
 
         $result = true;
@@ -150,7 +149,7 @@ class ConfigController extends QuarkController
                     ];
                 }
 
-                Helper::modifyEnv($data);
+                modify_env($data);
             }
 
             $getResult = Config::where('name',$key)->update(['value'=>$value]);
@@ -160,9 +159,9 @@ class ConfigController extends QuarkController
         }
 
         if ($result) {
-            return $this->success('操作成功！','');
+            return success('操作成功！','');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 

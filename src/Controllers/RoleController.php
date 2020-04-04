@@ -125,7 +125,7 @@ class RoleController extends QuarkController
         $menuIds       =   $request->json('menu_ids');
         
         if (empty($name)) {
-            return $this->error('角色名称必须填写！');
+            return error('角色名称必须填写！');
         }
 
         $data['name'] = $name;
@@ -141,9 +141,9 @@ class RoleController extends QuarkController
         $result = $role->syncPermissions(array_filter(array_unique($permissions)));
 
         if ($result) {
-            return $this->success('操作成功！','/quark/engine?api=/admin/role/index&component=table');
+            return success('操作成功！','/quark/engine?api=/admin/role/index&component=table');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -160,11 +160,11 @@ class RoleController extends QuarkController
         $menuIds       =   $request->json('menu_ids');
         
         if (empty($id)) {
-            return $this->error('参数错误！');
+            return error('参数错误！');
         }
 
         if (empty($name)) {
-            return $this->error('角色名称必须填写！');
+            return error('角色名称必须填写！');
         }
 
         $data['name'] = $name;
@@ -180,9 +180,9 @@ class RoleController extends QuarkController
         $result1 = Role::where('id',$id)->first()->syncPermissions(array_filter(array_unique($permissions)));
 
         if ($result && $result1) {
-            return $this->success('操作成功！','/quark/engine?api=/admin/role/index&component=table');
+            return success('操作成功！','/quark/engine?api=/admin/role/index&component=table');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 }
