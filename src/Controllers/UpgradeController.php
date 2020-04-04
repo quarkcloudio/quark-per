@@ -41,6 +41,7 @@ class UpgradeController extends Controller
     {
         $version   = $request->get('version');
 
+        //https://mirrors.aliyun.com/composer/dists/quarkcms/quark-cms/2c16aface7def659a67d3b22bf2965b0e80d420e.zip
         $url ='https://dev.tencent.com/u/tangtanglove/p/fullstack-backend/git/archive/'.$version.'.zip';
         $file = Helper::curl($url,false,'get',false,1);
 
@@ -134,7 +135,7 @@ class UpgradeController extends Controller
             'APP_VERSION' => $version
         ];
 
-        Helper::modifyEnv($data);
+        modify_env($data);
 
         $result = Artisan::call('config:clear');
 
