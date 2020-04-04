@@ -1,0 +1,22 @@
+<?php
+
+namespace DummyNamespace;
+
+use QuarkCMS\QuarkAdmin\Helper;
+use QuarkCMS\QuarkAdmin\Models\Admin;
+use QuarkCMS\QuarkAdmin\Controllers\QuarkController;
+use Quark;
+
+class DashboardController extends QuarkController
+{
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function index()
+    {
+        $result['app_version'] = config('quark.version');
+        return $this->success('获取成功！','',$result);
+    }
+}

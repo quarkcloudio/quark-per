@@ -9,6 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Input;
 use Quark;
 use Str;
+use Artisan;
 
 class QuarkController extends Controller
 {
@@ -238,6 +239,20 @@ class QuarkController extends Controller
             return $this->success('删除成功！');
         } else {
             return $this->error('删除失败！');
+        }
+    }
+
+    /**
+     * 应用信息
+     * @author  tangtanglove <dai_hang_love@126.com>
+     */
+    public function appInfo(Request $request)
+    {
+
+        if($result !== false) {
+            return $this->success('操作成功！');
+        } else {
+            return $this->error('操作失败！');
         }
     }
 }

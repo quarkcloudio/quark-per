@@ -7,53 +7,13 @@ use Illuminate\Support\Facades\Storage;
 use QuarkCMS\QuarkAdmin\Helper;
 use Artisan;
 
-class DashboardController extends Controller
+class UpgradeController extends Controller
 {
-    /**
-     * Show the application dashboard.
-     *
-     * @return \Illuminate\Contracts\Support\Renderable
-     */
-    public function index()
-    {
-
-        $result['app_version'] = config('quark.version');
-
-        return $this->success('获取成功！','',$result);
-    }
-
-    /**
-     * 清空缓存
-     * @author  tangtanglove <dai_hang_love@126.com>
-     */
-    public function clearCache(Request $request)
-    {
-        $result = Artisan::call('config:clear');
-
-        if($result !== false) {
-            return $this->success('操作成功！');
-        } else {
-            return $this->error('操作失败！');
-        }
-    }
-
-    // 获取当前年月的开始与结束日期
-    protected function getMonth($month,$type)
-    {
-        $startDate = date("Y-".$month."-01 00:00:00");
-        $endDate = date('Y-m-d', mktime(23, 59, 59, date('m', strtotime($startDate))+1, 00));
-        if($type == 1) {
-            return $startDate;
-        } elseif($type == 2) {
-            return $endDate;
-        }
-    }
-
     /**
      * 版本升级
      * @author  tangtanglove <dai_hang_love@126.com>
      */
-    public function update(Request $request)
+    public function index(Request $request)
     {
         $header['Accept'] = 'application/json';
 
@@ -80,9 +40,6 @@ class DashboardController extends Controller
     public function download(Request $request)
     {
         $version   = $request->get('version');
-
-        // $url = 'https://github.com/tangtanglove/fullstack-backend/archive/'.$version.'.zip';
-        // $file = readfile($url);
 
         $url ='https://dev.tencent.com/u/tangtanglove/p/fullstack-backend/git/archive/'.$version.'.zip';
         $file = Helper::curl($url,false,'get',false,1);

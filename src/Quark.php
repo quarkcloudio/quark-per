@@ -80,18 +80,21 @@ class Quark
             'middleware' => config('quark.route.middleware'),
         ];
 
+        Route::get('admin/appInfo', 'QuarkCMS\\QuarkAdmin\\Controllers\\QuarkController@appInfo')->name('api/admin/quark/appInfo');
+        Route::get('admin/captcha', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@captcha')->name('api/admin/captcha');
+        Route::post('admin/login', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@login')->name('api/admin/login');
+        Route::any('admin/logout', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@logout')->name('api/admin/logout');
+
         app('router')->group($attributes, function ($router) {
 
             $router->namespace('\QuarkCMS\QuarkAdmin\Controllers')->group(function ($router) {
                 
-                $router->get('admin/dashboard/index', 'DashboardController@index')->name('api/admin/dashboard/index');
-                $router->get('admin/dashboard/clearCache', 'DashboardController@clearCache')->name('api/admin/dashboard/clearCache');
-                $router->get('admin/dashboard/update', 'DashboardController@update')->name('api/admin/dashboard/update');
-                $router->get('admin/dashboard/download', 'DashboardController@download')->name('api/admin/dashboard/download');
-                $router->get('admin/dashboard/extract', 'DashboardController@extract')->name('api/admin/dashboard/extract');
-                $router->get('admin/dashboard/updateFile', 'DashboardController@updateFile')->name('api/admin/dashboard/updateFile');
-                $router->get('admin/dashboard/updateDatabase', 'DashboardController@updateDatabase')->name('api/admin/dashboard/updateDatabase');
-                $router->get('admin/dashboard/finish', 'DashboardController@finish')->name('api/admin/dashboard/finish');
+                $router->get('admin/upgrade/index', 'UpgradeController@index')->name('api/admin/upgrade/index');
+                $router->get('admin/upgrade/download', 'UpgradeController@download')->name('api/admin/upgrade/download');
+                $router->get('admin/upgrade/extract', 'UpgradeController@extract')->name('api/admin/upgrade/extract');
+                $router->get('admin/upgrade/updateFile', 'UpgradeController@updateFile')->name('api/admin/upgrade/updateFile');
+                $router->get('admin/upgrade/updateDatabase', 'UpgradeController@updateDatabase')->name('api/admin/upgrade/updateDatabase');
+                $router->get('admin/upgrade/finish', 'UpgradeController@finish')->name('api/admin/upgrade/finish');
                 
                 $router->any('admin/account/info', 'AccountController@info')->name('api/admin/account/info');
                 $router->post('admin/account/profile', 'AccountController@profile')->name('api/admin/account/profile');
@@ -154,10 +157,6 @@ class Quark
                 $router->post('admin/file/action', 'FileController@action')->name('api/admin/file/action');
                 $router->post('admin/file/delete', 'FileController@delete')->name('api/admin/file/delete');
             });
-
-            Route::get('admin/captcha', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@captcha')->name('api/admin/captcha');
-            Route::post('admin/login', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@login')->name('api/admin/login');
-            Route::any('admin/logout', 'QuarkCMS\\QuarkAdmin\\Controllers\\Auth\\AdminLoginController@logout')->name('api/admin/logout');
         });
     }
 }

@@ -10,5 +10,14 @@ Route::group([
     'middleware'    => config('quark.route.middleware'),
 ], function (Router $router) {
 
-    $router->get('/', 'HomeController@index')->name('admin.home');
+    $router->get('admin/dashboard/index', 'DashboardController@index')->name('api/admin/dashboard/index');
+
+    $router->get('admin/example/index', 'ExampleController@index')->name('api/admin/example/index');
+    $router->get('admin/example/show', 'ExampleController@show')->name('api/admin/example/show');
+    $router->get('admin/example/create', 'ExampleController@create')->name('api/admin/example/create');
+    $router->post('admin/example/store', 'ExampleController@store')->name('api/admin/example/store');
+    $router->get('admin/example/edit', 'ExampleController@edit')->name('api/admin/example/edit');
+    $router->post('admin/example/update', 'ExampleController@update')->name('api/admin/example/update');
+    $router->any('admin/example/action', 'ExampleController@action')->name('api/admin/example/action');
+    $router->post('admin/example/destroy', 'ExampleController@destroy')->name('api/admin/example/destroy');
 });

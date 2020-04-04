@@ -1,0 +1,13 @@
+<?php
+
+namespace DummyNamespace;
+
+use QuarkCMS\QuarkAdmin\Helper;
+use QuarkCMS\QuarkAdmin\Controllers\UpgradeController;
+
+class UpgradeController extends UpgradeController
+{
+    /**
+     * 自定义版本升级计划
+     */
+}
