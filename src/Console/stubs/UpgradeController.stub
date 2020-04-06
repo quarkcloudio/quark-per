@@ -2,12 +2,13 @@
 
 namespace DummyNamespace;
 
-use QuarkCMS\QuarkAdmin\Helper;
-use QuarkCMS\QuarkAdmin\Controllers\UpgradeController;
+use QuarkCMS\QuarkAdmin\Controllers\UpgradeController as Controller;
 
-class UpgradeController extends UpgradeController
+class UpgradeController extends Controller
 {
     /**
      * 自定义版本升级计划
      */
+    
+    public $packageName = 'quarkcms/quark-cms';
 }

@@ -12,6 +12,13 @@ Route::group([
 
     $router->get('admin/dashboard/index', 'DashboardController@index')->name('api/admin/dashboard/index');
 
+    $router->get('admin/upgrade/index', 'UpgradeController@index')->name('api/admin/upgrade/index');
+    $router->get('admin/upgrade/download', 'UpgradeController@download')->name('api/admin/upgrade/download');
+    $router->get('admin/upgrade/extract', 'UpgradeController@extract')->name('api/admin/upgrade/extract');
+    $router->get('admin/upgrade/updateFile', 'UpgradeController@updateFile')->name('api/admin/upgrade/updateFile');
+    $router->get('admin/upgrade/updateDatabase', 'UpgradeController@updateDatabase')->name('api/admin/upgrade/updateDatabase');
+    $router->get('admin/upgrade/finish', 'UpgradeController@finish')->name('api/admin/upgrade/finish');
+
     $router->get('admin/example/index', 'ExampleController@index')->name('api/admin/example/index');
     $router->get('admin/example/show', 'ExampleController@show')->name('api/admin/example/show');
     $router->get('admin/example/create', 'ExampleController@create')->name('api/admin/example/create');

@@ -4,8 +4,9 @@ namespace QuarkCMS\QuarkAdmin\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use QuarkCMS\QuarkAdmin\Helper;
+use GuzzleHttp\Client;
 use Artisan;
+use Arr;
 
 class UpgradeController extends Controller
 {
@@ -15,18 +16,20 @@ class UpgradeController extends Controller
      */
     public function index(Request $request)
     {
-        $header['Accept'] = 'application/json';
+        $client = new Client();
+        $getContent = $client->request('GET', 'https://repo.packagist.org/p/'.$this->packageName.'.json')->getBody()->getContents();
 
-        $repository = json_decode(Helper::curl('https://api.github.com/repos/tangtanglove/fullstack-backend/releases/latest?access_token='.base64_decode('YWM1MWIzYWQ5NjMzMGNlNGZlMTMyYTVhNWY4MDM2ZWEyM2QwY2ZjMw=='),false,'get',$header,1),true);
+        $content = json_decode($getContent, true);
+        $packages = Arr::sort($content['packages'][$this->packageName]);
 
-        $result['app_version'] = config('app.version');
-        $result['repository'] = $repository;
+        cache(['packages' => $packages], 3600);
 
-        $result['can_update'] = false;
-
-        if(isset($repository['name'])) {
-            if($repository['name'] != $result['app_version']) {
-                $result['can_update'] = true;
+        $result['app_version'] = config('quark.version');
+        foreach ($packages as $key => $value) {
+            if($value['version'] > config('quark.version')) {
+                $result['can_upgrade'] = true;
+                $result['next_package'] = $value;
+                break;
             }
         }
 
@@ -41,9 +44,18 @@ class UpgradeController extends Controller
     {
         $version   = $request->get('version');
 
-        //https://mirrors.aliyun.com/composer/dists/quarkcms/quark-cms/2c16aface7def659a67d3b22bf2965b0e80d420e.zip
-        $url ='https://dev.tencent.com/u/tangtanglove/p/fullstack-backend/git/archive/'.$version.'.zip';
-        $file = Helper::curl($url,false,'get',false,1);
+        $packages = cache('packages');
+
+        foreach ($packages as $key => $value) {
+            if($value['version'] == $version) {
+                $reference = $value['dist']['reference'];
+                break;
+            }
+        }
+
+        $url ='https://mirrors.aliyun.com/composer/dists/'.$this->packageName.'/'.$reference.'.zip';
+        $client = new Client();
+        $file = $client->request('GET', $url)->getBody()->getContents();
 
         // 默认本地上传
         $path = 'uploads/files/'.$version.".zip";
@@ -66,7 +78,7 @@ class UpgradeController extends Controller
         $version   = $request->get('version');
 
         $path = storage_path('app/').'public/uploads/files/'.$version.".zip";
-        $outPath = storage_path('app/').'public/uploads/files/';
+        $outPath = storage_path('app/').'public/uploads/files/'.$version.'/';
 
         $zip = new \ZipArchive();
 
@@ -92,17 +104,19 @@ class UpgradeController extends Controller
     {
         $version   = $request->get('version');
 
-        $path = storage_path('app/').'public/uploads/files/fullstack-backend-'.$version;
+        $path = storage_path('app/').'public/uploads/files/'.$version;
 
-        $dirs = Helper::getDir($path);
-        $files = Helper::getFileLists($path);
+        $dirs = get_folder_dirs($path);
 
-        foreach ($dirs as $key => $value) {
-            Helper::copyDirToDir(storage_path('app/').'public/uploads/files/fullstack-backend-'.$version.'/'.$value,base_path());
+        $appDirs = get_folder_dirs($path.'/'.$dirs[0]);
+        $appFiles = get_folder_files($path.'/'.$dirs[0]);
+
+        foreach ($appDirs as $key => $value) {
+            copy_dir_to_folder($path.'/'.$dirs[0].'/'.$value,base_path());
         }
 
-        foreach ($files as $key => $value) {
-            Helper::copyFileToDir(storage_path('app/').'public/uploads/files/fullstack-backend-'.$version.'/'.$value,base_path());
+        foreach ($appFiles as $key => $value) {
+            copy_file_to_folder($path.'/'.$dirs[0].'/'.$value,base_path());
         }
 
         return success('程序更新成功！');

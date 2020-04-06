@@ -248,9 +248,16 @@ class QuarkController extends Controller
      */
     public function appInfo(Request $request)
     {
+        $logo = null;
+        if(web_config('WEB_SITE_LOGO')) {
+            $logo = get_picture(web_config('WEB_SITE_LOGO'));
+        }
+        $webInfo['logo'] = $logo;
+        $webInfo['name'] = web_config('WEB_SITE_NAME');
+        $webInfo['description'] = web_config('WEB_SITE_DESCRIPTION');
 
-        if($result !== false) {
-            return success('操作成功！');
+        if($webInfo) {
+            return success('操作成功！','',$webInfo);
         } else {
             return error('操作失败！');
         }

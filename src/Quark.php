@@ -89,13 +89,6 @@ class Quark
 
             $router->namespace('\QuarkCMS\QuarkAdmin\Controllers')->group(function ($router) {
                 
-                $router->get('admin/upgrade/index', 'UpgradeController@index')->name('api/admin/upgrade/index');
-                $router->get('admin/upgrade/download', 'UpgradeController@download')->name('api/admin/upgrade/download');
-                $router->get('admin/upgrade/extract', 'UpgradeController@extract')->name('api/admin/upgrade/extract');
-                $router->get('admin/upgrade/updateFile', 'UpgradeController@updateFile')->name('api/admin/upgrade/updateFile');
-                $router->get('admin/upgrade/updateDatabase', 'UpgradeController@updateDatabase')->name('api/admin/upgrade/updateDatabase');
-                $router->get('admin/upgrade/finish', 'UpgradeController@finish')->name('api/admin/upgrade/finish');
-                
                 $router->any('admin/account/info', 'AccountController@info')->name('api/admin/account/info');
                 $router->post('admin/account/profile', 'AccountController@profile')->name('api/admin/account/profile');
                 $router->post('admin/account/password', 'AccountController@password')->name('api/admin/account/password');

@@ -238,7 +238,7 @@ class Form
             if($item->component == 'image') {
                 if(count(explode('[',$data[$item->name]))>1) {
                     $getImages = json_decode($data[$item->name],true);
-                    $images = [];
+                    $images = null;
                     foreach ($getImages as $key => $value) {
                         $image['id'] = $value;
                         $image['uid'] = $value;
@@ -249,10 +249,13 @@ class Form
                     }
                     $data[$item->name] = $images;
                 } else {
-                    $image['id'] = $data[$item->name];
-                    $image['name'] = get_picture($data[$item->name],0,'name');
-                    $image['size'] = get_picture($data[$item->name],0,'size');
-                    $image['url'] = get_picture($data[$item->name],0,'path');
+                    $image = null;
+                    if($data[$item->name]) {
+                        $image['id'] = $data[$item->name];
+                        $image['name'] = get_picture($data[$item->name],0,'name');
+                        $image['size'] = get_picture($data[$item->name],0,'size');
+                        $image['url'] = get_picture($data[$item->name],0,'path');
+                    }
                     $data[$item->name] = $image;
                 }
             }

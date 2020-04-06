@@ -2,12 +2,10 @@
 
 namespace DummyNamespace;
 
-use QuarkCMS\QuarkAdmin\Helper;
-use QuarkCMS\QuarkAdmin\Models\Admin;
-use QuarkCMS\QuarkAdmin\Controllers\QuarkController;
+use App\Http\Controllers\Controller;
 use Quark;
 
-class DashboardController extends QuarkController
+class DashboardController extends Controller
 {
     /**
      * Show the application dashboard.
@@ -17,6 +15,6 @@ class DashboardController extends QuarkController
     public function index()
     {
         $result['app_version'] = config('quark.version');
-        return $this->success('获取成功！','',$result);
+        return success('获取成功！','',$result);
     }
 }

@@ -13,7 +13,7 @@ return [
     | login page.
     |
     */
-    'name' => 'Quark-Admin',
+    'name' => env('APP_NAME', 'Quark-Admin'),
 
     /*
     |--------------------------------------------------------------------------

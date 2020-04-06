@@ -44,9 +44,20 @@ class ConfigController extends QuarkController
                                 ->value($config['value']);
                                 break;
                             case 'file':
+                                $files = null;
+                                if($config['value']) {
+                                    $file['id'] = $config['value'];
+                                    $file['uid'] = $config['value'];
+                                    $file['name'] = get_file($config['value'],'name');
+                                    $file['size'] = get_file($config['value'],'size');
+                                    $file['url'] = get_file($config['value'],'path');
+                                    $files[] = $file;
+                                }
+
                                 $form->file($config['name'],$config['title'])
                                 ->extra($config['remark'])
-                                ->button('上传'.$config['title']);
+                                ->button('上传'.$config['title'])
+                                ->value($files);
 
                                 break;
                             case 'textarea':
@@ -66,9 +77,18 @@ class ConfigController extends QuarkController
                                 break;
                             case 'picture':
 
+                                $image = null;
+                                if($config['value']) {
+                                    $image['id'] = $config['value'];
+                                    $image['name'] = get_picture($config['value'],0,'name');
+                                    $image['size'] = get_picture($config['value'],0,'size');
+                                    $image['url'] = get_picture($config['value'],0,'path');
+                                }
+
                                 $form->image($config['name'],$config['title'])
                                 ->extra($config['remark'])
-                                ->button('上传'.$config['name']);
+                                ->button('上传'.$config['name'])
+                                ->value($image);
 
                                 break;
                             default:
@@ -128,14 +148,6 @@ class ConfigController extends QuarkController
             Cache::pull($key);
 
             $config = Config::where('name',$key)->first();
-
-            if(($config['type'] == 'file')) {
-                if($value) {
-                    $value = $value[0];
-                } else {
-                    $value = null;
-                }
-            }
 
             if($config['name'] == 'APP_DEBUG') {
 

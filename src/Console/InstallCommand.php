@@ -72,11 +72,13 @@ class InstallCommand extends Command
         $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
         $this->createExampleController();
+        $this->createDashboardController();
+        $this->createUpgradeController();
         $this->createRoutesFile();
     }
 
     /**
-     * Create HomeController.
+     * Create ExampleController.
      *
      * @return void
      */
@@ -90,6 +92,41 @@ class InstallCommand extends Command
             str_replace('DummyNamespace', config('quark.route.namespace'), $contents)
         );
         $this->line('<info>ExampleController file was created:</info> '.str_replace(base_path(), '', $exampleController));
+    }
+
+    /**
+     * Create DashboardController.
+     *
+     * @return void
+     */
+    public function createDashboardController()
+    {
+        $controller = $this->directory.'/DashboardController.php';
+        $contents = $this->getStub('DashboardController');
+
+        $this->laravel['files']->put(
+            $controller,
+            str_replace('DummyNamespace', config('quark.route.namespace'), $contents)
+        );
+        $this->line('<info>DashboardController file was created:</info> '.str_replace(base_path(), '', $controller));
+    }
+
+
+    /**
+     * Create UpgradeController.
+     *
+     * @return void
+     */
+    public function createUpgradeController()
+    {
+        $controller = $this->directory.'/UpgradeController.php';
+        $contents = $this->getStub('UpgradeController');
+
+        $this->laravel['files']->put(
+            $controller,
+            str_replace('DummyNamespace', config('quark.route.namespace'), $contents)
+        );
+        $this->line('<info>UpgradeController file was created:</info> '.str_replace(base_path(), '', $controller));
     }
 
     /**

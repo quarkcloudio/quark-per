@@ -237,9 +237,9 @@ class ExampleController extends QuarkController
         $result = $admin->syncRoles($roleIds);
 
         if ($result) {
-            return $this->success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
+            return success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -255,7 +255,7 @@ class ExampleController extends QuarkController
         $requestData    =   json_decode($requestJson,true);
 
         if(!isset($requestData['role_ids'])) {
-            return $this->error('请选择角色');
+            return error('请选择角色');
         }
 
         $roleIds = $requestData['role_ids'];
@@ -302,7 +302,7 @@ class ExampleController extends QuarkController
                 }
             }
 
-            return $this->error($errorMsg);
+            return error($errorMsg);
         }
 
         if (!empty($requestData['password'])) {
@@ -321,9 +321,9 @@ class ExampleController extends QuarkController
         $result1 = Admin::where('id',$requestData['id'])->first()->syncRoles($roleIds);
 
         if ($result) {
-            return $this->success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
+            return success('操作成功！','/quark/engine?api=admin/admin/index&component=table');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
