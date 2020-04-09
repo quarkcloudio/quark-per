@@ -131,8 +131,6 @@ class AdminController extends QuarkController
         ->options(['1' => '男', '2'=> '女'])
         ->default(1);
 
-        $form->datetime('created_at','时间');
-
         $form->text('email','邮箱')
         ->rules(['required','email','max:255'],['required'=>'邮箱必须填写','email'=>'邮箱格式错误','max'=>'邮箱不能超过255个字符'])
         ->creationRules(["unique:admins"],['unique'=>'邮箱已经存在',])
