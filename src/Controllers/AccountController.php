@@ -29,9 +29,9 @@ class AccountController extends QuarkController
             } else {
                 $admin['avatar'] = '//'.$_SERVER['HTTP_HOST'].'/images/user.png';
             }
-            return $this->success('获取成功！','',$admin);
+            return success('获取成功！','',$admin);
         } else {
-            return $this->error('获取失败！');
+            return error('获取失败！');
         }
     }
 
@@ -75,15 +75,15 @@ class AccountController extends QuarkController
                 }
             }
 
-            return $this->error($errorMsg);
+            return error($errorMsg);
         }
 
         $result = Admin::where('id',ADMINID)->update($requestData);
 
         if(!empty($result)) {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
@@ -131,21 +131,21 @@ class AccountController extends QuarkController
                 }
             }
 
-            return $this->error($errorMsg);
+            return error($errorMsg);
         }
 
         $adminInfo = Admin::where('id',ADMINID)->first();
 
         if(!Hash::check($requestData['oldPassword'], $adminInfo->password)) {
-            return $this->error('原密码错误！');
+            return error('原密码错误！');
         }
 
         $result = Admin::where('id',ADMINID)->update(['password' => bcrypt($requestData['password'])]);
 
         if(!empty($result)) {
-            return $this->success('操作成功！');
+            return success('操作成功！');
         } else {
-            return $this->error('操作失败！');
+            return error('操作失败！');
         }
     }
 
