@@ -6,13 +6,13 @@ use QuarkCMS\QuarkAdmin\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
-class RangePicker extends Item
+class DatetimeRange extends Item
 {
     public  $format,
             $showTime;
 
     function __construct($name,$label = '') {
-        $this->component = 'rangePicker';
+        $this->component = 'datetimeRange';
         $this->name = $name;
 
         if(empty($label) || !count($label)) {

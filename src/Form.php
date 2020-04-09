@@ -37,7 +37,7 @@ class Form
         'switch' => Form\Fields\SwitchField::class,
         'icon' => Form\Fields\Icon::class,
         'datetime' => Form\Fields\Datetime::class,
-        'rangePicker' => Form\Fields\RangePicker::class,
+        'datetimeRange' => Form\Fields\DatetimeRange::class,
         'editor' => Form\Fields\Editor::class,
     ];
 
