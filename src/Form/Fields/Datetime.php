@@ -25,7 +25,6 @@ class Datetime extends Item
         $this->format = 'YYYY-MM-DD HH:mm:ss';
         $showTime['format'] = 'HH:mm:ss';
         $this->showTime = $showTime;
-        $this->value = date('Y-m-d H:i:s');
     }
 
     /**

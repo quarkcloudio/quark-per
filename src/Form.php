@@ -632,7 +632,6 @@ class Form
                     if(isset($item->defaultValue)) {
                         $data[$item->name] = $item->defaultValue;
                     }
-    
                     if(isset($item->value)) {
                         $this->form['data'][$item->name] = $item->value;
                     }
