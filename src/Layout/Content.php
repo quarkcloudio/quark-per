@@ -6,7 +6,10 @@ class Content
 {
     public  $content;
 
+    protected $row;
+
     function __construct() {
+        $this->row = new Row;
         $this->content['title'] = false;
         $this->content['subTitle'] = false;
         $this->content['description'] = false;
@@ -44,9 +47,11 @@ class Content
         return $this;
     }
 
-    public function row($row)
+    public function row($callback = null)
     {
-        $this->content['row'] = $row;
+        $callback($this->row);
+
+        $this->content['row'][] = $this->row;
         return $this;
     }
 }
