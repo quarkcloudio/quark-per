@@ -14,6 +14,38 @@ class DashboardController extends Controller
      */
     public function index()
     {
+
+        $content = Quark::content();
+
+        $content->row(function ($row) {
+
+            $row->col(4, function ($col) {
+                $col->text('111');
+                $col->text('222');
+            });
+        
+            $row->col(8, function ($col) {
+                $col->row(function($row) {
+                    $row->text('333');
+                    $row->text('444');
+                });
+                $col->row(function($row) {
+                    $row->text('555');
+                    $row->text('666');
+                });
+                $col->row(function($row) {
+                    $row->col(6, function ($col) {
+                        $col->text('777');
+                        $col->text('888');
+                    });
+                    $row->col(6, function ($col) {
+                        $col->text('999');
+                        $col->text('100');
+                    });
+                });
+            });
+        });
+
         $result['app_version'] = config('quark.version');
         return success('获取成功！','',$result);
     }

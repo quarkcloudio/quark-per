@@ -5,20 +5,12 @@ use Illuminate\Support\Arr;
 
 class Col
 {
-    public $span;
-    public $row = null;
-    public $content = null;
+    public $component = null;
 
     function __construct($span,$callback = null) {
+        $this->component['span'] = $span;
+        $callback($this);
 
-        if(gettype($callback) == 'object') {
-            $callback($this);
-        } else {
-            $this->content = $callback;
-        }
-
-        $this->span = $span;
-        
         return $this;
     }
 
@@ -29,6 +21,7 @@ class Col
      */
     public static $availableFields = [
         'row' => Row::class,
+        'text'=> Text::class
     ];
 
     /**
@@ -56,8 +49,8 @@ class Col
             $content = Arr::get($arguments, 0, ''); //[0];
             $element = new $className($content);
 
-            $this->row[] = $element;
-
+            $this->component['name'] = 'col';
+            $this->component['items'][]= $element;
             return $element;
         }
     }

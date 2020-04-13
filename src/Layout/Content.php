@@ -1,15 +1,13 @@
 <?php
 
 namespace QuarkCMS\QuarkAdmin\Layout;
+use Illuminate\Support\Arr;
 
 class Content
 {
     public  $content;
 
-    protected $row;
-
     function __construct() {
-        $this->row = new Row;
         $this->content['title'] = false;
         $this->content['subTitle'] = false;
         $this->content['description'] = false;
@@ -47,11 +45,45 @@ class Content
         return $this;
     }
 
-    public function row($callback = null)
-    {
-        $callback($this->row);
+    /**
+     * Available fields.
+     *
+     * @var array
+     */
+    public static $availableFields = [
+        'row' => Row::class,
+    ];
 
-        $this->content['row'][] = $this->row;
-        return $this;
+    /**
+     * Find field class.
+     *
+     * @param string $method
+     *
+     * @return bool|mixed
+     */
+    public static function findFieldClass($method)
+    {
+        $class = Arr::get(static::$availableFields, $method);
+
+        if (class_exists($class)) {
+            return $class;
+        }
+
+        return false;
+    }
+
+    public function __call($method, $arguments)
+    {
+        if ($className = static::findFieldClass($method)) {
+
+            $argument = Arr::get($arguments, 0, ''); //[0];
+            $element = new $className($argument);
+
+            $this->content['body']['component']['name'] = $method;
+
+            $this->content['body']['component']['items'][] = $element;
+
+            return $element;
+        }
     }
 }

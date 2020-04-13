@@ -5,15 +5,11 @@ use Illuminate\Support\Arr;
 
 class Row
 {
-    public $content = null;
-    public $col = null;
+    public $component = null;
 
     function __construct($callback = null) {
-        if(gettype($callback) == 'object') {
-            $callback($this);
-        } else {
-            $this->content = $callback;
-        }
+
+        $callback($this);
         
         return $this;
     }
@@ -25,6 +21,7 @@ class Row
      */
     public static $availableFields = [
         'col' => Col::class,
+        'text'=> Text::class
     ];
 
     /**
@@ -52,7 +49,8 @@ class Row
             $argument = Arr::get($arguments, 1, ''); //[1];
             $element = new $className($span, $argument);
 
-            $this->col[] = $element;
+            $this->component['name'] = 'row';
+            $this->component['items'][]= $element;
             return $element;
         }
     }
