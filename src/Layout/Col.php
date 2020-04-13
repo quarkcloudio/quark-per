@@ -6,18 +6,20 @@ use Illuminate\Support\Arr;
 class Col
 {
     public $span;
-    public $content;
+    public $row = null;
+    public $content = null;
 
     function __construct($span,$callback = null) {
 
-        if ($callback instanceof Closure) {
-            $callback($this->row);
+        if(gettype($callback) == 'object') {
+            $callback($this);
         } else {
-            $content = Arr::get($callback, 0, '');
-            $this->content = $content;
+            $this->content = $callback;
         }
 
         $this->span = $span;
+        
+        return $this;
     }
 
     /**
@@ -51,10 +53,10 @@ class Col
     {
         if ($className = static::findFieldClass($method)) {
 
-            $column = Arr::get($arguments, 0, ''); //[0];
-            $element = new $className($column, array_slice($arguments, 1));
+            $content = Arr::get($arguments, 0, ''); //[0];
+            $element = new $className($content);
 
-            $this->content['row'][] = $element;
+            $this->row[] = $element;
 
             return $element;
         }

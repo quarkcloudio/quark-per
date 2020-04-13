@@ -239,13 +239,15 @@ class Form
                 if(count(explode('[',$data[$item->name]))>1) {
                     $getImages = json_decode($data[$item->name],true);
                     $images = null;
-                    foreach ($getImages as $key => $value) {
-                        $image['id'] = $value;
-                        $image['uid'] = $value;
-                        $image['name'] = get_picture($value,0,'name');
-                        $image['size'] = get_picture($value,0,'size');
-                        $image['url'] = get_picture($value,0,'path');
-                        $images[] = $image;
+                    if($getImages) {
+                        foreach ($getImages as $key => $value) {
+                            $image['id'] = $value;
+                            $image['uid'] = $value;
+                            $image['name'] = get_picture($value,0,'name');
+                            $image['size'] = get_picture($value,0,'size');
+                            $image['url'] = get_picture($value,0,'path');
+                            $images[] = $image;
+                        }
                     }
                     $data[$item->name] = $images;
                 } else {
@@ -262,23 +264,25 @@ class Form
 
             if($item->component == 'file') {
                 $files = null;
-                if(count(explode('[',$data[$item->name]))>1) {
-                    $getFiles = json_decode($data[$item->name],true);
-                    foreach ($getFiles as $key => $value) {
-                        $file['id'] = $value;
-                        $file['uid'] = $value;
-                        $file['name'] = get_file($value,'name');
-                        $file['size'] = get_file($value,'size');
-                        $file['url'] = get_file($value,'path');
+                if($data[$item->name]) {
+                    if(count(explode('[',$data[$item->name]))>1) {
+                        $getFiles = json_decode($data[$item->name],true);
+                        foreach ($getFiles as $key => $value) {
+                            $file['id'] = $value;
+                            $file['uid'] = $value;
+                            $file['name'] = get_file($value,'name');
+                            $file['size'] = get_file($value,'size');
+                            $file['url'] = get_file($value,'path');
+                            $files[] = $file;
+                        }
+                    } else {
+                        $file['id'] = $data[$item->name];
+                        $file['uid'] = $data[$item->name];
+                        $file['name'] = get_file($data[$item->name],'name');
+                        $file['size'] = get_file($data[$item->name],'size');
+                        $file['url'] = get_file($data[$item->name],'path');
                         $files[] = $file;
                     }
-                } else {
-                    $file['id'] = $data[$item->name];
-                    $file['uid'] = $data[$item->name];
-                    $file['name'] = get_file($data[$item->name],'name');
-                    $file['size'] = get_file($data[$item->name],'size');
-                    $file['url'] = get_file($data[$item->name],'path');
-                    $files[] = $file;
                 }
 
                 $data[$item->name] = $files;
