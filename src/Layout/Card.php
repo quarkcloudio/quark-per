@@ -3,12 +3,12 @@
 namespace QuarkCMS\QuarkAdmin\Layout;
 use Illuminate\Support\Arr;
 
-class Col
+class Card
 {
     public $component = null;
 
-    function __construct($span,$callback = null) {
-        $this->component['span'] = $span;
+    function __construct($title,$callback = null) {
+        $this->component['title'] = $title;
         $callback($this);
 
         return $this;
@@ -20,9 +20,7 @@ class Col
      * @var array
      */
     public static $availableFields = [
-        'row' => Row::class,
         'text'=> Text::class,
-        'card'=> Card::class,
         'statistic'=> Statistic::class,
         'table'=> Table::class
     ];
@@ -49,20 +47,9 @@ class Col
     {
         if ($className = static::findFieldClass($method)) {
 
-            if($method == 'row') {
-                $content = Arr::get($arguments, 0, ''); //[0];
-                $element = new $className($content);
-            }
-
             if($method == 'text') {
                 $content = Arr::get($arguments, 0, ''); //[0];
                 $element = new $className($content);
-            }
-
-            if($method == 'card') {
-                $title = Arr::get($arguments, 0, ''); //[0];
-                $argument = Arr::get($arguments, 1, ''); //[1];
-                $element = new $className($title, $argument);
             }
 
             if($method == 'statistic') {
@@ -76,7 +63,7 @@ class Col
                 $element = new $className($content);
             }
 
-            $this->component['name'] = 'col';
+            $this->component['name'] = 'card';
             $this->component['items'][]= $element;
             return $element;
         }

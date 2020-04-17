@@ -10,7 +10,7 @@ class Text
     function __construct($text) {
         
         $this->component['name'] = 'text';
-        $this->component['items'] = $text;
+        $this->component['text'] = $text;
 
         return $this;
     }
