@@ -2,7 +2,6 @@
 
 namespace DummyNamespace;
 
-use QuarkCMS\QuarkAdmin\Helper;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Controllers\QuarkController;
 use Quark;
@@ -349,7 +348,7 @@ class ExampleController extends QuarkController
 
         //渲染前回调
         $show->rendering(function ($show) {
-            $show->data['avatar'] = Helper::getPicture($show->data['avatar']);
+            $show->data['avatar'] = get_picture($show->data['avatar']);
             $show->data['sex'] == 1 ? $show->data['sex'] = '男' : $show->data['sex'] = '女';
 
             if(empty($show->data['last_login_time'])) {
