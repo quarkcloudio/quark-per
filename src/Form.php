@@ -567,7 +567,6 @@ class Form
      */
     protected function setFrontendRules()
     {
-
         if(isset($this->form['tab'])) {
             foreach ($this->form['tab'] as $tabKey => $tab) {
                 if(isset($tab['items'])) {
