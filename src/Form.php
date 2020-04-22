@@ -567,39 +567,80 @@ class Form
      */
     protected function setFrontendRules()
     {
-        if(isset($this->form['items'])) {
-            foreach ($this->form['items'] as $key => $item) {
-                $frontendRules = [];
-                $rules = false;
-                $creationRules = false;
-                $updateRules = false;
-    
-                if(!empty($item->rules)) {
-                    $rules = $this->parseRules($item->rules,$item->ruleMessages);
+
+        if(isset($this->form['tab'])) {
+            foreach ($this->form['tab'] as $tabKey => $tab) {
+                if(isset($tab['items'])) {
+                    foreach ($tab['items'] as $key => $item) {
+                        $frontendRules = [];
+                        $rules = false;
+                        $creationRules = false;
+                        $updateRules = false;
+            
+                        if(!empty($item->rules)) {
+                            $rules = $this->parseRules($item->rules,$item->ruleMessages);
+                        }
+            
+                        if($this->isCreating() && !empty($item->creationRules)) {
+                            $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
+                        }
+            
+                        if($this->isEditing() && !empty($item->updateRules)) {
+                            $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
+                        }
+            
+                        if($rules) {
+                            $frontendRules = Arr::collapse([$frontendRules, $rules]);
+                        }
+            
+                        if($creationRules) {
+                            $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
+                        }
+            
+                        if($updateRules) {
+                            $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
+                        }
+            
+                        $item->frontendRules = $frontendRules;
+                        $this->form['tab'][$tabKey]['items'][$key] = $item;
+                    }
                 }
-    
-                if($this->isCreating() && !empty($item->creationRules)) {
-                    $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
+            }
+        } else {
+            if(isset($this->form['items'])) {
+                foreach ($this->form['items'] as $key => $item) {
+                    $frontendRules = [];
+                    $rules = false;
+                    $creationRules = false;
+                    $updateRules = false;
+        
+                    if(!empty($item->rules)) {
+                        $rules = $this->parseRules($item->rules,$item->ruleMessages);
+                    }
+        
+                    if($this->isCreating() && !empty($item->creationRules)) {
+                        $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
+                    }
+        
+                    if($this->isEditing() && !empty($item->updateRules)) {
+                        $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
+                    }
+        
+                    if($rules) {
+                        $frontendRules = Arr::collapse([$frontendRules, $rules]);
+                    }
+        
+                    if($creationRules) {
+                        $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
+                    }
+        
+                    if($updateRules) {
+                        $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
+                    }
+        
+                    $item->frontendRules = $frontendRules;
+                    $this->form['items'][$key] = $item;
                 }
-    
-                if($this->isEditing() && !empty($item->updateRules)) {
-                    $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
-                }
-    
-                if($rules) {
-                    $frontendRules = Arr::collapse([$frontendRules, $rules]);
-                }
-    
-                if($creationRules) {
-                    $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
-                }
-    
-                if($updateRules) {
-                    $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
-                }
-    
-                $item->frontendRules = $frontendRules;
-                $this->form['items'][$key] = $item;
             }
         }
     }
