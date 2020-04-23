@@ -62,6 +62,26 @@ class Form
     }
 
     /**
+     * Indicates if current form page is creating.
+     *
+     * @return bool
+     */
+    public function isCreating(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), ['/create', '/store']);
+    }
+
+    /**
+     * Indicates if current form page is editing.
+     *
+     * @return bool
+     */
+    public function isEditing(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), '/edit', '/update');
+    }
+
+    /**
      * form title.
      *
      * @param string $url
@@ -171,16 +191,82 @@ class Form
     }
 
     /**
-     * form store.
+     * 验证提交数据库前的值
      *
-     * @return bool
+     * @param array $rules
+     *
+     * @return array
      */
-    public function store()
+    protected function validator($data,$items)
     {
-        $data = $this->request;
+        foreach ($items as $key => $value) {
 
-        foreach ($this->form['items'] as $key => $value) {
+            // 通用验证规则
+            if($value->rules) {
+                foreach ($value->rules as &$rule) {
+                    if (is_string($rule) && isset($data['id'])) {
+                        $rule = str_replace('{{id}}', $data['id'], $rule);
+                    }
+                }
+                $rules[$value->name] = $value->rules;
+                $validator = Validator::make($data,$rules,$value->ruleMessages);
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+                    return $errorMsg;
+                }
+            }
 
+            // 新增数据，验证规则
+            if($this->isCreating()) {
+                if($value->creationRules) {
+                    $creationRules[$value->name] = $value->creationRules;
+                    $validator = Validator::make($data,$creationRules,$value->creationRuleMessages);
+                    if ($validator->fails()) {
+                        $errors = $validator->errors()->getMessages();
+                        foreach($errors as $key => $value) {
+                            $errorMsg = $value[0];
+                        }
+                        return $errorMsg;
+                    }
+                }
+            }
+
+            // 编辑数据，验证规则
+            if($this->isEditing()) {
+                if($value->updateRules) {
+                    foreach ($value->updateRules as &$rule) {
+                        if (is_string($rule)) {
+                            $rule = str_replace('{{id}}', $data['id'], $rule);
+                        }
+                    }
+                    $updateRules[$value->name] = $value->updateRules;
+                    $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
+                    if ($validator->fails()) {
+                        $errors = $validator->errors()->getMessages();
+                        foreach($errors as $key => $value) {
+                            $errorMsg = $value[0];
+                        }
+                        return $errorMsg;
+                    }
+                }
+            }
+
+        }
+    }
+
+    /**
+     * 解析保存提交数据库前的值
+     *
+     * @param array $rules
+     *
+     * @return array
+     */
+    protected function parseSubmitValues($data,$items)
+    {
+        foreach ($items as $key => $value) {
             if($value->component == 'image' || $value->component == 'file') {
                 if(isset($data[$value->name])) {
                     if(is_array($data[$value->name])) {
@@ -189,31 +275,44 @@ class Form
                 }
             }
 
-            if($value->rules) {
-                $rules[$value->name] = $value->rules;
-                $validator = Validator::make($data,$rules,$value->ruleMessages);
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
-
-                    return error($errorMsg);
+            if($value->component == 'checkbox') {
+                if(isset($data[$value->name])) {
+                    $data[$value->name] = json_encode($data[$value->name]);
                 }
             }
+        }
 
-            if($value->creationRules) {
-                $creationRules[$value->name] = $value->creationRules;
-                $validator = Validator::make($data,$creationRules,$value->creationRuleMessages);
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
-                    
-                    return error($errorMsg);
+        return $data;
+    }
+
+    /**
+     * form store.
+     *
+     * @return bool
+     */
+    public function store()
+    {
+        $data = $this->request;
+        $items = [];
+
+        if(isset($this->form['tab'])) {
+            foreach ($this->form['tab'] as $tabKey => $tab) {
+                if(isset($tab['items'])) {
+                    $items = array_merge($items, $tab['items']);
                 }
             }
+        } else {
+            if(isset($this->form['items'])) {
+                $items = $this->form['items'];
+            }
+        }
+
+        if($items) {
+            $errorMsg = $this->validator($data,$items);
+            if($errorMsg) {
+                return error($errorMsg);
+            }
+            $data = $this->parseSubmitValues($data,$items);
         }
 
         $result = $this->model->create($data);
@@ -226,15 +325,15 @@ class Form
     }
 
     /**
-     * form edit.
+     * 解析编辑显示前的值
      *
-     * @return bool
+     * @param array $rules
+     *
+     * @return array
      */
-    public function edit($id)
+    protected function parseEditValues($data,$items)
     {
-        $data = $this->model->findOrFail($id);
-
-        foreach ($this->form['items'] as $key => $item) {
+        foreach ($items as $key => $item) {
             if($item->component == 'image') {
                 if(count(explode('[',$data[$item->name]))>1) {
                     $getImages = json_decode($data[$item->name],true);
@@ -287,10 +386,40 @@ class Form
 
                 $data[$item->name] = $files;
             }
+
+            if($item->component == 'checkbox') {
+                if(count(explode('[',$data[$item->name]))>1) {
+                    $data[$item->name] = json_decode($data[$item->name],true);
+                }
+            }
         }
 
-        $this->form['data'] = $data;
+        return $data;
+    }
 
+    /**
+     * form edit.
+     *
+     * @return bool
+     */
+    public function edit($id)
+    {
+        $data = $this->model->findOrFail($id);
+        $items = [];
+
+        if(isset($this->form['tab'])) {
+            foreach ($this->form['tab'] as $tabKey => $tab) {
+                if(isset($tab['items'])) {
+                    $items = array_merge($items, $tab['items']);
+                }
+            }
+        } else {
+            if(isset($this->form['items'])) {
+                $items = $this->form['items'];
+            }
+        }
+
+        $this->form['data'] = $this->parseEditValues($data,$items);
         return $this;
     }
 
@@ -302,57 +431,26 @@ class Form
     public function update()
     {
         $data = $this->request;
+        $items = [];
 
-        foreach ($this->form['items'] as $key => $value) {
-
-            if($value->component == 'image' || $value->component == 'file') {
-                if(isset($data[$value->name])) {
-                    if(is_array($data[$value->name])) {
-                        $data[$value->name] = json_encode($data[$value->name]);
-                    }
+        if(isset($this->form['tab'])) {
+            foreach ($this->form['tab'] as $tabKey => $tab) {
+                if(isset($tab['items'])) {
+                    $items = array_merge($items, $tab['items']);
                 }
             }
-
-            if($value->rules) {
-
-                foreach ($value->rules as &$rule) {
-                    if (is_string($rule)) {
-                        $rule = str_replace('{{id}}', $data['id'], $rule);
-                    }
-                }
-
-                $rules[$value->name] = $value->rules;
-                $validator = Validator::make($data,$rules,$value->ruleMessages);
-                if ($validator->fails()) {
-
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
-
-                    return error($errorMsg);
-                }
+        } else {
+            if(isset($this->form['items'])) {
+                $items = $this->form['items'];
             }
+        }
 
-            if($value->updateRules) {
-
-                foreach ($value->updateRules as &$rule) {
-                    if (is_string($rule)) {
-                        $rule = str_replace('{{id}}', $data['id'], $rule);
-                    }
-                }
-
-                $updateRules[$value->name] = $value->updateRules;
-                $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
-                    
-                    return error($errorMsg);
-                }
+        if($items) {
+            $errorMsg = $this->validator($data,$items);
+            if($errorMsg) {
+                return error($errorMsg);
             }
+            $data = $this->parseSubmitValues($data,$items);
         }
 
         // 清除空数据
@@ -386,26 +484,6 @@ class Form
 
         $result = $this->model->destroy($id);
         return $result;
-    }
-
-    /**
-     * Indicates if current form page is creating.
-     *
-     * @return bool
-     */
-    public function isCreating(): bool
-    {
-        return Str::endsWith(\request()->route()->getName(), ['/create', '/store']);
-    }
-
-    /**
-     * Indicates if current form page is editing.
-     *
-     * @return bool
-     */
-    public function isEditing(): bool
-    {
-        return Str::endsWith(\request()->route()->getName(), '/edit', '/update');
     }
 
     /**
