@@ -5,9 +5,5 @@
 首先确保安装好了laravel，并且数据库连接设置正确。
 composer require quarkcms/quark-admin
 
-然后运行下面的命令来发布资源：
-php artisan vendor:publish --provider="QuarkCMS\QuarkAdmin\QuarkServiceProvider"
-在该命令会生成配置文件config/quark.php，可以在里面修改相关配置，建议都是用默认配置不修改。
-
 然后运行下面的命令完成安装：
-php artisan quarkadmin:install && php artisan storage:link
+php artisan quarkadmin:install

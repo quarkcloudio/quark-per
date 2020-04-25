@@ -34,9 +34,17 @@ class InstallCommand extends Command
      */
     public function handle()
     {
+        // 发布资源
+        $this->call('vendor:publish --provider="QuarkCMS\QuarkAdmin\QuarkServiceProvider"');
+
+        // 初始化数据库
         $this->initDatabase();
 
+        // 初始化Admin目录
         $this->initAdminDirectory();
+
+        // 创建软连接
+        $this->call('storage:link');
     }
 
     /**
