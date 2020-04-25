@@ -54,6 +54,8 @@ class Form
         $layout['wrapperCol']['span'] = 21;
         $this->form['layout'] = $layout;
 
+        $this->form['data'] = [];
+
         // 设置默认表单行为
         $this->setDefaultAction();
 
