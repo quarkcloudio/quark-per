@@ -11,14 +11,14 @@ class InstallCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'quark:install';
+    protected $signature = 'quarkadmin:install';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Install the quark package';
+    protected $description = 'Install the quark-admin package';
 
     /**
      * Install directory.

@@ -10,4 +10,4 @@ php artisan vendor:publish --provider="QuarkCMS\QuarkAdmin\QuarkServiceProvider"
 在该命令会生成配置文件config/quark.php，可以在里面修改安装的地址、数据库连接、以及表名，建议都是用默认配置不修改。
 
 然后运行下面的命令完成安装：
-php artisan quark:install && php artisan storage:link
+php artisan quarkadmin:install && php artisan storage:link
