@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class AccountLog extends Model
 {
-
     /**
      * The attributes that are mass assignable.
      *
@@ -15,5 +14,4 @@ class AccountLog extends Model
     protected $fillable = [
         'adminid','uid', 'money','score', 'type','remark','status'
     ];
-
 }
