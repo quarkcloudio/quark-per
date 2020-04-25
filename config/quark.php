@@ -2,18 +2,15 @@
 
 return [
 
-    'version' => env('APP_VERSION', 'v1.0.0'),
+    'app' => [
+        'version' => env('APP_VERSION', 'v0.0.1'),
+        'name' => env('APP_NAME', 'Quark-CMS')
+    ],
 
-    /*
-    |--------------------------------------------------------------------------
-    | Quark-Admin name
-    |--------------------------------------------------------------------------
-    |
-    | This value is the name of Quark-admin, This setting is displayed on the
-    | login page.
-    |
-    */
-    'name' => env('APP_NAME', 'Quark-Admin'),
+    'admin' => [
+        'version' => env('ADMIN_VERSION', 'v0.0.4'),
+        'name' => env('ADMIN_NAME', 'Quark-Admin')
+    ],
 
     /*
     |--------------------------------------------------------------------------

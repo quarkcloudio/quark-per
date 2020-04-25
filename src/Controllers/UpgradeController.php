@@ -24,9 +24,9 @@ class UpgradeController extends Controller
 
         cache(['packages' => $packages], 3600);
 
-        $result['app_version'] = config('quark.version');
+        $result['app_version'] = config('quark.app.version');
         foreach ($packages as $key => $value) {
-            if($value['version'] > config('quark.version')) {
+            if($value['version'] > config('quark.app.version')) {
                 $result['can_upgrade'] = true;
                 $result['next_package'] = $value;
                 break;
