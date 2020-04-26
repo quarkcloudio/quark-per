@@ -8,17 +8,31 @@ use Exception;
 
 class Display extends Item
 {
-    public  $type;
+    function __construct($label = '') {
+        $this->component = 'display';
+        $this->label = $label;
 
-    function __construct() {
-        $this->componentName = 'display';
+        $style['width'] = 200;
+        $this->style = $style;
     }
 
-    static function make($labelName)
+    /**
+     * 创建组件
+     *
+     * @param  string $name
+     * @param  string $label
+     * @return object
+     */
+    static function make($name,$label = '')
     {
         $self = new self();
 
-        $self->labelName = $labelName;
+        $self->name = $name;
+        if(empty($label)) {
+            $self->label = $name;
+        } else {
+            $self->label = $label;
+        }
 
         // 删除空属性
         $self->unsetNullProperty();

@@ -24,6 +24,7 @@ class Form
      */
     public static $availableFields = [
         'id' => Form\Fields\ID::class,
+        'display' => Form\Fields\Display::class,
         'text' => Form\Fields\Text::class,
         'textArea' => Form\Fields\TextArea::class,
         'number' => Form\Fields\Number::class,
