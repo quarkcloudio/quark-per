@@ -27,7 +27,7 @@ class AdminLoginController extends QuarkController
         $captcha = $request->json('captcha');
 
         $getCaptcha = cache('adminCaptcha');
-        if(empty($captcha) || ($captcha != $getCaptcha)) {
+        if(empty($captcha) || (strtolower($captcha) != strtolower($getCaptcha))) {
             return error('验证码错误！');
         }
 
