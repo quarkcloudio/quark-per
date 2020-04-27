@@ -739,12 +739,13 @@ class Form
             foreach ($this->form['tab'] as $key => $tab) {
                 if(isset($tab['items'])) {
                     foreach ($tab['items'] as $key => $item) {
-                        if(isset($item->defaultValue)) {
-                            $data[$item->name] = $item->defaultValue;
-                        }
-        
-                        if(isset($item->value) && empty($this->form['data'][$item->name])) {
-                            $this->form['data'][$item->name] = $item->value;
+                        if(isset($item->name)) {
+                            if(isset($item->defaultValue)) {
+                                $data[$item->name] = $item->defaultValue;
+                            }
+                            if(isset($item->value) && empty($this->form['data'][$item->name])) {
+                                $this->form['data'][$item->name] = $item->value;
+                            }
                         }
                     }
                 }
@@ -754,11 +755,13 @@ class Form
             if(isset($this->form['items'])) {
                 $data = [];
                 foreach ($this->form['items'] as $key => $item) {
-                    if(isset($item->defaultValue)) {
-                        $data[$item->name] = $item->defaultValue;
-                    }
-                    if(isset($item->value) && empty($this->form['data'][$item->name])) {
-                        $this->form['data'][$item->name] = $item->value;
+                    if(isset($item->name)) {
+                        if(isset($item->defaultValue)) {
+                            $data[$item->name] = $item->defaultValue;
+                        }
+                        if(isset($item->value) && empty($this->form['data'][$item->name])) {
+                            $this->form['data'][$item->name] = $item->value;
+                        }
                     }
                 }
                 $this->form['initialValues'] = $data;
