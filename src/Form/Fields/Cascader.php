@@ -47,14 +47,21 @@ class Cascader extends Item
 
     public function options($options)
     {
-        $data = [];
-        foreach ($options as $key => $value) {
-            $option['label'] = $value;
-            $option['value'] = $key;
-            $data[] = $option;
-        }
-        $this->options = $data;
+        $this->options = $options;
 
+        return $this;
+    }
+
+    /**
+     * 输入框宽度
+     * 
+     * @param  number|string $value
+     * @return object
+     */
+    public function width($value = '100%')
+    {
+        $style['width'] = $value;
+        $this->style = $style;
         return $this;
     }
 }

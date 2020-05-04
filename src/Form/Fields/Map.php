@@ -11,8 +11,17 @@ class Map extends Item
 {
     public  $type,$zoom,$key;
 
-    function __construct() {
+    function __construct($name,$label = '') {
         $this->component = 'map';
+        $this->name = $name;
+
+        if(empty($label) || !count($label)) {
+            $this->label = $name;
+        } else {
+            $label = Arr::get($label, 0, ''); //[0];
+            $this->label = $label;
+        }
+
         $this->type = 'text';
         $this->zoom = 14;
         $this->key = '788e08def03f95c670944fe2c78fa76f';
@@ -38,8 +47,6 @@ class Map extends Item
         } else {
             $self->label = $label;
         }
-
-        $self->placeholder = '请输入'.$labelName;
 
         // 删除空属性
         $self->unsetNullProperty();
