@@ -26,6 +26,7 @@ class Form
         'id' => Form\Fields\ID::class,
         'display' => Form\Fields\Display::class,
         'text' => Form\Fields\Text::class,
+        'textarea' => Form\Fields\TextArea::class,
         'textArea' => Form\Fields\TextArea::class,
         'number' => Form\Fields\Number::class,
         'radio' => Form\Fields\Radio::class,
@@ -40,6 +41,9 @@ class Form
         'datetime' => Form\Fields\Datetime::class,
         'datetimeRange' => Form\Fields\DatetimeRange::class,
         'editor' => Form\Fields\Editor::class,
+        'map' => Form\Fields\Map::class,
+        'cascader' => Form\Fields\Cascader::class,
+        'search' => Form\Fields\Search::class,
     ];
 
     /**
