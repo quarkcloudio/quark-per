@@ -40,6 +40,7 @@ class Form
         'icon' => Form\Fields\Icon::class,
         'datetime' => Form\Fields\Datetime::class,
         'datetimeRange' => Form\Fields\DatetimeRange::class,
+        'timeRange' => Form\Fields\TimeRange::class,
         'editor' => Form\Fields\Editor::class,
         'map' => Form\Fields\Map::class,
         'cascader' => Form\Fields\Cascader::class,
