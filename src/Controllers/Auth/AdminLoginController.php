@@ -45,7 +45,7 @@ class AdminLoginController extends QuarkController
 
             $user = Auth::guard('admin')->user();
 
-            if($user['status'] !== 1) {
+            if(intval($user['status']) !== 1) {
                 return error('用户被禁用！');
             }
 

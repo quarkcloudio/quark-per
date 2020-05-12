@@ -70,7 +70,7 @@ class InstallCommand extends Command
      */
     protected function initAdminDirectory()
     {
-        $this->directory = app_path('Http\\Controllers\\Admin');
+        $this->directory = app_path('Http/Controllers/Admin');
 
         if (is_dir($this->directory)) {
             $this->line("<error>{$this->directory} directory already exists !</error> ");
