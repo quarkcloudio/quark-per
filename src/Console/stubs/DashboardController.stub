@@ -31,7 +31,7 @@ class DashboardController extends Controller
                     });
                 });
             });
-        
+
             $row->col(6, function ($col) {
                 $col->card(null, function ($card) {
                     $card->statistic('日志数量', function ($statistic) {
@@ -84,10 +84,11 @@ class DashboardController extends Controller
                         $os = "linux";
                     } else if(strpos(PHP_OS,"WIN")!==false){
                         $os = "windows";
+                    }else{
+                        $os=PHP_OS;
                     }
 
-                    $version = "version()";
-                    $mysqlVersion = DB::select("select version()")[0]->$version;
+                    $version = config('database.default')==='sqlite'?"sqlite_version()":"version()";
 
                     $dataSource = [
                         [
@@ -113,7 +114,7 @@ class DashboardController extends Controller
                         [
                             'key'=> '5',
                             'name'=> 'MYSQL版本',
-                            'info'=> $mysqlVersion,
+                            'info'=> $version,
                         ],
                         [
                             'key'=> '6',
@@ -130,7 +131,7 @@ class DashboardController extends Controller
                     ->size('small');
                 });
             });
-        
+
             $row->col(12, function ($col) {
                 $col->card('产品团队', function ($card) {
 
