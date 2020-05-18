@@ -437,6 +437,7 @@ class Grid
         unset($data['actionName']);
         unset($data['actionUrl']);
         unset($data['id']);
+        unset($data['s']);
 
         $model = $this->model()->eloquent();
 
