@@ -167,6 +167,7 @@ class Form
     {
         if(Str::endsWith(\request()->route()->getName(), ['/store', '/update'])) {
             $data = request()->all();
+            unset($data['s']);
             unset($data['actionUrl']);
             $this->request = $data;
         }
