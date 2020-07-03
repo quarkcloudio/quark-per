@@ -169,7 +169,11 @@ if(!function_exists('get_picture')) {
                 }
                 $result = $url;
             } else {
-                $result = $picture[$field];
+                if($field == 'realPath') {
+                    $result = storage_path('app/').$picture->path;
+                } else {
+                    $result = $picture[$field];
+                }
             }
             return $result;
         }
