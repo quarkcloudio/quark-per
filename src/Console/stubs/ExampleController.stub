@@ -1,6 +1,6 @@
 <?php
 
-namespace DummyNamespace;
+namespace App\Http\Controllers\Admin;
 
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Controllers\QuarkController;
