@@ -8,7 +8,7 @@ return [
     ],
 
     'admin' => [
-        'version' => env('ADMIN_VERSION', 'v0.1.0'),
+        'version' => env('ADMIN_VERSION', 'v0.1.1'),
         'name' => env('ADMIN_NAME', 'Quark-Admin')
     ],
 

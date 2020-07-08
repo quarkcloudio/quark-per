@@ -97,10 +97,7 @@ class InstallCommand extends Command
         $exampleController = $this->directory.'/ExampleController.php';
         $contents = $this->getStub('ExampleController');
 
-        $this->laravel['files']->put(
-            $exampleController,
-            str_replace('DummyNamespace', config('quark.route.namespace'), $contents)
-        );
+        $this->laravel['files']->put($exampleController,$contents);
         $this->line('<info>ExampleController file was created:</info> '.str_replace(base_path(), '', $exampleController));
     }
 
@@ -114,10 +111,7 @@ class InstallCommand extends Command
         $controller = $this->directory.'/DashboardController.php';
         $contents = $this->getStub('DashboardController');
 
-        $this->laravel['files']->put(
-            $controller,
-            str_replace('DummyNamespace', config('quark.route.namespace'), $contents)
-        );
+        $this->laravel['files']->put($controller,$contents);
         $this->line('<info>DashboardController file was created:</info> '.str_replace(base_path(), '', $controller));
     }
 
@@ -132,10 +126,7 @@ class InstallCommand extends Command
         $controller = $this->directory.'/UpgradeController.php';
         $contents = $this->getStub('UpgradeController');
 
-        $this->laravel['files']->put(
-            $controller,
-            str_replace('DummyNamespace', config('quark.route.namespace'), $contents)
-        );
+        $this->laravel['files']->put($controller,$contents);
         $this->line('<info>UpgradeController file was created:</info> '.str_replace(base_path(), '', $controller));
     }
 
@@ -147,9 +138,9 @@ class InstallCommand extends Command
     protected function createRoutesFile()
     {
         $file = base_path().'/routes/admin.php';
-
         $contents = $this->getStub('routes');
-        $this->laravel['files']->put($file, str_replace('DummyNamespace', config('quark.route.namespace'), $contents));
+
+        $this->laravel['files']->put($file, $contents);
         $this->line('<info>Routes file was created:</info> '.str_replace(base_path(), '', $file));
     }
 
