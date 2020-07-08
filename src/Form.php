@@ -464,7 +464,7 @@ class Form
 
         // 清除空数据
         foreach($data as $key => $value) {
-            if($value == '') {
+            if($value === '') {
                 unset($data[$key]);
             }
         }
