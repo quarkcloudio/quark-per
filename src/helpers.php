@@ -240,10 +240,10 @@ if(!function_exists('unset_null')) {
 }
 
 // 获取用户token
-if(!function_exists('token')) {
-    function token($request)
+if(!function_exists('get_admin_token')) {
+    function get_admin_token()
     {
-        $authorization = $request->header('Authorization');
+        $authorization = request()->header('Authorization');
     
         // 获取不到则重新登录
         if(empty($authorization)) {
