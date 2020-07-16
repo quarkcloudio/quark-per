@@ -20,12 +20,12 @@ class MenusTableSeeder extends Seeder
 
             ['id' =>13,'name' => '管理员','guard_name' => 'admin','icon' => 'icon-admin','type'=>'default','pid' => 0,'sort' => 0,'path' => '/admin','show'  => 1,'status' => 1],
             ['id' =>14,'name' => '管理员列表','guard_name' => 'admin','icon' => '','type'=>'table','pid' => 13,'sort' => 0,'path' => '/quark/engine?api=admin/admin/index&component=table','show'  => 1,'status' => 1],
-            ['id' =>15,'name' => '菜单列表','guard_name' => 'admin','icon' => '','type'=>'table','pid' => 13,'sort' => 0,'path' => '/quark/engine?api=admin/menu/index&component=table','show'  => 1,'status' => 1],
+            ['id' =>15,'name' => '菜单列表','guard_name' => 'admin','icon' => '','type'=>'table','pid' => 25,'sort' => 0,'path' => '/quark/engine?api=admin/menu/index&component=table','show'  => 1,'status' => 1],
             ['id' =>16,'name' => '权限列表','guard_name' => 'admin','icon' => '','type'=>'table','pid' => 13,'sort' => 0,'path' => '/quark/engine?api=admin/permission/index&component=table','show'  => 1,'status' => 1],
             ['id' =>17,'name' => '角色列表','guard_name' => 'admin','icon' => '','type'=>'table','pid' => 13,'sort' => 0,'path' => '/quark/engine?api=admin/role/index&component=table','show'  => 1,'status' => 1],
 
             ['id' =>25,'name' => '系统配置','guard_name' => 'admin','icon' => 'icon-setting','type'=>'default','pid' => 0,'sort' => 0,'path' => '/system','show'  => 1,'status' => 1],
-            ['id' =>26,'name' => '设置管理','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 25,'sort' => 0,'path' => '/system/config','show'  => 1,'status' => 1],
+            ['id' =>26,'name' => '设置管理','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 25,'sort' => -1,'path' => '/system/config','show'  => 1,'status' => 1],
             ['id' =>27,'name' => '网站设置','guard_name' => 'admin','icon' => '','type'=>'form','pid' => 26,'sort' => 0,'path' => '/quark/engine?api=admin/config/website&component=form','show'  => 1,'status' => 1],
             ['id' =>28,'name' => '配置管理','guard_name' => 'admin','icon' => '','type'=>'table','pid' => 26,'sort' => 0,'path' => '/quark/engine?api=admin/config/index&component=table','show'  => 1,'status' => 1],
             ['id' =>32,'name' => '操作日志','guard_name' => 'admin','icon' => '','type'=>'table','pid' => 25,'sort' => 0,'path' => '/quark/engine?api=admin/actionLog/index&component=table','show'  => 1,'status' => 1],
