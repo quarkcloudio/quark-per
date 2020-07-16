@@ -230,6 +230,26 @@ class AccountController extends QuarkController
             if(empty($data[$key]['icon'])) {
                 unset($data[$key]['icon']);
             }
+
+            switch ($value['type']) {
+                case 'table':
+                    $path = '/quark/engine?api='.$value['path'].'&component=table';
+                    break;
+                
+                case 'form':
+                    $path = '/quark/engine?api='.$value['path'].'&component=form';
+                    break;
+
+                case 'show':
+                    $path = '/quark/engine?api='.$value['path'].'&component=show';
+                    break;
+
+                default:
+                    $path = $value['path'];
+                    break;
+            }
+
+            $data[$key]['path'] = $path;
         }
 
         $menuTrees = list_to_tree($data,'id','pid','children');

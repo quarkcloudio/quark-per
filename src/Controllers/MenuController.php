@@ -122,7 +122,7 @@ class MenuController extends QuarkController
         $form->select('pid','父节点')
         ->width(200)
         ->options($list)
-        ->default(1);
+        ->default(0);
 
         $form->number('sort','排序')->default(0);
 
@@ -188,34 +188,13 @@ class MenuController extends QuarkController
             return error('名称必须填写！');
         }
 
-        switch ($type) {
-            case 'default':
-                $getPath = $path;
-                break;
-
-            case 'table':
-                $getPath = '/quark/engine?api='.$path.'&component=table';
-                break;
-
-            case 'form':
-                $getPath = '/quark/engine?api='.$path.'&component=form';
-                break;
-
-            case 'show':
-                $getPath = '/quark/engine?api='.$path.'&component=show';
-                break;
-
-            default:
-                $getPath = $path;
-                break;
-        }
-
+        $data['type'] = $type;
         $data['name'] = $name;
         $data['guard_name'] = 'admin';
         $data['pid'] = $pid;
         $data['sort'] = $sort;
         $data['icon'] = $icon;
-        $data['path'] = $getPath;
+        $data['path'] = $path;
         $data['show'] = $show;
         $data['status'] = $status;
 
@@ -258,28 +237,6 @@ class MenuController extends QuarkController
         if (empty($name)) {
             return error('名称必须填写！');
         }
-        
-        switch ($type) {
-            case 'default':
-                $getPath = $path;
-                break;
-
-            case 'table':
-                $getPath = '/quark/engine?api='.$path.'&component=table';
-                break;
-
-            case 'form':
-                $getPath = '/quark/engine?api='.$path.'&component=form';
-                break;
-
-            case 'show':
-                $getPath = '/quark/engine?api='.$path.'&component=show';
-                break;
-
-            default:
-                $getPath = $path;
-                break;
-        }
 
         if ($show == true) {
             $show = 1;
@@ -293,12 +250,13 @@ class MenuController extends QuarkController
             $status = 2; //禁用
         }
 
+        $data['type'] = $type;
         $data['name'] = $name;
         $data['guard_name'] = 'admin';
         $data['pid'] = $pid;
         $data['sort'] = $sort;
         $data['icon'] = $icon;
-        $data['path'] = $getPath;
+        $data['path'] = $path;
         $data['show'] = $show;
         $data['status'] = $status;
 
