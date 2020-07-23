@@ -75,6 +75,7 @@ class MenuController extends QuarkController
 
         $grid->model()
         ->orderBy('sort', 'asc')
+        ->orderBy('id', 'asc')
         ->paginate(100);
 
         return $grid;
