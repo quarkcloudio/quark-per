@@ -288,6 +288,8 @@ class Form
             if($value->component == 'checkbox' || $value->component == 'list') {
                 if(isset($data[$value->name])) {
                     $data[$value->name] = json_encode($data[$value->name]);
+                } else {
+                    $data[$value->name] = json_encode([]);
                 }
             }
         }
