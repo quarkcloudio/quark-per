@@ -45,6 +45,7 @@ class Form
         'map' => Form\Fields\Map::class,
         'cascader' => Form\Fields\Cascader::class,
         'search' => Form\Fields\Search::class,
+        'list' => Form\Fields\ListField::class,
     ];
 
     /**
@@ -284,7 +285,7 @@ class Form
                 }
             }
 
-            if($value->component == 'checkbox') {
+            if($value->component == 'checkbox' || $value->component == 'list') {
                 if(isset($data[$value->name])) {
                     $data[$value->name] = json_encode($data[$value->name]);
                 }
@@ -396,7 +397,7 @@ class Form
                 $data[$item->name] = $files;
             }
 
-            if($item->component == 'checkbox') {
+            if($item->component == 'checkbox' || $item->component == 'list') {
                 if(count(explode('[',$data[$item->name]))>1) {
                     $data[$item->name] = json_decode($data[$item->name],true);
                 }

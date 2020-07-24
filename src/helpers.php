@@ -132,6 +132,10 @@ if(!function_exists('get_picture')) {
                 if(isset($ids[$key][$field])) {
                     return $ids[$key][$field];
                 } else {
+                    if(isset($ids[$key])) {
+                        return get_picture($ids[$key]);
+                    }
+                    
                     return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';
                 }
     
