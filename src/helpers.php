@@ -76,14 +76,14 @@ if(!function_exists('list_to_tree')) {
 * @return array
 */
 if(!function_exists('tree_to_ordered_list')) {
-    function tree_to_ordered_list($arr,$level=0,$filed='name',$child='_child') {
+    function tree_to_ordered_list($arr,$level=0,$field='name',$child='_child') {
         $tree=array();
         if(is_array($arr)) {
             foreach ($arr as $key=>$val) {
-                $val[$filed] = str_repeat('—', $level).$val[$filed];
+                $val[$field] = str_repeat('—', $level).$val[$field];
                 $tree[]=$val;
                 if(isset($val[$child])) {
-                    tree_to_ordered_list($val[$child],$level+1,$filed,$child);
+                    tree_to_ordered_list($val[$child],$level+1,$field,$child);
                 }        
             }
         }
