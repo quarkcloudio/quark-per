@@ -104,7 +104,7 @@ class RoleController extends QuarkController
             }
         }
 
-        $menus = Helper::listToTree($menus,'key','pid','children',0);
+        $menus = list_to_tree($menus,'key','pid','children',0);
 
         $form->tree('menu_ids','权限')
         ->data($menus)
