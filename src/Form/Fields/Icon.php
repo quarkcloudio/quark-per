@@ -13,6 +13,7 @@ class Icon extends Item
     function __construct($name,$label = '') {
         $this->component = 'icon';
         $this->name = $name;
+        $this->value = 0;
 
         if(empty($label) || !count($label)) {
             $this->label = $name;

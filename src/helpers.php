@@ -77,7 +77,7 @@ if(!function_exists('list_to_tree')) {
 */
 if(!function_exists('tree_to_ordered_list')) {
     function tree_to_ordered_list($arr,$level=0,$field='name',$child='_child') {
-        $tree=array();
+        static $tree=array();
         if(is_array($arr)) {
             foreach ($arr as $key=>$val) {
                 $val[$field] = str_repeat('—', $level).$val[$field];
