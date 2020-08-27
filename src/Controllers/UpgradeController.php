@@ -108,8 +108,10 @@ class UpgradeController extends Controller
 
         $dirs = get_folder_dirs($path);
 
-        $appDirs = get_folder_dirs($path.'/'.$dirs[0]);
-        $appFiles = get_folder_files($path.'/'.$dirs[0]);
+        $filePath = $path.'/'.$dirs[0];
+
+        $appDirs = get_folder_dirs($filePath);
+        $appFiles = get_folder_files($filePath);
 
         foreach ($appDirs as $key => $value) {
             copy_dir_to_folder($path.'/'.$dirs[0].'/'.$value,base_path());
@@ -134,6 +136,21 @@ class UpgradeController extends Controller
             return success('数据库更新成功！','',$result);
         } else {
             return error('数据库更新失败！',$result);
+        }
+    }
+
+    /**
+     * 清除缓存
+     * @author  tangtanglove <dai_hang_love@126.com>
+     */
+    public function clearCache(Request $request)
+    {
+        $result = Artisan::call('cache:clear');
+
+        if($result !== false) {
+            return success('缓存清除成功！','',$result);
+        } else {
+            return error('缓存清除失败！',$result);
         }
     }
 

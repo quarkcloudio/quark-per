@@ -17,6 +17,7 @@ Route::group([
     $router->get('admin/upgrade/extract', 'UpgradeController@extract')->name('api/admin/upgrade/extract');
     $router->get('admin/upgrade/updateFile', 'UpgradeController@updateFile')->name('api/admin/upgrade/updateFile');
     $router->get('admin/upgrade/updateDatabase', 'UpgradeController@updateDatabase')->name('api/admin/upgrade/updateDatabase');
+    $router->get('admin/upgrade/clearCache', 'UpgradeController@clearCache')->name('api/admin/upgrade/clearCache');
     $router->get('admin/upgrade/finish', 'UpgradeController@finish')->name('api/admin/upgrade/finish');
 
     $router->get('admin/example/index', 'ExampleController@index')->name('api/admin/example/index');

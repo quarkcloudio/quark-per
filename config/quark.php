@@ -3,12 +3,12 @@
 return [
 
     'app' => [
-        'version' => env('APP_VERSION', 'v0.0.2'),
+        'version' => env('APP_VERSION', 'v1.0.1'),
         'name' => env('APP_NAME', 'Quark-CMS')
     ],
 
     'admin' => [
-        'version' => env('ADMIN_VERSION', 'v0.1.8'),
+        'version' => env('ADMIN_VERSION', 'v0.1.9'),
         'name' => env('ADMIN_NAME', 'Quark-Admin')
     ],
 
