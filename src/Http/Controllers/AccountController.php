@@ -3,14 +3,13 @@
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 use Validator;
 use Hash;
 
-class AccountController extends QuarkController
+class AccountController extends Controller
 {
     /**
      * 获取账号信息

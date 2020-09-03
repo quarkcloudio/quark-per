@@ -3,11 +3,13 @@
 use Illuminate\Support\Facades\Route;
 
 Route::group(['namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'], function ($router) {
-	$router->get('admin/appInfo', 'QuarkController@appInfo')->name('api/admin/quark/appInfo');
+	$router->get('admin/quark/info', 'QuarkController@info')->name('api/admin/quark/info');
+	$router->get('admin/quark/layout', 'QuarkController@layout')->name('api/admin/quark/layout');
+	$router->get('admin/quark/test', 'QuarkController@test')->name('api/admin/quark/test');
+
 	$router->get('admin/captcha', 'LoginController@captcha')->name('api/admin/captcha');
 	$router->post('admin/login', 'LoginController@login')->name('api/admin/login');
 	$router->any('admin/logout', 'LoginController@logout')->name('api/admin/logout');
-	$router->any('admin/layout', 'LayoutController@layout')->name('api/admin/layout');
 });
 
 Route::group([

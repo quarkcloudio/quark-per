@@ -7,9 +7,8 @@ use QuarkCMS\QuarkAdmin\Models\ActionLog;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use App\User;
 use Quark;
-use Route;
 
-class ActionLogController extends QuarkController
+class ActionLogController extends Controller
 {
     public $title = '日志';
 

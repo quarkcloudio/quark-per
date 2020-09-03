@@ -2,53 +2,63 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-use Closure;
-
 /**
  * Class Quark.
  */
 class Quark
 {
     /**
-     * Get the current Quark version.
+     * Get the current quark version.
      *
      * @return string
      */
-    public static function version()
+    public function version()
     {
         return '1.0.0';
     }
 
     /**
-     * @param $model
-     * @param Closure $callable
+     * Get the current quark info.
      *
-     * @return QuarkCMS\QuarkAdmin\Form
+     * @return string
      */
-    public function form($model = null)
+    public function info()
     {
-        return new Form($model);
+        return [
+            'version' => $this->version(),
+            'name' => config('admin.name'),
+            'logo' => config('admin.logo'),
+            'description' => config('admin.description'),
+            'captcha_driver' => config('admin.captcha_driver'),
+            'tencent_captcha_appid' => config('admin.tencent_captcha.appid'),
+        ];
     }
 
     /**
-     * @param $model
-     * @param Closure $callable
+     * Get the current quark layout.
      *
-     * @return QuarkCMS\QuarkAdmin\Layout\Content
+     * @return string
      */
-    public function table($model = null)
+    public function layout()
     {
-        return new Table($model);
+        return config('admin.layout');
     }
 
     /**
-     * @param $model
-     * @param Closure $callable
+     * Dynamically proxy method calls.
      *
-     * @return QuarkCMS\QuarkAdmin\Layout\Show
+     * @param  string  $method
+     * @param  array  $parameters
+     * @return void
      */
-    public function show($model = null)
+    public function __call($method, $parameters)
     {
-        return new Show($model);
+        $getCalledClass = __NAMESPACE__.'\\'.ucwords($method);
+
+        if(!class_exists($getCalledClass)) {
+            throw new \Exception("Class {$method} does not exist.");
+        }
+
+        return new $getCalledClass($parameters);
     }
 }

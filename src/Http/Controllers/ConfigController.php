@@ -4,13 +4,10 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Config;
-use DB;
 use Cache;
-use Str;
 use Quark;
-use Validator;
 
-class ConfigController extends QuarkController
+class ConfigController extends Controller
 {
     public $title = '配置';
 

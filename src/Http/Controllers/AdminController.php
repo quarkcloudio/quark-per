@@ -9,7 +9,7 @@ use Illuminate\Validation\Rule;
 use Quark;
 use Validator;
 
-class AdminController extends QuarkController
+class AdminController extends Controller
 {
     public $title = '管理员';
 

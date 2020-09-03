@@ -4,14 +4,11 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Input;
 use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Models\Picture;
 use QuarkCMS\QuarkAdmin\Models\PictureCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
-use Session;
-use Cache;
 use Quark;
 
 class PictureController extends QuarkController
