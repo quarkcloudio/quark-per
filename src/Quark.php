@@ -31,6 +31,9 @@ class Quark
             'description' => config('admin.description'),
             'captcha_driver' => config('admin.captcha_driver'),
             'tencent_captcha_appid' => config('admin.tencent_captcha.appid'),
+            'iconfont_url' => config('admin.iconfont_url'),
+            'copyright' => config('admin.copyright'),
+            'links' => config('admin.links'),
         ];
     }
 

@@ -23,7 +23,7 @@ return [
     | `img` tag, eg '<img src="http://logo-url" alt="Admin logo">'.
     |
     */
-    'logo' => '/logo.png',
+    'logo' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -127,15 +127,15 @@ return [
     'links' => [
         [
             'title' => '百度',
-            'href' => 'www.baidu.com'
+            'href' => 'https://www.baidu.com'
         ],
         [
             'title' => '淘宝',
-            'href' => 'www.taobao.com'
+            'href' => 'https://www.taobao.com'
         ],
         [
             'title' => '知乎',
-            'href' => 'www.zhihu.com'
+            'href' => 'https://www.zhihu.com'
         ]
     ],
 
