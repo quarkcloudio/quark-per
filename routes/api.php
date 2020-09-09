@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::group(['namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'], function ($router) {
 	$router->get('admin/quark/info', 'QuarkController@info')->name('api/admin/quark/info');
-	$router->get('admin/quark/layout', 'QuarkController@layout')->name('api/admin/quark/layout');
 	$router->get('admin/quark/test', 'QuarkController@test')->name('api/admin/quark/test');
 
 	$router->get('admin/captcha', 'LoginController@captcha')->name('api/admin/captcha');
@@ -16,11 +15,12 @@ Route::group([
 	'middleware' => 'admin',
 	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
 ], function ($router) {
+	$router->get('admin/quark/layout', 'QuarkController@layout')->name('api/admin/quark/layout');
+	$router->get('admin/quark/menus', 'QuarkController@menus')->name('api/admin/quark/menus');
 
 	$router->any('admin/account/info', 'AccountController@info')->name('api/admin/account/info');
 	$router->post('admin/account/profile', 'AccountController@profile')->name('api/admin/account/profile');
 	$router->post('admin/account/password', 'AccountController@password')->name('api/admin/account/password');
-	$router->any('admin/account/menus', 'AccountController@menus')->name('api/admin/account/menus');
 
 	$router->get('admin/admin/index', 'AdminController@index')->name('api/admin/admin/index');
 	$router->get('admin/admin/show', 'AdminController@show')->name('api/admin/admin/show');

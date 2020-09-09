@@ -30,7 +30,7 @@ class Layout extends Element
      *
      * @var array
      */
-    public $contentStyle;
+    public $contentStyle = null;
 
     /**
      * layout 的菜单模式,side：右侧导航，top：顶部导航
@@ -72,7 +72,7 @@ class Layout extends Element
      *
      * @var string
      */
-    public $iconfontUrl;
+    public $iconfontUrl = null;
 
     /**
      * 当前 layout 的语言设置，'zh-CN' | 'zh-TW' | 'en-US'
