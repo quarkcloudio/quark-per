@@ -23,7 +23,7 @@ class Layout extends Element
      *
      * @var bool
      */
-    public $loading = true;
+    public $loading = false;
 
     /**
      * layout 的内容区 style
@@ -44,7 +44,7 @@ class Layout extends Element
      *
      * @var string
      */
-    public $contentWidth = 'Fixed';
+    public $contentWidth = 'Fluid';
 
     /**
      * 导航的主题，'light' | 'dark'
@@ -52,6 +52,13 @@ class Layout extends Element
      * @var string
      */
     public $navTheme = 'dark';
+
+    /**
+     * 主题色
+     *
+     * @var string
+     */
+    public $primaryColor = '#1890ff';
 
     /**
      * 是否固定 header 到顶部
@@ -72,7 +79,7 @@ class Layout extends Element
      *
      * @var string
      */
-    public $iconfontUrl = null;
+    public $iconfontUrl = '';
 
     /**
      * 当前 layout 的语言设置，'zh-CN' | 'zh-TW' | 'en-US'
@@ -86,7 +93,7 @@ class Layout extends Element
      *
      * @var number
      */
-    public $siderWidth = 210;
+    public $siderWidth = 208;
 
     /**
      * 控制菜单的收起和展开
@@ -94,6 +101,13 @@ class Layout extends Element
      * @var bool
      */
     public $collapsed = false;
+
+    /**
+     * 自动分割菜单
+     *
+     * @var bool
+     */
+    public $splitMenus = false;
 
     /**
      * layout 的左上角 的 title
@@ -143,7 +157,13 @@ class Layout extends Element
     public function layout($layout)
     {
         if(!in_array($layout,['side', 'top'])) {
-            throw new \Exception("argument must be in 'side', 'top'!");
+            throw new \Exception("Argument must be in 'side', 'top'!");
+        }
+
+        if($layout == 'side') {
+            if($this->contentWidth === 'Fixed') {
+                throw new \Exception("If layout is side model,contentWidth can't set Fixed!");
+            }
         }
 
         return $this;
@@ -158,7 +178,13 @@ class Layout extends Element
     public function contentWidth($contentWidth)
     {
         if(!in_array($contentWidth,['Fluid', 'Fixed'])) {
-            throw new \Exception("argument must be in 'Fluid', 'Fixed'!");
+            throw new \Exception("Argument must be in 'Fluid', 'Fixed'!");
+        }
+
+        if($this->layout === 'side') {
+            if($contentWidth === 'Fixed') {
+                throw new \Exception("If layout is side model,contentWidth can't set Fixed!");
+            }
         }
 
         return $this;
@@ -173,7 +199,22 @@ class Layout extends Element
     public function navTheme($navTheme)
     {
         if(!in_array($navTheme,['light', 'dark'])) {
-            throw new \Exception("argument must be in 'light', 'dark'!");
+            throw new \Exception("Argument must be in 'light', 'dark'!");
+        }
+
+        return $this;
+    }
+
+    /**
+     * 后台主题色
+     *
+     * @param  string  $primaryColor
+     * @return $this
+     */
+    public function primaryColor($primaryColor)
+    {
+        if(strpos($primaryColor,'#') === false) {
+            throw new \Exception("Primary color format error!");
         }
 
         return $this;
@@ -227,7 +268,7 @@ class Layout extends Element
     public function locale($locale)
     {
         if(!in_array($locale,['zh-CN', 'zh-TW', 'en-US'])) {
-            throw new \Exception("argument must be in 'zh-CN', 'zh-TW', 'en-US'!");
+            throw new \Exception("Argument must be in 'zh-CN', 'zh-TW', 'en-US'!");
         }
 
         return $this;
@@ -260,6 +301,23 @@ class Layout extends Element
     }
 
     /**
+     * 自动分割菜单
+     *
+     * @param  bool  $splitMenus
+     * @return $this
+     */
+    public function splitMenus($splitMenus)
+    {
+        $splitMenus ? $this->splitMenus = true : $this->splitMenus = false;
+
+        if($this->layout !== 'mix' && $splitMenus === true) {
+            throw new \Exception("If layout is side mix,can't set splitMenus!");
+        }
+
+        return $this;
+    }
+
+    /**
      * Prepare the element for JSON serialization.
      *
      * @return array
@@ -278,7 +336,7 @@ class Layout extends Element
             'iconfontUrl' => $this->iconfontUrl,
             'locale' => $this->locale,
             'siderWidth' => $this->siderWidth,
-            'collapsed' => $this->collapsed,
+            'splitMenus' => $this->splitMenus
         ], parent::jsonSerialize());
     }
 }

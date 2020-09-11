@@ -50,16 +50,15 @@ class Quark
         $layout->title(config('admin.name'));
         $layout->logo(config('admin.logo'));
         $layout->layout(config('admin.layout.layout'));
+        $layout->splitMenus(config('admin.layout.split_menus'));
         $layout->contentWidth(config('admin.layout.content_width'));
         $layout->navTheme(config('admin.layout.nav_theme'));
+        $layout->primaryColor(config('admin.layout.primary_color'));
         $layout->fixedHeader(config('admin.layout.fixed_header'));
         $layout->fixSiderbar(config('admin.layout.fix_siderbar'));
         $layout->iconfontUrl(config('admin.layout.iconfont_url'));
         $layout->locale(config('admin.layout.locale'));
         $layout->siderWidth(config('admin.layout.sider_width'));
-        $layout->collapsed(config('admin.layout.collapsed'));
-
-        // unset($layout->component);
 
         return $layout;
     }

@@ -114,7 +114,7 @@ class LoginController extends QuarkController
         $builder->setMaxBehindLines(0);
         $builder->setMaxFrontLines(0);
         // 可以设置图片宽高及字体
-        $builder->build($width = 110, $height = 38, $font = null);
+        $builder->build(110, 38, null);
         cache(['adminCaptcha' => $builder->getPhrase()],60*10);
         return response($builder->output())->header('Content-type','image/jpeg');
     }

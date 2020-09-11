@@ -78,20 +78,32 @@ return [
     */
     'layout' => [
 
-        // layout 的菜单模式,side：右侧导航，top：顶部导航
+        // layout 的左上角 的 title
+        'title' => config('admin.name'),
+
+        // layout 的左上角 的 logo
+        'logo' => config('admin.logo'),
+
+        // layout 的菜单模式,side：右侧导航，top：顶部导航，mix：混合模式
         'layout' => 'side',
 
+        // layout 的菜单模式为mix时，是否自动分割菜单
+        'split_menus' => false,
+
         // layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
-        'content_width' => 'Fixed',
+        'content_width' => 'Fluid',
 
         // 导航的主题，'light' | 'dark'
         'nav_theme' => 'dark',
+
+        // 主题色
+        'primary_color' => '#1890ff',
 
         // 是否固定 header 到顶部
         'fixed_header' => true,
 
         // 是否固定导航
-        'fix_siderbar' => false,
+        'fix_siderbar' => true,
 
         // 使用 IconFont 的图标配置
         'iconfont_url' => config('admin.iconfont_url'),
@@ -100,10 +112,7 @@ return [
         'locale' => config('locale','zh-CN'),
 
         // 侧边菜单宽度
-        'sider_width' => 208,
-
-        // 控制菜单的收起和展开
-        'collapsed' => false
+        'sider_width' => 208
     ],
 
     /*
