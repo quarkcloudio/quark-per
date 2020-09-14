@@ -19,7 +19,6 @@ class LoginController extends QuarkController
     public function login(Request $request)
     {
         // 账号登录
-
         $username = $request->json('username');
         $password = $request->json('password');
         $captcha = $request->json('captcha');
