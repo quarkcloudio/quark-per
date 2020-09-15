@@ -166,6 +166,8 @@ class Layout extends Element
             }
         }
 
+        $this->layout = $layout;
+
         return $this;
     }
 
@@ -187,6 +189,8 @@ class Layout extends Element
             }
         }
 
+        $this->contentWidth = $contentWidth;
+
         return $this;
     }
 
@@ -202,6 +206,8 @@ class Layout extends Element
             throw new \Exception("Argument must be in 'light', 'dark'!");
         }
 
+        $this->navTheme = $navTheme;
+
         return $this;
     }
 
@@ -216,6 +222,8 @@ class Layout extends Element
         if(strpos($primaryColor,'#') === false) {
             throw new \Exception("Primary color format error!");
         }
+
+        $this->primaryColor = $primaryColor;
 
         return $this;
     }
@@ -271,6 +279,8 @@ class Layout extends Element
             throw new \Exception("Argument must be in 'zh-CN', 'zh-TW', 'en-US'!");
         }
 
+        $this->locale = $locale;
+
         return $this;
     }
 
@@ -313,6 +323,8 @@ class Layout extends Element
         if($this->layout !== 'mix' && $splitMenus === true) {
             throw new \Exception("If layout is side mix,can't set splitMenus!");
         }
+
+        $this->splitMenus = $splitMenus;
 
         return $this;
     }

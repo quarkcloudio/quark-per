@@ -113,8 +113,11 @@ class Container extends Element
      */
     public function __construct($title = '', $content = [])
     {
+        $this->component = 'container';
         $this->title = $title;
         $this->content = $content;
+
+        return $this;
     }
 
     /**
@@ -194,7 +197,6 @@ class Container extends Element
             'subTitle' => $this->subTitle,
             'breadcrumb' => $this->breadcrumb,
             'backButton' => $this->backButton,
-            'contentWidth' => $this->contentWidth,
             'content' => $this->content
         ], parent::jsonSerialize());
     }

@@ -2,790 +2,343 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Http\Request;
 use Closure;
-use Validator;
 
-class Form
+class Card extends Element
 {
-    public $form;
-
-    public $model;
-
-    public $request;
+    /**
+     * 标题
+     *
+     * @var string
+     */
+    public $title;
 
     /**
-     * Available fields.
+     * 副标题
+     *
+     * @var string
+     */
+    public $subTitle;
+
+    /**
+     * 标题右侧图标 hover 提示信息
+     *
+     * @var string
+     */
+    public $tip;
+
+    /**
+     * 右上角自定义区域
      *
      * @var array
      */
-    public static $availableFields = [
-        'id' => Form\Fields\ID::class,
-        'display' => Form\Fields\Display::class,
-        'text' => Form\Fields\Text::class,
-        'textarea' => Form\Fields\TextArea::class,
-        'textArea' => Form\Fields\TextArea::class,
-        'number' => Form\Fields\Number::class,
-        'radio' => Form\Fields\Radio::class,
-        'image' => Form\Fields\Image::class,
-        'file' => Form\Fields\File::class,
-        'tree' => Form\Fields\Tree::class,
-        'select' => Form\Fields\Select::class,
-        'checkbox' => Form\Fields\Checkbox::class,
-        'icon' => Form\Fields\Icon::class,
-        'switch' => Form\Fields\SwitchField::class,
-        'icon' => Form\Fields\Icon::class,
-        'datetime' => Form\Fields\Datetime::class,
-        'datetimeRange' => Form\Fields\DatetimeRange::class,
-        'timeRange' => Form\Fields\TimeRange::class,
-        'editor' => Form\Fields\Editor::class,
-        'map' => Form\Fields\Map::class,
-        'cascader' => Form\Fields\Cascader::class,
-        'search' => Form\Fields\Search::class,
-        'list' => Form\Fields\ListField::class,
-    ];
+    public $extra;
 
     /**
-     * Create a new form instance.
+     * 内容布局，支持垂直居中 default | center
      *
-     * @param $model
-     * @param \Closure $callback
+     * @var string
      */
-    public function __construct($model = null)
+    public $layout = 'default';
+
+    /**
+     * 加载中，支持自定义 loading 样式
+     *
+     * @var bool
+     */
+    public $loading;
+
+    /**
+     * 栅格布局宽度，24 栅格，支持指定宽度 px 或百分比, 支持响应式的对象写法 { xs: 8, sm: 16, md: 24}
+     *
+     * @var number | string
+     */
+    public $colSpan = 24;
+
+    /**
+     * 数字或使用数组形式同时设置 [水平间距, 垂直间距], 支持响应式的对象写法 { xs: 8, sm: 16, md: 24}
+     *
+     * @var number | array
+     */
+    public $gutter = 0;
+
+    /**
+     * 拆分卡片的方向,vertical | horizontal
+     *
+     * @var string
+     */
+    public $split = 'vertical';
+
+    /**
+     * 是否有边框
+     *
+     * @var bool
+     */
+    public $bordered = false;
+
+    /**
+     * 幽灵模式，即是否取消卡片内容区域的 padding 和 卡片的背景颜色。
+     *
+     * @var bool
+     */
+    public $ghost = false;
+
+    /**
+     * 页头是否有分割线
+     *
+     * @var bool
+     */
+    public $headerBordered = false;
+
+    /**
+     * 配置是否可折叠，受控时无效
+     *
+     * @var bool
+     */
+    public $collapsible = false;
+
+    /**
+     * 默认折叠, 受控时无效
+     *
+     * @var bool
+     */
+    public $defaultCollapsed = false;
+
+    /**
+     * 卡牌内容
+     *
+     * @var string | array
+     */
+    public $content = null;
+
+    /**
+     * 初始化容器
+     *
+     * @param  string  $name
+     * @param  \Closure|array  $content
+     * @return void
+     */
+    public function __construct($title = '', $content = [])
     {
-        $this->model = $model;
-        $layout['labelCol']['span'] = 3;
-        $layout['wrapperCol']['span'] = 21;
-        $this->form['layout'] = $layout;
+        $this->component = 'card';
+        $this->title = $title;
+        $this->content = $content;
 
-        $this->form['data'] = [];
-
-        // 设置默认表单行为
-        $this->setDefaultAction();
-
-        // 初始化表单数据
-        $this->initRequestData();
+        return $this;
     }
 
     /**
-     * Indicates if current form page is creating.
+     * 设置标题文字
      *
-     * @return bool
-     */
-    public function isCreating(): bool
-    {
-        return Str::endsWith(\request()->route()->getName(), ['/create', '/store']);
-    }
-
-    /**
-     * Indicates if current form page is editing.
-     *
-     * @return bool
-     */
-    public function isEditing(): bool
-    {
-        return Str::endsWith(\request()->route()->getName(), '/edit', '/update');
-    }
-
-    /**
-     * form title.
-     *
-     * @param string $url
-     *
-     * @return bool|mixed
+     * @param  string  $title
+     * @return $this
      */
     public function title($title)
     {
-        $this->form['title'] = $title;
+        $this->title = $title;
+
         return $this;
     }
 
     /**
-     * form layout.
+     * 设置二级标题文字
      *
-     * @param string $url
+     * @param  string  $subTitle
+     * @return $this
+     */
+    public function subTitle($subTitle)
+    {
+        $this->subTitle = $subTitle;
+
+        return $this;
+    }
+
+    /**
+     * 标题右侧图标 hover 提示信息
      *
-     * @return bool|mixed
+     * @param  string  $tip
+     * @return $this
+     */
+    public function tip($tip)
+    {
+        $this->tip = $tip;
+
+        return $this;
+    }
+
+    /**
+     * 右上角自定义区域
+     *
+     * @param  array  $extra
+     * @return $this
+     */
+    public function extra($extra)
+    {
+        $this->extra = $extra;
+
+        return $this;
+    }
+
+    /**
+     * 内容布局，支持垂直居中 default | center
+     *
+     * @param  string  $layout
+     * @return $this
      */
     public function layout($layout)
     {
-        $this->form['layout'] = $layout;
-        return $this;
-    }
-
-    /**
-     * form disableSubmit.
-     *
-     * @return bool
-     */
-    public function disableSubmit()
-    {
-        $this->form['disableSubmit'] = true;
-        return $this;
-    }
-
-    /**
-     * form disableReset.
-     *
-     * @return bool
-     */
-    public function disableReset()
-    {
-        $this->form['disableReset'] = true;
-        return $this;
-    }
-
-    /**
-     * form default action.
-     *
-     *
-     * @return bool|mixed
-     */
-    protected function setDefaultAction()
-    {
-        $action = \request()->route()->getName();
-        $action = Str::replaceFirst('api/','',$action);
-        if($this->isCreating()) {
-            $this->form['action'] = Str::replaceLast('/create','/store',$action);
+        if(!in_array($layout,['default', 'center'])) {
+            throw new \Exception("Argument must be in 'default', 'center'!");
         }
 
-        if($this->isEditing()) {
-            $action = 
-            $this->form['action'] = Str::replaceLast('/edit','/update',$action);
-        }
-    }
+        $this->layout = $layout;
 
-    /**
-     * form default action.
-     *
-     *
-     * @return bool|mixed
-     */
-    protected function initRequestData()
-    {
-        if(Str::endsWith(\request()->route()->getName(), ['/store', '/update'])) {
-            $data = request()->all();
-            unset($data['s']);
-            unset($data['actionUrl']);
-            $this->request = $data;
-        }
-    }
-
-    /**
-     * form ajax.
-     *
-     * @param string $ajax
-     *
-     * @return bool|mixed
-     */
-    public function ajax($url)
-    {
-        $this->form['url'] = $url;
         return $this;
     }
 
     /**
-     * form action.
+     * 栅格布局宽度，24 栅格，支持指定宽度 px 或百分比, 支持响应式的对象写法 { xs: 8, sm: 16, md: 24}
      *
-     * @param string $url
-     *
-     * @return bool|mixed
+     * @param  number|string  $colSpan
+     * @return $this
      */
-    public function setAction($url)
+    public function colSpan($colSpan)
     {
-        $this->form['action'] = $url;
+        $this->colSpan = $colSpan;
+
         return $this;
     }
 
     /**
-     * 验证提交数据库前的值
+     * 数字或使用数组形式同时设置 [水平间距, 垂直间距], 支持响应式的对象写法 { xs: 8, sm: 16, md: 24}
      *
-     * @param array $rules
+     * @param  number|array  $gutter
+     * @return $this
+     */
+    public function gutter($gutter)
+    {
+        $this->gutter = $gutter;
+
+        return $this;
+    }
+
+    /**
+     * 拆分卡片的方向,vertical | horizontal
+     *
+     * @param  string  $split
+     * @return $this
+     */
+    public function split($split)
+    {
+        if(!in_array($split,['vertical', 'horizontal'])) {
+            throw new \Exception("Argument must be in 'vertical', 'horizontal'!");
+        }
+
+        $this->split = $split;
+
+        return $this;
+    }
+
+    /**
+     * 是否有边框
+     *
+     * @param  bool  $bordered
+     * @return $this
+     */
+    public function bordered($bordered = true)
+    {
+        $bordered ? $this->bordered = true : $this->bordered = false;
+
+        return $this;
+    }
+
+    /**
+     * 幽灵模式，即是否取消卡片内容区域的 padding 和 卡片的背景颜色。
+     *
+     * @param  bool  $ghost
+     * @return $this
+     */
+    public function ghost($ghost = true)
+    {
+        $ghost ? $this->ghost = true : $this->ghost = false;
+
+        return $this;
+    }
+
+    /**
+     * 页头是否有分割线
+     *
+     * @param  bool  $headerBordered
+     * @return $this
+     */
+    public function headerBordered($headerBordered = true)
+    {
+        $headerBordered ? $this->headerBordered = true : $this->headerBordered = false;
+
+        return $this;
+    }
+
+    /**
+     * 配置是否可折叠，受控时无效
+     *
+     * @param  bool  $collapsible
+     * @return $this
+     */
+    public function collapsible($collapsible = true)
+    {
+        $collapsible ? $this->collapsible = true : $this->collapsible = false;
+
+        return $this;
+    }
+
+    /**
+     * 默认折叠, 受控时无效
+     *
+     * @param  bool  $defaultCollapsed
+     * @return $this
+     */
+    public function defaultCollapsed($defaultCollapsed = true)
+    {
+        $defaultCollapsed ? $this->defaultCollapsed = true : $this->defaultCollapsed = false;
+
+        return $this;
+    }
+
+    /**
+     * 容器控件里面的内容
+     *
+     * @param  string|array  $content
+     * @return $this
+     */
+    public function content($content)
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    /**
+     * Prepare the element for JSON serialization.
      *
      * @return array
      */
-    protected function validator($data,$items)
+    public function jsonSerialize()
     {
-        foreach ($items as $key => $value) {
-
-            // 通用验证规则
-            if($value->rules) {
-                foreach ($value->rules as &$rule) {
-                    if (is_string($rule) && isset($data['id'])) {
-                        $rule = str_replace('{{id}}', $data['id'], $rule);
-                    }
-                }
-                $rules[$value->name] = $value->rules;
-                $validator = Validator::make($data,$rules,$value->ruleMessages);
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
-                    return $errorMsg;
-                }
-            }
-
-            // 新增数据，验证规则
-            if($this->isCreating()) {
-                if($value->creationRules) {
-                    $creationRules[$value->name] = $value->creationRules;
-                    $validator = Validator::make($data,$creationRules,$value->creationRuleMessages);
-                    if ($validator->fails()) {
-                        $errors = $validator->errors()->getMessages();
-                        foreach($errors as $key => $value) {
-                            $errorMsg = $value[0];
-                        }
-                        return $errorMsg;
-                    }
-                }
-            }
-
-            // 编辑数据，验证规则
-            if($this->isEditing()) {
-                if($value->updateRules) {
-                    foreach ($value->updateRules as &$rule) {
-                        if (is_string($rule)) {
-                            $rule = str_replace('{{id}}', $data['id'], $rule);
-                        }
-                    }
-                    $updateRules[$value->name] = $value->updateRules;
-                    $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
-                    if ($validator->fails()) {
-                        $errors = $validator->errors()->getMessages();
-                        foreach($errors as $key => $value) {
-                            $errorMsg = $value[0];
-                        }
-                        return $errorMsg;
-                    }
-                }
-            }
-
-        }
-    }
-
-    /**
-     * 解析保存提交数据库前的值
-     *
-     * @param array $rules
-     *
-     * @return array
-     */
-    protected function parseSubmitValues($data,$items)
-    {
-        foreach ($items as $key => $value) {
-            if($value->component == 'image' || $value->component == 'file') {
-                if(isset($data[$value->name])) {
-                    if(is_array($data[$value->name])) {
-                        $data[$value->name] = json_encode($data[$value->name]);
-                    }
-                }
-            }
-
-            if($value->component == 'checkbox' || $value->component == 'list') {
-                if(isset($data[$value->name])) {
-                    $data[$value->name] = json_encode($data[$value->name]);
-                } else {
-                    $data[$value->name] = json_encode([]);
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * form store.
-     *
-     * @return bool
-     */
-    public function store()
-    {
-        $data = $this->request;
-        $items = [];
-
-        if(isset($this->form['tab'])) {
-            foreach ($this->form['tab'] as $tabKey => $tab) {
-                if(isset($tab['items'])) {
-                    $items = array_merge($items, $tab['items']);
-                }
-            }
-        } else {
-            if(isset($this->form['items'])) {
-                $items = $this->form['items'];
-            }
-        }
-
-        if($items) {
-            $errorMsg = $this->validator($data,$items);
-            if($errorMsg) {
-                return error($errorMsg);
-            }
-            $data = $this->parseSubmitValues($data,$items);
-        }
-
-        $result = $this->model->create($data);
-
-        if($result) {
-            return success('操作成功！','',$result);
-        } else {
-            return error('操作失败！');
-        }
-    }
-
-    /**
-     * 解析编辑显示前的值
-     *
-     * @param array $rules
-     *
-     * @return array
-     */
-    protected function parseEditValues($data,$items)
-    {
-        foreach ($items as $key => $item) {
-            if($item->component == 'image') {
-                if(count(explode('[',$data[$item->name]))>1) {
-                    $getImages = json_decode($data[$item->name],true);
-                    $images = null;
-                    if($getImages) {
-                        foreach ($getImages as $key => $value) {
-                            $image['id'] = $value;
-                            $image['uid'] = $value;
-                            $image['name'] = get_picture($value,0,'name');
-                            $image['size'] = get_picture($value,0,'size');
-                            $image['url'] = get_picture($value,0,'path');
-                            $images[] = $image;
-                        }
-                    }
-                    $data[$item->name] = $images;
-                } else {
-                    $image = null;
-                    if($data[$item->name]) {
-                        $image['id'] = $data[$item->name];
-                        $image['name'] = get_picture($data[$item->name],0,'name');
-                        $image['size'] = get_picture($data[$item->name],0,'size');
-                        $image['url'] = get_picture($data[$item->name],0,'path');
-                    }
-                    $data[$item->name] = $image;
-                }
-            }
-
-            if($item->component == 'file') {
-                $files = null;
-                if($data[$item->name]) {
-                    if(count(explode('[',$data[$item->name]))>1) {
-                        $getFiles = json_decode($data[$item->name],true);
-                        foreach ($getFiles as $key => $value) {
-                            $file['id'] = $value;
-                            $file['uid'] = $value;
-                            $file['name'] = get_file($value,'name');
-                            $file['size'] = get_file($value,'size');
-                            $file['url'] = get_file($value,'path');
-                            $files[] = $file;
-                        }
-                    } else {
-                        $file['id'] = $data[$item->name];
-                        $file['uid'] = $data[$item->name];
-                        $file['name'] = get_file($data[$item->name],'name');
-                        $file['size'] = get_file($data[$item->name],'size');
-                        $file['url'] = get_file($data[$item->name],'path');
-                        $files[] = $file;
-                    }
-                }
-
-                $data[$item->name] = $files;
-            }
-
-            if($item->component == 'checkbox' || $item->component == 'list') {
-                if(count(explode('[',$data[$item->name]))>1) {
-                    $data[$item->name] = json_decode($data[$item->name],true);
-                }
-            }
-        }
-
-        return $data;
-    }
-
-    /**
-     * form edit.
-     *
-     * @return bool
-     */
-    public function edit($id)
-    {
-        $data = $this->model->findOrFail($id);
-        $items = [];
-
-        if(isset($this->form['tab'])) {
-            foreach ($this->form['tab'] as $tabKey => $tab) {
-                if(isset($tab['items'])) {
-                    $items = array_merge($items, $tab['items']);
-                }
-            }
-        } else {
-            if(isset($this->form['items'])) {
-                $items = $this->form['items'];
-            }
-        }
-
-        $this->form['data'] = $this->parseEditValues($data,$items);
-        return $this;
-    }
-
-    /**
-     * form update.
-     *
-     * @return bool
-     */
-    public function update()
-    {
-        $data = $this->request;
-        $items = [];
-
-        if(isset($this->form['tab'])) {
-            foreach ($this->form['tab'] as $tabKey => $tab) {
-                if(isset($tab['items'])) {
-                    $items = array_merge($items, $tab['items']);
-                }
-            }
-        } else {
-            if(isset($this->form['items'])) {
-                $items = $this->form['items'];
-            }
-        }
-
-        if($items) {
-            $errorMsg = $this->validator($data,$items);
-            if($errorMsg) {
-                return error($errorMsg);
-            }
-            $data = $this->parseSubmitValues($data,$items);
-        }
-
-        // 清除空数据
-        foreach($data as $key => $value) {
-            if($value === '') {
-                unset($data[$key]);
-            }
-        }
-
-        $result = $this->model->where('id',$data['id'])->update($data);
-
-        if($result) {
-            return success('操作成功！','',$result);
-        } else {
-            return error('操作失败！');
-        }
-    }
-
-    /**
-     * form destroy.
-     *
-     * @return bool
-     */
-    public function destroy()
-    {
-        $id = request('id');
-
-        if(empty($id)) {
-            return $this->error('参数错误！');
-        }
-
-        $result = $this->model->destroy($id);
-        return $result;
-    }
-
-    /**
-     * tab布局的form
-     *
-     * @return bool
-     */
-    public function tab($title,Closure $callback = null)
-    {
-        $callback($this);
-
-        $tab['title'] = $title;
-        if(isset($this->form['items'])) {
-            $tab['items'] = $this->form['items'];
-            $this->form['items'] = [];
-        }
-        $this->form['tab'][] = $tab;
-
-        return $this;
-    }
-
-
-    /**
-     * 保存前回调
-     *
-     * @return bool
-     */
-    public function saving(Closure $callback = null)
-    {
-        $callback($this);
-    }
-
-    /**
-     * Find field class.
-     *
-     * @param string $method
-     *
-     * @return bool|mixed
-     */
-    public static function findFieldClass($method)
-    {
-        $class = Arr::get(static::$availableFields, $method);
-
-        if (class_exists($class)) {
-            return $class;
-        }
-
-        return false;
-    }
-
-    public function __call($method, $arguments)
-    {
-        if ($className = static::findFieldClass($method)) {
-
-            $column = Arr::get($arguments, 0, ''); //[0];
-            $element = new $className($column, array_slice($arguments, 1));
-            $this->form['items'][] = $element;
-
-            return $element;
-        }
-    }
-
-    /**
-     * 解析成前端验证规则
-     *
-     * @param array $rules
-     *
-     * @return array
-     */
-    protected function parseRules($rules,$messages)
-    {
-        $result = false;
-
-        foreach ($rules as $key => $value) {
-
-            if(strpos($value,':') !== false) {
-                $arr = explode(':',$value);
-                $rule = $arr[0];
-            } else {
-                $rule = $value;
-            }
-
-            $data = false;
-
-            switch ($rule) {
-                case 'required':
-                    // 必填
-                    $data['required'] = true;
-                    $data['message'] = $messages['required'];
-                    break;
-
-                case 'min':
-                    // 最小字符串数
-                    $data['min'] =  (int)$arr[1];
-                    $data['message'] = $messages['min'];
-                    break;
-
-                case 'max':
-                    // 最大字符串数
-                    $data['max'] =  (int)$arr[1];
-                    $data['message'] = $messages['max'];
-                    break;
-
-                case 'email':
-                    // 必须为邮箱
-                    $data['type'] = 'email';
-                    $data['message'] = $messages['email'];
-                    break;
-
-                case 'numeric':
-                    // 必须为数字
-                    $data['type'] = 'number';
-                    $data['message'] = $messages['numeric'];
-                    break;
-
-                case 'url':
-                    // 必须为url
-                    $data['type'] = 'url';
-                    $data['message'] = $messages['url'];
-                    break;
-
-                case 'integer':
-                    // 必须为整数
-                    $data['type'] = 'integer';
-                    $data['message'] = $messages['integer'];
-                    break;
-
-                case 'date':
-                    // 必须为日期
-                    $data['type'] = 'date';
-                    $data['message'] = $messages['date'];
-                    break;
-
-                case 'boolean':
-                    // 必须为布尔值
-                    $data['type'] = 'boolean';
-                    $data['message'] = $messages['boolean'];
-                    break;
-
-                default:
-                    $data = false;
-                    break;
-            }
-
-            if($data) {
-                $result[] = $data;
-            }
-        }
-
-        return $result;
-    }
-
-    /**
-     * 设置前端验证规则
-     *
-     * @param array $rules
-     *
-     * @return array
-     */
-    protected function setFrontendRules()
-    {
-        if(isset($this->form['tab'])) {
-            foreach ($this->form['tab'] as $tabKey => $tab) {
-                if(isset($tab['items'])) {
-                    foreach ($tab['items'] as $key => $item) {
-                        $frontendRules = [];
-                        $rules = false;
-                        $creationRules = false;
-                        $updateRules = false;
-            
-                        if(!empty($item->rules)) {
-                            $rules = $this->parseRules($item->rules,$item->ruleMessages);
-                        }
-            
-                        if($this->isCreating() && !empty($item->creationRules)) {
-                            $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
-                        }
-            
-                        if($this->isEditing() && !empty($item->updateRules)) {
-                            $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
-                        }
-            
-                        if($rules) {
-                            $frontendRules = Arr::collapse([$frontendRules, $rules]);
-                        }
-            
-                        if($creationRules) {
-                            $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
-                        }
-            
-                        if($updateRules) {
-                            $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
-                        }
-            
-                        $item->frontendRules = $frontendRules;
-                        $this->form['tab'][$tabKey]['items'][$key] = $item;
-                    }
-                }
-            }
-        } else {
-            if(isset($this->form['items'])) {
-                foreach ($this->form['items'] as $key => $item) {
-                    $frontendRules = [];
-                    $rules = false;
-                    $creationRules = false;
-                    $updateRules = false;
-        
-                    if(!empty($item->rules)) {
-                        $rules = $this->parseRules($item->rules,$item->ruleMessages);
-                    }
-        
-                    if($this->isCreating() && !empty($item->creationRules)) {
-                        $creationRules = $this->parseRules($item->creationRules,$item->creationRuleMessages);
-                    }
-        
-                    if($this->isEditing() && !empty($item->updateRules)) {
-                        $updateRules = $this->parseRules($item->updateRules,$item->updateRuleMessages);
-                    }
-        
-                    if($rules) {
-                        $frontendRules = Arr::collapse([$frontendRules, $rules]);
-                    }
-        
-                    if($creationRules) {
-                        $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
-                    }
-        
-                    if($updateRules) {
-                        $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
-                    }
-        
-                    $item->frontendRules = $frontendRules;
-                    $this->form['items'][$key] = $item;
-                }
-            }
-        }
-    }
-
-    /**
-     * 表单默认值，只有初始化以及重置时生效
-     *
-     * @param array $rules
-     *
-     * @return array
-     */
-    protected function initialValues()
-    {
-        if(isset($this->form['tab'])) {
-            $data = [];
-            foreach ($this->form['tab'] as $key => $tab) {
-                if(isset($tab['items'])) {
-                    foreach ($tab['items'] as $key => $item) {
-                        if(isset($item->name)) {
-                            if(isset($item->defaultValue)) {
-                                $data[$item->name] = $item->defaultValue;
-                            }
-                            if(isset($item->value) && empty($this->form['data'][$item->name])) {
-                                $this->form['data'][$item->name] = $item->value;
-                            }
-                        }
-                    }
-                }
-            }
-            $this->form['initialValues'] = $data;
-        } else {
-            if(isset($this->form['items'])) {
-                $data = [];
-                foreach ($this->form['items'] as $key => $item) {
-                    if(isset($item->name)) {
-                        if(isset($item->defaultValue)) {
-                            $data[$item->name] = $item->defaultValue;
-                        }
-                        if(isset($item->value) && empty($this->form['data'][$item->name])) {
-                            $this->form['data'][$item->name] = $item->value;
-                        }
-                    }
-                }
-                $this->form['initialValues'] = $data;
-            }
-        }
-    }
-
-    public function render()
-    {
-        // 设置前端验证规则
-        $this->setFrontendRules();
-
-        // 设置表单默认值
-        $this->initialValues();
-
-        return $this->form;
+        return array_merge([
+            'title' => $this->title,
+            'subTitle' => $this->subTitle,
+            'tip' => $this->tip,
+            'extra' => $this->extra,
+            'layout' => $this->layout,
+            'colSpan' => $this->colSpan,
+            'gutter' => $this->gutter,
+            'split' => $this->split,
+            'bordered' => $this->bordered,
+            'ghost' => $this->ghost,
+            'headerBordered' => $this->headerBordered,
+            'collapsible' => $this->collapsible,
+            'defaultCollapsed' => $this->defaultCollapsed,
+            'content' => $this->content
+        ], parent::jsonSerialize());
     }
 }
