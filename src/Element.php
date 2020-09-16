@@ -14,6 +14,13 @@ abstract class Element implements JsonSerializable
     public $component;
 
     /**
+     * The element's style.
+     *
+     * @var array
+     */
+    public $style = [];
+
+    /**
      * Create a new element.
      *
      * @param  string|null  $component
@@ -45,6 +52,18 @@ abstract class Element implements JsonSerializable
     }
 
     /**
+     * Set the element style.
+     *
+     * @return string
+     */
+    public function style($style)
+    {
+        $this->style = $style;
+
+        return $this;
+    }
+
+    /**
      * Prepare the element for JSON serialization.
      *
      * @return array
@@ -52,7 +71,8 @@ abstract class Element implements JsonSerializable
     public function jsonSerialize()
     {
         return array_merge([
-            'component' => $this->component()
+            'component' => $this->component(),
+            'style' => $this->style
         ]);
     }
 }
