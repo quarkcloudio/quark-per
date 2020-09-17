@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Quark;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Models\Menu;
@@ -136,6 +137,9 @@ class QuarkController extends Controller
         }
 
         foreach ($data as $key => $value) {
+
+            $data[$key]['key'] = Str::uuid();
+
             $data[$key]['locale'] = 'menu'.str_replace("/",".",$value['path']);
             if(!$value['show']) {
                 $data[$key]['hideInMenu'] = true;

@@ -66,7 +66,7 @@ return [
     | 使用 IconFont 的图标配置
     |
     */
-    'iconfont_url' => false,
+    'iconfont_url' => '//at.alicdn.com/t/font_1615691_3pgkh5uyob.js',
 
     /*
     |--------------------------------------------------------------------------

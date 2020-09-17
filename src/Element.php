@@ -3,9 +3,17 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use JsonSerializable;
+use Illuminate\Support\Str;
 
 abstract class Element implements JsonSerializable
 {
+    /**
+     * The element's unique key.
+     *
+     * @var string
+     */
+    public $key = '';
+
     /**
      * The element's component.
      *
@@ -42,6 +50,16 @@ abstract class Element implements JsonSerializable
     }
 
     /**
+     * Get the component key for the element.
+     *
+     * @return string
+     */
+    public function key()
+    {
+        return $this->key;
+    }
+
+    /**
      * Get the component name for the element.
      *
      * @return string
@@ -70,7 +88,10 @@ abstract class Element implements JsonSerializable
      */
     public function jsonSerialize()
     {
+        $this->key = Str::uuid();
+
         return array_merge([
+            'key' => $this->key(),
             'component' => $this->component(),
             'style' => $this->style
         ]);

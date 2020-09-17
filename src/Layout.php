@@ -275,8 +275,10 @@ class Layout extends Element
      */
     public function locale($locale)
     {
-        if(!in_array($locale,['zh-CN', 'zh-TW', 'en-US'])) {
-            throw new \Exception("Argument must be in 'zh-CN', 'zh-TW', 'en-US'!");
+        if($locale != false) {
+            if(!in_array($locale,['zh-CN', 'zh-TW', 'en-US'])) {
+                throw new \Exception("Argument must be in 'zh-CN', 'zh-TW', 'en-US'!");
+            }
         }
 
         $this->locale = $locale;
