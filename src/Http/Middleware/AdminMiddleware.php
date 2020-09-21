@@ -21,7 +21,13 @@ class AdminMiddleware
             if(empty($authorization)) {
                 throw new AuthenticationException('Unauthenticated.');
             }
+            
             $authorizations = explode(' ',$authorization);
+
+            if(!isset($authorization[1])) {
+                throw new AuthenticationException('Unauthenticated.');
+            }
+
             $token = $authorizations[1];
         }
 
