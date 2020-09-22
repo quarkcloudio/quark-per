@@ -1,6 +1,6 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Grid\Actions;
+namespace QuarkCMS\QuarkAdmin\Table\Actions;
 
 use Illuminate\Support\Arr;
 use Exception;

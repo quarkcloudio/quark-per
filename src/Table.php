@@ -3,6 +3,9 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
+use Illuminate\Database\Eloquent\Model as Eloquent;
+use QuarkCMS\QuarkAdmin\Table\Model;
+use QuarkCMS\QuarkAdmin\Table\Column;
 
 class Table extends Element
 {
@@ -21,11 +24,11 @@ class Table extends Element
     public $headerTitle;
 
     /**
-     * 表格列的配置描述
+     * 表格列描述
      *
-     * @var array
+     * @var object
      */
-    public $columns = [];
+    public $columns;
     
     /**
      * 表格数据
@@ -48,10 +51,11 @@ class Table extends Element
      * @param  \Closure|array  $content
      * @return void
      */
-    public function __construct($model = '')
+    public function __construct(Eloquent $model)
     {
         $this->component = 'table';
-        $this->model = $model;
+        $this->model = new Model($model);
+        $this->columns = collect();
 
         return $this;
     }
@@ -70,48 +74,106 @@ class Table extends Element
     }
 
     /**
-     * 表格列的配置描述
+     * 表格列描述
      *
-     * @param  array  $columns
-     * @return $this
+     * @param string $name
+     * @param string $label
+     *
+     * @return Column
      */
-    public function columns($columns)
+    public function column($name, $label = '')
     {
-        $this->columns = $columns;
-
-        return $this;
+        return $this->__call($name, array_filter([$label]));
     }
 
     /**
-     * 读取或者设置表格模型
+     * 解析列
      *
-     * @param  object|null  $model
      * @return $this
      */
-    public function model($model = null)
+    protected function parseColumns()
     {
-        if($model) {
-            $this->model = $model;
+        $columns = $this->columns;
+        foreach ($columns as $key => $value) {
+            $getColumns[$key]['key'] = $value->name;
+            $getColumns[$key]['title'] = $value->label;
+            $getColumns[$key]['dataIndex'] = $value->name;
         }
+        
+        return $getColumns;
+    }
 
+    /**
+     * 读取模型
+     *
+     * @return $this
+     */
+    public function model()
+    {
         return $this->model;
     }
 
     /**
-     * 填充表格数据
+     * 根据column显示规则解析每一行的数据
      *
-     * @param  arrar  $data
      * @return $this
      */
-    public function fillData($data = null)
+    protected function parseRowData($row)
     {
-        if($data) {
-            $this->datasource = $data;
+        $columns = $this->columns;
+        foreach ($columns as $key => $value) {
+            if(isset($row[$value->name])) {
+
+                // 解析display回调函数
+                if($value->displayCallback) {
+                    $row[$value->name] = call_user_func_array($value->displayCallback,[$row[$value->name]]);
+                }
+
+                // 解析using规则
+                if($value->using) {
+                    if(isset($value->using[$row[$value->name]])) {
+                        $row[$value->name] = $value->using[$row[$value->name]];
+                    }
+                }
+            }
         }
 
-        $this->datasource = $this->model;
+        return $row;
+    }
 
-        return $this;
+    /**
+     * 填充数据
+     *
+     * @param  array  $data
+     * @return $this
+     */
+    public function fillData()
+    {
+        $data = $this->model->data();
+
+        foreach ($data as $key => $value) {
+            $datasource[$key] = $this->parseRowData($value);
+        }
+
+        $this->datasource = $datasource;
+    }
+
+    /**
+     * Dynamically add columns to the table view.
+     *
+     * @param $method
+     * @param $parameters
+     *
+     * @return Column
+     */
+    public function __call($method, $parameters)
+    {
+        $label = $parameters[0] ?? null;
+        $column = new Column($method, $label);
+
+        return tap($column, function ($value) {
+            $this->columns->push($value);
+        });
     }
 
     /**
@@ -121,13 +183,12 @@ class Table extends Element
      */
     public function jsonSerialize()
     {
-
         $this->fillData();
 
         return array_merge([
             'rowKey' => $this->rowKey,
             'headerTitle' => $this->headerTitle,
-            'columns' => $this->columns,
+            'columns' => $this->parseColumns(),
             'datasource' => $this->datasource
         ], parent::jsonSerialize());
     }

@@ -1,16 +1,17 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Grid;
+namespace QuarkCMS\QuarkAdmin\Table;
 
 use Closure;
 use Illuminate\Support\Str;
-use QuarkCMS\QuarkAdmin\Grid\Actions;
+use QuarkCMS\QuarkAdmin\Element;
+use QuarkCMS\QuarkAdmin\Table\Actions;
 
 /**
  * Class Column.
  *
  */
-class Column
+class Column extends Element
 {
     /**
      * Name of column.
@@ -72,11 +73,18 @@ class Column
     public $filters = null;
 
     /**
-     * The grid rowActions.
+     * The Table rowActions.
      *
      * @var
      */
     public $rowActions = null;
+
+    /**
+     * The Table displayCallback.
+     *
+     * @var
+     */
+    public $displayCallback = null;
 
     /**
      * @param string $name
@@ -84,6 +92,7 @@ class Column
      */
     public function __construct($name, $label)
     {
+        $this->component = 'column';
         $this->name = $name;
         $this->label = $label;
     }
@@ -223,6 +232,17 @@ class Column
         $this->rowActions->style($showStyle,$style);
 
         $callback($this->rowActions);
+        return $this;
+    }
+
+    /**
+     * display
+     *
+     * @return bool
+     */
+    public function display(Closure $callback)
+    {
+        $this->displayCallback = $callback;
         return $this;
     }
 }

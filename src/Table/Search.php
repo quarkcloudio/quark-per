@@ -1,6 +1,6 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Grid;
+namespace QuarkCMS\QuarkAdmin\Table;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;

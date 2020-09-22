@@ -1,6 +1,6 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Grid\Search;
+namespace QuarkCMS\QuarkAdmin\Table\Search;
 
 use Exception;
 

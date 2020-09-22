@@ -1,9 +1,9 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Grid\Search\Fields;
+namespace QuarkCMS\QuarkAdmin\Table\Search\Fields;
 
 use Illuminate\Support\Arr;
-use QuarkCMS\QuarkAdmin\Grid\Search\Item;
+use QuarkCMS\QuarkAdmin\Table\Search\Item;
 use Exception;
 
 class Gt extends Item

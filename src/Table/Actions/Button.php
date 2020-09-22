@@ -1,10 +1,10 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Grid\Actions;
+namespace QuarkCMS\QuarkAdmin\Table\Actions;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use QuarkCMS\QuarkAdmin\Grid\Actions\Modal;
+use QuarkCMS\QuarkAdmin\Table\Actions\Modal;
 use Exception;
 
 class Button
