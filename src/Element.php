@@ -54,9 +54,14 @@ abstract class Element implements JsonSerializable
      *
      * @return string
      */
-    public function key()
+    public function key($key = null)
     {
-        return $this->key;
+        if(empty($key)) {
+            $key = Str::uuid();
+        }
+        $this->key = md5($key);
+
+        return $this;
     }
 
     /**
@@ -88,10 +93,8 @@ abstract class Element implements JsonSerializable
      */
     public function jsonSerialize()
     {
-        $this->key = Str::uuid();
-
         return array_merge([
-            'key' => $this->key(),
+            'key' => $this->key,
             'component' => $this->component(),
             'style' => $this->style
         ]);

@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use QuarkCMS\QuarkAdmin\Table\Model;
 use QuarkCMS\QuarkAdmin\Table\Column;
 
+use function GuzzleHttp\json_decode;
+
 class Table extends Element
 {
     /**
@@ -31,11 +33,25 @@ class Table extends Element
     public $columns;
     
     /**
+     * 是否开启搜索
+     *
+     * @var bool
+     */
+    public $search = false;
+
+    /**
      * 表格数据
      *
-     * @var array
+     * @var array|string
      */
-    public $datasource = [];
+    public $datasource = null;
+
+    /**
+     * 表格分页
+     *
+     * @var array|bool
+     */
+    public $pagination = null;
 
     /**
      * 绑定的模型
@@ -87,6 +103,19 @@ class Table extends Element
     }
 
     /**
+     * 是否开启搜索
+     *
+     * @param  bool  $search
+     * @return $this
+     */
+    public function search($search = true)
+    {
+        $this->search = $search;
+
+        return $this;
+    }
+
+    /**
      * 解析列
      *
      * @return $this
@@ -95,7 +124,6 @@ class Table extends Element
     {
         $columns = $this->columns;
         foreach ($columns as $key => $value) {
-            $getColumns[$key]['key'] = $value->name;
             $getColumns[$key]['title'] = $value->label;
             $getColumns[$key]['dataIndex'] = $value->name;
         }
@@ -151,6 +179,18 @@ class Table extends Element
     {
         $data = $this->model->data();
 
+        if(isset($data['current_page'])) {
+            // 存在分页
+            $pagination['defaultCurrent'] = 1;
+            $pagination['current'] = $data['current_page'];
+            $pagination['pageSize'] = $data['per_page'];
+            $pagination['total'] = $data['total'];
+            $this->pagination = $pagination;
+
+            // 重设数据
+            $data = $data['data'];
+        }
+
         foreach ($data as $key => $value) {
             $datasource[$key] = $this->parseRowData($value);
         }
@@ -183,13 +223,19 @@ class Table extends Element
      */
     public function jsonSerialize()
     {
+        // 设置组件唯一标识
+        $this->key($this->headerTitle.json_encode($this->columns));
+
+        // 填充数据
         $this->fillData();
 
         return array_merge([
             'rowKey' => $this->rowKey,
             'headerTitle' => $this->headerTitle,
             'columns' => $this->parseColumns(),
-            'datasource' => $this->datasource
+            'search' => $this->search,
+            'datasource' => $this->datasource,
+            'pagination' => $this->pagination
         ], parent::jsonSerialize());
     }
 }

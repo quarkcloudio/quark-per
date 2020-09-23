@@ -4,22 +4,37 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Quark;
-use Str;
+use QuarkCMS\QuarkAdmin\Container;
+use QuarkCMS\QuarkAdmin\Card;
+use QuarkCMS\QuarkAdmin\Table;
 
 class Controller extends BaseController
 {
+    /**
+     * 页面标题
+     *
+     * @var string
+     */
     protected $title = '默认页面';
 
+    /**
+     * 页面二级标题
+     *
+     * @var string
+     */
     protected $subTitle = false;
 
-    protected $description = false;
-
+    /**
+     * 页面面包屑导航
+     *
+     * @var array
+     */
     protected $breadcrumb = false;
 
     /**
-     * Get content title.
+     * 获取标题
      *
+     * @param  void
      * @return string
      */
     protected function title()
@@ -28,8 +43,9 @@ class Controller extends BaseController
     }
 
     /**
-     * Get content subTitle.
+     * 获取二级标题
      *
+     * @param  void
      * @return string
      */
     protected function subTitle()
@@ -38,19 +54,10 @@ class Controller extends BaseController
     }
 
     /**
-     * Get content description.
+     * 获取面包屑导航
      *
-     * @return string
-     */
-    protected function description()
-    {
-        return $this->description;
-    }
-
-    /**
-     * Get content breadcrumb.
-     *
-     * @return string
+     * @param  void
+     * @return array
      */
     protected function breadcrumb()
     {
@@ -62,20 +69,31 @@ class Controller extends BaseController
      *
      * @param Request $request
      *
-     * @return \Illuminate\Http\Response
+     * @return json
      */
     public function index(Request $request)
     {
         $table = $this->table();
 
-        $content = Quark::content()
-        ->title($this->title())
-        ->subTitle($this->subTitle())
-        ->description($this->description())
-        ->breadcrumb($this->breadcrumb())
-        ->body($table->render());
+        // 初始化card组件
+        $card = new Card(null,$table);
 
-        return success('获取成功！','',$content);
+        // 初始化容器
+        $container = new Container();
+
+        // 设置标题
+        $container->title($this->title());
+
+        // 设置二级标题
+        $container->subTitle($this->subTitle());
+
+        // 设置面包屑导航
+        $container->breadcrumb($this->breadcrumb());
+
+        // 设置内容
+        $container->content($card);
+
+        return success('获取成功！','',$container);
     }
 
     /**
