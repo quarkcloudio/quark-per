@@ -3,11 +3,10 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
+use Str;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use QuarkCMS\QuarkAdmin\Table\Model;
 use QuarkCMS\QuarkAdmin\Table\Column;
-
-use function GuzzleHttp\json_decode;
 
 class Table extends Element
 {
@@ -37,7 +36,7 @@ class Table extends Element
      *
      * @var bool
      */
-    public $search = false;
+    public $search = true;
 
     /**
      * 表格数据
@@ -126,6 +125,11 @@ class Table extends Element
         foreach ($columns as $key => $value) {
             $getColumns[$key]['title'] = $value->label;
             $getColumns[$key]['dataIndex'] = $value->name;
+            $getColumns[$key]['width'] = $value->width;
+            $getColumns[$key]['link'] = $value->link;
+            $getColumns[$key]['image'] = $value->image;
+            $getColumns[$key]['qrcode'] = $value->qrcode;
+            $getColumns[$key]['rowActions'] = $value->rowActions;
         }
         
         return $getColumns;
@@ -162,6 +166,43 @@ class Table extends Element
                     if(isset($value->using[$row[$value->name]])) {
                         $row[$value->name] = $value->using[$row[$value->name]];
                     }
+                }
+
+                // 解析link规则
+                if($value->link) {
+                    if($value->link === true) {
+                        $item['title'] = $row[$value->name];
+                        $action = \request()->route()->getName();
+                        $action = Str::replaceFirst('api/','',$action);
+                        $action = urlencode(Str::replaceLast('/index','/edit',$action));
+                        $item['link'] = '/quark/engine?api='.$action.'&id='.$row['id'];
+                        $row[$value->name] = $item;
+                    } else {
+                        $item['title'] = $row[$value->name];
+                        $item['link'] = Str::replace('{id}',$row['id'],$value->link);
+                        $row[$value->name] = $item;
+                    }
+                }
+
+                // 解析image规则
+                if($value->image) {
+                    if($value->image['path']) {
+                        $row[$value->name] = $value->image['path'];
+                    } else {
+                        $row[$value->name] = get_picture($row[$value->name]);
+                    }
+                }
+
+                // 解析qrcode规则
+                if($value->qrcode) {
+                    $url = 'https://api.qrserver.com/v1/create-qr-code/?size=';
+                    $size = $value->qrcode['width'].'x'.$value->qrcode['height'];
+                    if($value->qrcode['content']) {
+                        $content = '&data='.$value->qrcode['content'];
+                    } else {
+                        $content = '&data='.$row[$value->name];
+                    }
+                    $row[$value->name] = $url.$size.$content;
                 }
             }
         }
