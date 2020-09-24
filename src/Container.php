@@ -192,7 +192,7 @@ class Container extends Element
      */
     public function jsonSerialize()
     {
-        $this->key($this->title.$this->subTitle);
+        $this->key(__CLASS__.$this->title.$this->subTitle);
 
         return array_merge([
             'title' => $this->title,

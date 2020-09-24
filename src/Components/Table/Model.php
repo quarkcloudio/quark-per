@@ -1,6 +1,6 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Table;
+namespace QuarkCMS\QuarkAdmin\Components\Table;
 
 use Illuminate\Database\Eloquent\Model as EloquentModel;
 

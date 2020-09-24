@@ -5,6 +5,7 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Table;
+use QuarkCMS\QuarkAdmin\Action;
 
 class AdminController extends Controller
 {
@@ -34,10 +35,30 @@ class AdminController extends Controller
             'off' => ['value' => 0, 'text' => '禁用']
         ])->width(100);
 
-        $table->column('actions','操作')->width(100)->rowActions(function($rowAction) {
-            $rowAction->menu('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+        $table->column('actions','操作')
+        ->width(100)
+        ->actions(function($row) {
+            $action = new Action();
+
+            if($row['status'] == 1) {
+                $action->button('禁用')->model()->update(['status'=>2]);
+            } else {
+                $action->button('启用')->model()->update(['status'=>1]);
+            }
+
+            $action->button('编辑')->link();
+            $action->button('审核')->model()->update(['status'=>1]);
+
+            // $action->menu('更多')->options(function($option) {
+            //     $option->name('下载')->download();
+            //     $option->name('删除')->model()
+            //     ->delete()
+            //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+            // });
+
+            // $action->button('查看')->modalForm('查看详情')->api('admin/menu/edit?id={id}');
+
+            return $action;
         });
 
         $table->model()->paginate(request('pageSize',10));

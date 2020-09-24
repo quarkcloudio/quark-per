@@ -5,8 +5,8 @@ namespace QuarkCMS\QuarkAdmin;
 use Closure;
 use Str;
 use Illuminate\Database\Eloquent\Model as Eloquent;
-use QuarkCMS\QuarkAdmin\Table\Model;
-use QuarkCMS\QuarkAdmin\Table\Column;
+use QuarkCMS\QuarkAdmin\Components\Table\Model;
+use QuarkCMS\QuarkAdmin\Components\Table\Column;
 
 class Table extends Element
 {
@@ -115,27 +115,6 @@ class Table extends Element
     }
 
     /**
-     * 解析列
-     *
-     * @return $this
-     */
-    protected function parseColumns()
-    {
-        $columns = $this->columns;
-        foreach ($columns as $key => $value) {
-            $getColumns[$key]['title'] = $value->label;
-            $getColumns[$key]['dataIndex'] = $value->name;
-            $getColumns[$key]['width'] = $value->width;
-            $getColumns[$key]['link'] = $value->link;
-            $getColumns[$key]['image'] = $value->image;
-            $getColumns[$key]['qrcode'] = $value->qrcode;
-            $getColumns[$key]['rowActions'] = $value->rowActions;
-        }
-        
-        return $getColumns;
-    }
-
-    /**
      * 读取模型
      *
      * @return $this
@@ -155,11 +134,6 @@ class Table extends Element
         $columns = $this->columns;
         foreach ($columns as $key => $value) {
             if(isset($row[$value->name])) {
-
-                // 解析display回调函数
-                if($value->displayCallback) {
-                    $row[$value->name] = call_user_func_array($value->displayCallback,[$row[$value->name]]);
-                }
 
                 // 解析using规则
                 if($value->using) {
@@ -204,6 +178,17 @@ class Table extends Element
                     }
                     $row[$value->name] = $url.$size.$content;
                 }
+
+                // 解析display回调函数
+                if($value->displayCallback) {
+                    $row[$value->name] = call_user_func_array($value->displayCallback,[$row[$value->name]]);
+                }
+            }
+
+            // 解析action回调函数
+            if($value->actionCallback) {
+                $actionCallback = call_user_func_array($value->actionCallback,[$row]);
+                $row[$value->name] = $actionCallback->actions();
             }
         }
 
@@ -265,7 +250,7 @@ class Table extends Element
     public function jsonSerialize()
     {
         // 设置组件唯一标识
-        $this->key($this->headerTitle.json_encode($this->columns));
+        $this->key(__CLASS__.$this->headerTitle.json_encode($this->columns));
 
         // 填充数据
         $this->fillData();
@@ -273,7 +258,7 @@ class Table extends Element
         return array_merge([
             'rowKey' => $this->rowKey,
             'headerTitle' => $this->headerTitle,
-            'columns' => $this->parseColumns(),
+            'columns' => $this->columns,
             'search' => $this->search,
             'datasource' => $this->datasource,
             'pagination' => $this->pagination

@@ -1,19 +1,15 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Table\Actions;
+namespace QuarkCMS\QuarkAdmin\Actions;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
-use QuarkCMS\QuarkAdmin\Table\Actions\Modal;
-use Exception;
 
-class Option
+class DropdownStyleAction extends Action
 {
     public  $label,
             $name,
-            $model,
-            $action,
-            $confirm;
+            $icon;
     
     public $methods = [];
 
@@ -32,24 +28,5 @@ class Option
         $action = Str::replaceLast('/index','/action',$action);
 
         $this->action = $action;
-    }
-
-    public function model($callback = null) {
-        $this->model = new Model;
-        $callback($this->model);
-        return $this;
-    }
-
-    public function withConfirm($title = null, $content = '')
-    {
-        $this->confirm['title'] = $title;
-        $this->confirm['content'] = $content;
-        return $this;
-    }
-
-    public function setAction($action)
-    {
-        $this->action = $action;
-        return $this;
     }
 }

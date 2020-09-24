@@ -338,7 +338,7 @@ class Layout extends Element
      */
     public function jsonSerialize()
     {
-        $this->key($this->title);
+        $this->key(__CLASS__.$this->title);
 
         return array_merge([
             'title' => $this->title,

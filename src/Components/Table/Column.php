@@ -1,11 +1,10 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Table;
+namespace QuarkCMS\QuarkAdmin\Components\Table;
 
 use Closure;
 use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Element;
-use QuarkCMS\QuarkAdmin\Table\Actions;
 
 /**
  * Class Column.
@@ -14,81 +13,109 @@ use QuarkCMS\QuarkAdmin\Table\Actions;
 class Column extends Element
 {
     /**
-     * Name of column.
+     * 列绑定的字段
      *
      * @var string
      */
     public $name;
 
     /**
-     * Label of column.
+     * 列标题
      *
      * @var string
      */
     public $label;
 
     /**
-     * @var width
+     * 列宽
+     *
+     * @var string|number
      */
     public $width;
 
     /**
-     * @var using
+     * using规则
+     * 
+     * @var array
      */
     public $using;
 
     /**
-     * @var tag
+     * 列以标签形式展示
+     * 
+     * @var array
      */
     public $tag;
 
     /**
-     * @var link
+     * 列以链接形式展示
+     * 
+     * @var string|bool
      */
     public $link;
 
     /**
-     * @var image
+     * 列以图片形式展示
+     * 
+     * @var string|bool
      */
     public $image;
 
     /**
-     * @var qrcode
+     * 列以二维码形式展示
+     * 
+     * @var string|bool
      */
     public $qrcode;
 
     /**
-     * @var editable
+     * 可编辑列
+     * 
+     * @var array|bool
      */
     public $editable = false;
 
     /**
-     * @var sorter
+     * 可排序列
+     * 
+     * @var array|bool
      */
     public $sorter = false;
 
     /**
-     * @var filters
+     * 可筛选列
+     * 
+     * @var array
      */
     public $filters = null;
 
     /**
-     * The Table rowActions.
-     *
-     * @var
-     */
-    public $rowActions = null;
-
-    /**
-     * The Table displayCallback.
+     * 数据展示回调
      *
      * @var
      */
     public $displayCallback = null;
 
     /**
-     * @param string $name
-     * @param string $label
+     * 是否为操作列
+     * 
+     * @var bool
+     */
+    public $actions = false;
+
+    /**
+     * 数据操作回调
+     *
+     * @var
+     */
+    public $actionCallback = null;
+
+    /**
+     * 初始化
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
      */
     public function __construct($name, $label)
     {
@@ -98,9 +125,10 @@ class Column extends Element
     }
 
     /**
-     * width.
+     * 设置列宽
      *
-     * @return mixed
+     * @param  string|number  $width
+     * @return $this
      */
     public function width($width)
     {
@@ -109,9 +137,10 @@ class Column extends Element
     }
 
     /**
-     * link.
+     * 设置本列跳转链接
      *
-     * @return mixed
+     * @param  string|bool  $link
+     * @return $this
      */
     public function link($link=true)
     {
@@ -120,9 +149,10 @@ class Column extends Element
     }
 
     /**
-     * using.
+     * 设置本列using规则
      *
-     * @return mixed
+     * @param  array  $using
+     * @return $this
      */
     public function using($using)
     {
@@ -131,9 +161,10 @@ class Column extends Element
     }
 
     /**
-     * tag.
+     * 设置本列tag显示
      *
-     * @return mixed
+     * @param  string  $tag
+     * @return $this
      */
     public function tag($tag='default')
     {
@@ -142,9 +173,12 @@ class Column extends Element
     }
 
     /**
-     * image.
+     * 设置本列图片显示
      *
-     * @return mixed
+     * @param  string  $path
+     * @param  string|number  $width
+     * @param  string|number  $height
+     * @return $this
      */
     public function image($path=null,$width=25,$height=25)
     {
@@ -156,9 +190,12 @@ class Column extends Element
     }
 
     /**
-     * qrcode.
+     * 设置本列二维码显示
      *
-     * @return mixed
+     * @param  string  $content
+     * @param  string|number  $width
+     * @param  string|number  $height
+     * @return $this
      */
     public function qrcode($content=null,$width=150,$height=150)
     {
@@ -170,9 +207,12 @@ class Column extends Element
     }
 
     /**
-     * editable.
+     * 设置为可编辑列
      *
-     * @return mixed
+     * @param  string  $name
+     * @param  array|bool  $options
+     * @param  string  $action
+     * @return $this
      */
     public function editable($name='text',$options=false,$action='')
     {
@@ -201,6 +241,12 @@ class Column extends Element
         return $this;
     }
 
+    /**
+     * 设置为可筛选列
+     *
+     * @param  array  $filters
+     * @return $this
+     */
     public function filters($filters = [])
     {
         $getFilters = [];
@@ -214,6 +260,12 @@ class Column extends Element
         return $this;
     }
 
+    /**
+     * 设置为可排序列
+     *
+     * @param  bool  $sorter
+     * @return $this
+     */
     public function sorter($sorter = true)
     {
         $this->sorter = $sorter;
@@ -221,28 +273,48 @@ class Column extends Element
     }
 
     /**
-     * rowActions
+     * 重置列的数据显示
      *
-     * @return bool
-     */
-    public function rowActions(Closure $callback = null,$showStyle = 'dropdown',$style = [])
-    {
-        $this->rowActions = new Actions;
-        $this->rowActions->prefix('rowAction');
-        $this->rowActions->style($showStyle,$style);
-
-        $callback($this->rowActions);
-        return $this;
-    }
-
-    /**
-     * display
-     *
-     * @return bool
+     * @param  Closure  $callback
+     * @return $this
      */
     public function display(Closure $callback)
     {
         $this->displayCallback = $callback;
         return $this;
+    }
+
+    /**
+     * 设置为数据操作列
+     *
+     * @param  Closure  $callback
+     * @return $this
+     */
+    public function actions(Closure $callback = null)
+    {
+        $this->actions = true;
+        $this->actionCallback = $callback;
+        return $this;
+    }
+
+    /**
+     * Prepare the element for JSON serialization.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        // 设置组件唯一标识
+        $this->key(__CLASS__.$this->label.$this->name);
+
+        return array_merge([
+            'title' => $this->label,
+            'dataIndex' => $this->name,
+            'width' => $this->width,
+            'link' => $this->link,
+            'image' => $this->image,
+            'qrcode' => $this->qrcode,
+            'actions' => $this->actions
+        ], parent::jsonSerialize());
     }
 }
