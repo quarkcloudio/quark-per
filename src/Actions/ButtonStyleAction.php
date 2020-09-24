@@ -4,53 +4,20 @@ namespace QuarkCMS\QuarkAdmin\Actions;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use QuarkCMS\QuarkAdmin\Components\Traits\Button;
 
-class ButtonStyleAction extends Action
+class ButtonStyleAction extends BaseAction
 {
-    public  $label,
-            $name,
-            $type,
-            $danger,
-            $size,
-            $icon;
-    
-    public $methods = [];
+    use Button;
 
-    function __construct($name,$label = '') {
+    function __construct($name) {
         $this->component = 'buttonStyleAction';
         $this->name = $name;
 
-        if(empty($label) || !count($label)) {
-            $this->label = $name;
-        } else {
-            $label = Arr::get($label, 0, ''); //[0];
-            $this->label = $label;
-        }
-
-        $action = \request()->route()->getName();
-        $action = Str::replaceFirst('api/','',$action);
-        $action = Str::replaceLast('/index','/action',$action);
-
-        $this->action = $action;
-    }
-
-    public function icon($icon = null)
-    {
-        $this->icon = 'icon-'.$icon;
-        return $this;
-    }
-
-    public function type($type = 'default',$danger = false)
-    {
-        $this->type = $type;
-        $this->danger = $danger;
-        return $this;
-    }
-
-    public function size($size = 'default')
-    {
-        $this->size = $size;
-        return $this;
+        $api = \request()->route()->getName();
+        $api = Str::replaceFirst('api/','',$api);
+        $api = Str::replaceLast('/index','/action',$api);
+        $this->api = $api;
     }
 
     /**
@@ -63,7 +30,7 @@ class ButtonStyleAction extends Action
         $this->key(json_encode($this));
 
         return array_merge([
-            'label' => $this->label
+            'name' => $this->name
         ], parent::jsonSerialize());
     }
 }

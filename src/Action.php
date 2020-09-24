@@ -7,14 +7,14 @@ use Illuminate\Support\Arr;
 class Action
 {
     /**
-     * 行为树列表
+     * 行为列表
      *
      * @var array
      */
     protected $actions = [];
 
     /**
-     * 获取所有操作
+     * 获取行为列表
      *
      * @return array
      */
@@ -24,7 +24,7 @@ class Action
     }
 
     /**
-     * 注册类到数组
+     * 注册行为类
      *
      * @var array
      */
@@ -35,7 +35,7 @@ class Action
     ];
 
     /**
-     * 获取数组里面的类
+     * 获取行为类
      *
      * @param string $method
      *
@@ -53,7 +53,7 @@ class Action
     }
 
     /**
-     * 动态调用类
+     * 动态调用行为类
      *
      * @param string $method
      *
