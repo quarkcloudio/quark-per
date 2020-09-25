@@ -3,11 +3,11 @@
 namespace QuarkCMS\QuarkAdmin\Components;
 
 use QuarkCMS\QuarkAdmin\Element;
-use QuarkCMS\QuarkAdmin\Components\Traits\Button as BaseButton;
+use QuarkCMS\QuarkAdmin\Components\Traits\A as BaseA;
 
-class Button extends Element
+class A extends Element
 {
-    use BaseButton;
+    use BaseA;
 
     /**
      * 初始化
@@ -16,7 +16,8 @@ class Button extends Element
      * @return void
      */
     function __construct($name) {
-        $this->component = 'button';
+        $this->style = ['padding'=>'5px 0px'];
+        $this->component = 'a';
         $this->name = $name;
     }
 
@@ -31,16 +32,8 @@ class Button extends Element
 
         return array_merge([
             'name' => $this->name,
-            'block' => $this->block,
-            'danger' => $this->danger,
-            'disabled' => $this->disabled,
-            'ghost' => $this->ghost,
             'href' => $this->href,
-            'icon' => $this->icon,
-            'shape' => $this->shape,
-            'size' => $this->size,
             'target' => $this->target,
-            'type' => $this->type,
             'api' => $this->api
         ], parent::jsonSerialize());
     }

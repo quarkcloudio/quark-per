@@ -17,6 +17,7 @@ class ButtonStyleAction extends BaseAction
         $api = \request()->route()->getName();
         $api = Str::replaceFirst('api/','',$api);
         $api = Str::replaceLast('/index','/action',$api);
+
         $this->api = $api;
     }
 
@@ -29,8 +30,21 @@ class ButtonStyleAction extends BaseAction
     {
         $this->key(json_encode($this));
 
+        $this->api = $this->api.'?id={id}&key='.$this->key;
+
         return array_merge([
-            'name' => $this->name
+            'name' => $this->name,
+            'block' => $this->block,
+            'danger' => $this->danger,
+            'disabled' => $this->disabled,
+            'ghost' => $this->ghost,
+            'href' => $this->href,
+            'icon' => $this->icon,
+            'shape' => $this->shape,
+            'size' => $this->size,
+            'target' => $this->target,
+            'type' => $this->type,
+            'api' => $this->api
         ], parent::jsonSerialize());
     }
 }

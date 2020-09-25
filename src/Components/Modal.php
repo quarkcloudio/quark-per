@@ -1,6 +1,6 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Actions;
+namespace QuarkCMS\QuarkAdmin\Components;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;

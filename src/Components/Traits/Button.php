@@ -2,14 +2,12 @@
 
 namespace QuarkCMS\QuarkAdmin\Components\Traits;
 
+use Closure;
+use QuarkCMS\QuarkAdmin\Components\Traits\A;
+
 trait Button
 {
-    /**
-     * 按钮名称
-     *
-     * @var string
-     */
-    public $name;
+    use A;
 
     /**
      * 将按钮宽度调整为其父宽度的选项
@@ -40,25 +38,11 @@ trait Button
     public $ghost = false;
 
     /**
-     * 点击跳转的地址，指定此属性 button 的行为和 a 链接一致
-     *
-     * @var string
-     */
-    public $href = false;
-
-    /**
      * 设置按钮的图标组件
      *
      * @var string
      */
     public $icon = null;
-
-    /**
-     * 点击按钮时的回调
-     *
-     * @var array
-     */
-    public $onClick = null;
 
     /**
      * 设置按钮形状，可选值为 circle、 round 或者不设
@@ -75,29 +59,11 @@ trait Button
     public $size = 'default';
 
     /**
-     * 相当于 a 链接的 target 属性，href 存在时生效
-     *
-     * @var string
-     */
-    public $target = null;
-
-    /**
      * 设置按钮类型,primary | ghost | dashed | link | text | default
      *
      * @var string
      */
     public $type = 'default';
-
-    /**
-     * 初始化
-     *
-     * @param  string  $name
-     * @return void
-     */
-    function __construct($name) {
-        $this->component = 'button';
-        $this->name = $name;
-    }
 
     /**
      * 将按钮宽度调整为其父宽度的选项
@@ -243,7 +209,7 @@ trait Button
      */
     public function size($size = 'default')
     {
-        if(!in_array($type,['large', 'middle', 'small', 'default'])) {
+        if(!in_array($size,['large', 'middle', 'small', 'default'])) {
             throw new \Exception("Argument must be in 'primary', 'large', 'middle', 'small', 'default'!");
         }
 

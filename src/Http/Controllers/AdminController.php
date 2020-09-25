@@ -36,18 +36,18 @@ class AdminController extends Controller
         ])->width(100);
 
         $table->column('actions','操作')
-        ->width(100)
+        ->width(200)
         ->actions(function($row) {
             $action = new Action();
 
             if($row['status'] == 1) {
-                $action->button('禁用')->model()->update(['status'=>2]);
+                $action->a('禁用')->model()->update(['status'=>2]);
             } else {
-                $action->button('启用')->model()->update(['status'=>1]);
+                $action->a('启用')->model()->update(['status'=>1]);
             }
 
-            $action->button('编辑')->link();
-            $action->button('审核')->model()->update(['status'=>1]);
+            $action->a('编辑')->link();
+            $action->a('审核')->model()->update(['status'=>1]);
 
             // $action->menu('更多')->options(function($option) {
             //     $option->name('下载')->download();

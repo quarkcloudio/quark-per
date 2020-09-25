@@ -221,15 +221,15 @@ class Controller extends BaseController
     }
 
     /**
-     * 列表action方法
+     * 执行行为方法
      *
      * @param  Request  $request
      * @return Response
      */
     public function action(Request $request)
     {
-        // 定义对象
-        $result = $this->table()->action();
+        // 执行表格定义的行为
+        $result = $this->table()->executeAction();
 
         if($result['status'] == 'success') {
             return success('操作成功！');

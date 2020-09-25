@@ -125,6 +125,16 @@ class Table extends Element
     }
 
     /**
+     * 执行行为
+     *
+     * @return $this
+     */
+    public function executeAction()
+    {
+        return $this->model;
+    }
+
+    /**
      * 根据column显示规则解析每一行的数据
      *
      * @return $this
@@ -153,7 +163,7 @@ class Table extends Element
                         $row[$value->name] = $item;
                     } else {
                         $item['title'] = $row[$value->name];
-                        $item['link'] = Str::replace('{id}',$row['id'],$value->link);
+                        $item['link'] = str_replace('{id}',$row['id'],$value->link);
                         $row[$value->name] = $item;
                     }
                 }
@@ -188,7 +198,12 @@ class Table extends Element
             // 解析action回调函数
             if($value->actionCallback) {
                 $actionCallback = call_user_func_array($value->actionCallback,[$row]);
-                $row[$value->name] = $actionCallback->actions();
+                $actions = $actionCallback->actions();
+                foreach ($actions as $actionKey => $actionValue) {
+                    $actionValue['api'] = str_replace('{id}',$row['id'],$actionValue['api']);
+                    $actions[$actionKey] = $actionValue;
+                }
+                $row[$value->name] = $actions;
             }
         }
 

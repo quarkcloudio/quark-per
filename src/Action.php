@@ -29,6 +29,7 @@ class Action
      * @var array
      */
     protected static $registerClasses = [
+        'a' => Actions\AStyleAction::class,
         'button' => Actions\ButtonStyleAction::class,
         'dropdown' => Actions\DropdownStyleAction::class,
         'select' => Actions\SelectStyleAction::class,
@@ -64,7 +65,7 @@ class Action
         if ($className = static::getCalledClass($method)) {
             $column = Arr::get($parameters, 0, '');
             $element = new $className($column, array_slice($parameters, 1));
-            $this->actions[] = $element;
+            $this->actions[] = $element->jsonSerialize();
             return $element;
         }
     }
