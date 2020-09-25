@@ -35,7 +35,8 @@ class AStyleAction extends BaseAction
             'name' => $this->name,
             'href' => $this->href,
             'target' => $this->target,
-            'api' => $this->api
+            'api' => $this->api,
+            'model' => $this->model()->jsonSerialize()
         ], parent::jsonSerialize());
     }
 }

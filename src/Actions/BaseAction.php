@@ -50,6 +50,18 @@ class BaseAction extends Element
     public $api;
 
     /**
+     * 初始化容器
+     *
+     * @param  void
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->model = new Model;
+        return $this;
+    }
+
+    /**
      * 设置跳转链接
      *
      * @param  string  $link
@@ -111,7 +123,6 @@ class BaseAction extends Element
      */
     public function model()
     {
-        $this->model = new Model;
         return $this->model;
     }
 

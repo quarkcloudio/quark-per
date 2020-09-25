@@ -125,13 +125,42 @@ class Table extends Element
     }
 
     /**
+     * 获取表格行行为
+     *
+     * @return $this
+     */
+    public function getRowExecuteAction()
+    {
+        $id = request('id');
+        $key = request('key');
+        $row = $this->model->eloquent()->where('id',$id)->first()->toArray();
+
+        $action = null;
+        $columns = $this->columns;
+        foreach ($columns as $columnKey => $value) {
+            // 解析action回调函数
+            if($value->actionCallback) {
+                $actionCallback = call_user_func_array($value->actionCallback,[$row]);
+                $rowActions = $actionCallback->actions();
+                foreach ($rowActions as $rowActionKey => $rowActionValue) {
+                    if($key === $rowActionValue['key']) {
+                        $action = $rowActionValue;
+                    }
+                }
+            }
+        }
+
+        return $action;
+    }
+
+    /**
      * 执行行为
      *
      * @return $this
      */
     public function executeAction()
     {
-        return $this->model;
+        dump($this->getRowExecuteAction());
     }
 
     /**
