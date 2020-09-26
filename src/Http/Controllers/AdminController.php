@@ -41,13 +41,13 @@ class AdminController extends Controller
             $action = new Action();
 
             if($row['status'] == 1) {
-                $action->a('禁用')->model()->update(['status'=>2]);
+                $action->a('禁用')->model()->where('id','{id}')->update(['status'=>2]);
             } else {
-                $action->a('启用')->model()->update(['status'=>1]);
+                $action->a('启用')->model()->where('id','{id}')->update(['status'=>1]);
             }
 
             $action->a('编辑')->link();
-            $action->a('审核')->model()->update(['status'=>1]);
+            $action->a('审核')->model()->where('id','{id}')->update(['status'=>1]);
 
             // $action->menu('更多')->options(function($option) {
             //     $option->name('下载')->download();

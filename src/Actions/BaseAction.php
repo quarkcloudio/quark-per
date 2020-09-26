@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Actions;
 
 use QuarkCMS\QuarkAdmin\Element;
 use QuarkCMS\QuarkAdmin\Components\Modal;
+use QuarkCMS\QuarkAdmin\Components\Table\Model;
 
 class BaseAction extends Element
 {
@@ -20,13 +21,6 @@ class BaseAction extends Element
      * @var array
      */
     public $modal;
-
-    /**
-     * 触发行为对数据模型的操作
-     *
-     * @var array
-     */
-    public $model;
 
     /**
      * 执行行为前的确认操作
@@ -50,16 +44,18 @@ class BaseAction extends Element
     public $api;
 
     /**
-     * 初始化容器
+     * 行为model
      *
-     * @param  void
-     * @return void
+     * @var array
      */
-    public function __construct()
-    {
-        $this->model = new Model;
-        return $this;
-    }
+    public $model;
+
+    /**
+     * 行为methods
+     *
+     * @var array
+     */
+    public $methods;
 
     /**
      * 设置跳转链接
@@ -116,17 +112,6 @@ class BaseAction extends Element
     }
 
     /**
-     *  触发行为对数据模型的操作
-     *
-     * @param  void
-     * @return model
-     */
-    public function model()
-    {
-        return $this->model;
-    }
-
-    /**
      *  执行行为的接口链接
      *
      * @param  string  $api
@@ -135,6 +120,34 @@ class BaseAction extends Element
     public function api($api)
     {
         $this->api = $api;
+        return $this;
+    }
+
+    /**
+     *  model
+     *
+     * @param  string  $api
+     * @return $this
+     */
+    public function model()
+    {
+        $this->model = new Model();
+        return $this->model;
+    }
+
+    /**
+     * @param string $method
+     * @param array  $arguments
+     *
+     * @return $this
+     */
+    public function __call($method, $arguments)
+    {
+        $this->methods[] = [
+            'method'    => $method,
+            'arguments' => $arguments,
+        ];
+
         return $this;
     }
 }

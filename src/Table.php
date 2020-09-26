@@ -60,6 +60,13 @@ class Table extends Element
     public $model;
 
     /**
+     * eloquent模型
+     *
+     * @var object
+     */
+    public $eloquentModel;
+
+    /**
      * 初始化容器
      *
      * @param  string  $name
@@ -70,6 +77,7 @@ class Table extends Element
     {
         $this->component = 'table';
         $this->model = new Model($model);
+        $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
 
         return $this;
@@ -129,12 +137,9 @@ class Table extends Element
      *
      * @return $this
      */
-    public function getRowExecuteAction()
+    public function getRowExecuteAction($id, $key)
     {
-        $id = request('id');
-        $key = request('key');
-        $row = $this->model->eloquent()->where('id',$id)->first()->toArray();
-
+        $row = $this->eloquentModel->where('id',$id)->first()->toArray();
         $action = null;
         $columns = $this->columns;
         foreach ($columns as $columnKey => $value) {
@@ -143,7 +148,8 @@ class Table extends Element
                 $actionCallback = call_user_func_array($value->actionCallback,[$row]);
                 $rowActions = $actionCallback->actions();
                 foreach ($rowActions as $rowActionKey => $rowActionValue) {
-                    if($key === $rowActionValue['key']) {
+                    $actionValueArray = $rowActionValue->jsonSerialize();
+                    if($key === $actionValueArray['key']) {
                         $action = $rowActionValue;
                     }
                 }
@@ -160,7 +166,26 @@ class Table extends Element
      */
     public function executeAction()
     {
-        dump($this->getRowExecuteAction());
+        $id = request('id');
+        $key = request('key');
+
+        if(empty($id) || empty($key)) {
+            return false;
+        }
+
+        $action = $this->getRowExecuteAction($id, $key);
+        if(isset($action->model->queries)) {
+            $action->model->queries->unique()->each(function ($query) use ($id) {
+                if($id) {
+                    foreach ($query['arguments'] as $key => $value) {
+                        $query['arguments'][$key] = str_replace('{id}',$id,$value);
+                    }
+                }
+                $this->eloquentModel = call_user_func_array([$this->eloquentModel, $query['method']], $query['arguments']);
+            });
+        }
+
+        return true;
     }
 
     /**
@@ -229,8 +254,9 @@ class Table extends Element
                 $actionCallback = call_user_func_array($value->actionCallback,[$row]);
                 $actions = $actionCallback->actions();
                 foreach ($actions as $actionKey => $actionValue) {
-                    $actionValue['api'] = str_replace('{id}',$row['id'],$actionValue['api']);
-                    $actions[$actionKey] = $actionValue;
+                    $actionValueArray = $actionValue->jsonSerialize();
+                    $actionValueArray['api'] = str_replace('{id}',$row['id'],$actionValueArray['api']);
+                    $actions[$actionKey] = $actionValueArray;
                 }
                 $row[$value->name] = $actions;
             }

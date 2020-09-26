@@ -231,10 +231,10 @@ class Controller extends BaseController
         // 执行表格定义的行为
         $result = $this->table()->executeAction();
 
-        if($result['status'] == 'success') {
+        if($result) {
             return success('操作成功！');
         } else {
-            return error($result['msg']);
+            return success('操作失败！');
         }
     }
 

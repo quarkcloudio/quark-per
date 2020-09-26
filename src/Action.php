@@ -65,7 +65,7 @@ class Action
         if ($className = static::getCalledClass($method)) {
             $column = Arr::get($parameters, 0, '');
             $element = new $className($column, array_slice($parameters, 1));
-            $this->actions[] = $element->jsonSerialize();
+            $this->actions[] = $element;
             return $element;
         }
     }

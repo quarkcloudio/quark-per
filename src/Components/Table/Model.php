@@ -23,11 +23,21 @@ class Model
      *
      * @param EloquentModel $model
      */
-    public function __construct(EloquentModel $model)
+    public function __construct(EloquentModel $model = null)
     {
         $this->model = $model;
 
         $this->queries = collect();
+    }
+
+    /**
+     * Set the model of the grid model.
+     *
+     * @return EloquentModel
+     */
+    public function setModel(EloquentModel $model)
+    {
+        return $this->model = $model;
     }
 
     /**

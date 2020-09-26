@@ -10,6 +10,12 @@ class AStyleAction extends BaseAction
 {
     use A;
 
+    /**
+     * 初始化
+     *
+     * @param  string  $name
+     * @return void
+     */
     function __construct($name) {
         $this->name = $name;
         $this->style = ['padding'=>'0px 5px'];
@@ -32,11 +38,11 @@ class AStyleAction extends BaseAction
         $this->api = $api.'?id={id}&key='.$this->key;
 
         return array_merge([
+            'link' => $this->link,
             'name' => $this->name,
             'href' => $this->href,
             'target' => $this->target,
-            'api' => $this->api,
-            'model' => $this->model()->jsonSerialize()
+            'api' => $this->api
         ], parent::jsonSerialize());
     }
 }
