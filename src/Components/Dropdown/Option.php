@@ -1,14 +1,15 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Actions;
+namespace QuarkCMS\QuarkAdmin\Components\Dropdown;
 
-use Illuminate\Support\Arr;
+use QuarkCMS\QuarkAdmin\Element;
+use QuarkCMS\QuarkAdmin\Components\Traits\A as BaseA;
+use QuarkCMS\QuarkAdmin\Actions\BaseAction;
 use Illuminate\Support\Str;
-use QuarkCMS\QuarkAdmin\Components\Traits\A;
 
-class AStyleAction extends BaseAction
+class Option extends BaseAction
 {
-    use A;
+    use BaseA;
 
     /**
      * 初始化
@@ -16,10 +17,21 @@ class AStyleAction extends BaseAction
      * @param  string  $name
      * @return void
      */
-    function __construct($name) {
+    function __construct($name = null) {
+        $this->component = 'option';
         $this->name = $name;
-        $this->style = ['padding'=>'0px 5px'];
-        $this->component = 'aStyleAction';
+    }
+
+    /**
+     * 设置name
+     *
+     * @param  string  $name
+     * @return $this
+     */
+    public function name($name)
+    {
+        $this->name = $name;
+        return $this;
     }
 
     /**
@@ -29,7 +41,7 @@ class AStyleAction extends BaseAction
      */
     public function jsonSerialize()
     {
-        $this->key(__CLASS__.json_encode($this->name));
+        $this->key(json_encode($this->name));
 
         $api = \request()->route()->getName();
         $api = Str::replaceFirst('api/','',$api);
@@ -41,9 +53,7 @@ class AStyleAction extends BaseAction
             'name' => $this->name,
             'href' => $this->href,
             'target' => $this->target,
-            'api' => $this->api,
-            'confirm' => $this->confirm,
-            'popconfirm' => $this->popconfirm
+            'api' => $this->api
         ], parent::jsonSerialize());
     }
 }

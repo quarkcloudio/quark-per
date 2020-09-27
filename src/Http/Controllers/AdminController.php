@@ -24,39 +24,49 @@ class AdminController extends Controller
         
         $table->column('id','ID');
         $table->column('avatar','头像')->image();
-        $table->column('username','用户名')->qrcode();
-        $table->column('nickname','昵称')->editable()->width('12%');
-        $table->column('email','邮箱')->editable()->width('12%');
+        $table->column('username','用户名')->editLink();
+        $table->column('nickname','昵称')->width('12%');
+        $table->column('email','邮箱')->width('12%');
         $table->column('sex','性别')->using(['1'=>'男','2'=>'女'])->filters(['1'=>'男','2'=>'女'])->width(80);
         $table->column('phone','手机号')->sorter()->width(100);
         $table->column('last_login_time','最后登录时间');
-        $table->column('status','状态')->editable('switch',[
-            'on'  => ['value' => 1, 'text' => '正常'],
-            'off' => ['value' => 0, 'text' => '禁用']
-        ])->width(100);
+        $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(100);
+        $table->column('actions','操作')->width(200)->actions(function($row) {
 
-        $table->column('actions','操作')
-        ->width(200)
-        ->actions(function($row) {
+            // 创建行为对象
             $action = new Action();
 
-            if($row['status'] == 1) {
-                $action->a('禁用')->model()->where('id','{id}')->update(['status'=>2]);
+            // 根据不同的条件定义不同的行为
+            if($row['status'] === 1) {
+
+                // A标签形式的行为
+                $action->a('禁用')
+                ->withPopconfirm('确认要禁用数据吗？')
+                ->model()
+                ->where('id','{id}')
+                ->update(['status'=>0]);
             } else {
-                $action->a('启用')->model()->where('id','{id}')->update(['status'=>1]);
+                $action->a('启用')
+                ->model()
+                ->where('id','{id}')
+                ->update(['status'=>1]);
             }
 
-            $action->a('编辑')->link();
-            $action->a('审核')->model()->where('id','{id}')->update(['status'=>1]);
+            // 跳转默认编辑页面
+            $action->a('编辑')->editLink();
 
-            // $action->menu('更多')->options(function($option) {
-            //     $option->name('下载')->download();
-            //     $option->name('删除')->model()
-            //     ->delete()
-            //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
-            // });
+            $action->a('删除')
+            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            ->model()
+            ->where('id','{id}')
+            ->delete();
 
-            // $action->button('查看')->modalForm('查看详情')->api('admin/menu/edit?id={id}');
+            // 下拉菜单形式的行为
+            $action->dropdown('更多')->options(function($option) {
+                $option->name('详情')->link();
+                $option->name('下载')->link();
+                return $option;
+            });
 
             return $action;
         });

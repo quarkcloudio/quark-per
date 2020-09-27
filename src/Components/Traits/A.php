@@ -18,7 +18,7 @@ trait A
      *
      * @var string
      */
-    public $href = false;
+    public $href = null;
 
     /**
      * 点击按钮时的回调

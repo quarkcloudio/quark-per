@@ -139,12 +139,36 @@ class Column extends Element
     /**
      * 设置本列跳转链接
      *
-     * @param  string|bool  $link
+     * @param  string|bool  $href
+     * @param  string  $target
      * @return $this
      */
-    public function link($link=true)
+    public function link($href='', $target='_self')
     {
+        if(!in_array($target,['_blank', '_self', '_parent', '_top'])) {
+            throw new \Exception("Argument must be in '_blank', '_self', '_parent', '_top'!");
+        }
+
+        $link['href'] = $href;
+        $link['target'] = $target;
         $this->link = $link;
+        return $this;
+    }
+
+    /**
+     * 设置本列编辑的跳转链接
+     *
+     * @param  string  $target
+     * @return $this
+     */
+    public function editLink($target='_self')
+    {
+        $action = \request()->route()->getName();
+        $action = Str::replaceFirst('api/','',$action);
+        $action = Str::replaceLast('/index','/edit',$action);
+        $href = '/quark/engine?api='.$action.'&id={id}';
+        $this->link($href, $target);
+
         return $this;
     }
 

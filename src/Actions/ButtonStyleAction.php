@@ -19,12 +19,6 @@ class ButtonStyleAction extends BaseAction
     function __construct($name) {
         $this->component = 'buttonStyleAction';
         $this->name = $name;
-
-        $api = \request()->route()->getName();
-        $api = Str::replaceFirst('api/','',$api);
-        $api = Str::replaceLast('/index','/action',$api);
-
-        $this->api = $api;
     }
 
     /**
@@ -34,9 +28,13 @@ class ButtonStyleAction extends BaseAction
      */
     public function jsonSerialize()
     {
-        $this->key(json_encode($this));
+        $this->key(__CLASS__.json_encode($this->name));
 
-        $this->api = $this->api.'?id={id}&key='.$this->key;
+        $api = \request()->route()->getName();
+        $api = Str::replaceFirst('api/','',$api);
+        $api = Str::replaceLast('/index','/action',$api);
+
+        $this->api = $api.'?id={id}&key='.$this->key;
 
         return array_merge([
             'name' => $this->name,
@@ -50,7 +48,9 @@ class ButtonStyleAction extends BaseAction
             'size' => $this->size,
             'target' => $this->target,
             'type' => $this->type,
-            'api' => $this->api
+            'api' => $this->api,
+            'confirm' => $this->confirm,
+            'popconfirm' => $this->popconfirm
         ], parent::jsonSerialize());
     }
 }

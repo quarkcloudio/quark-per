@@ -2,32 +2,50 @@
 
 namespace QuarkCMS\QuarkAdmin\Actions;
 
-use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
+use QuarkCMS\QuarkAdmin\Element;
+use QuarkCMS\QuarkAdmin\Components\Traits\Dropdown;
+use QuarkCMS\QuarkAdmin\Components\Dropdown\Option;
 
-class DropdownStyleAction extends BaseAction
+class DropdownStyleAction extends Element
 {
-    public  $label,
-            $name,
-            $icon;
-    
-    public $methods = [];
+    use Dropdown;
 
-    function __construct($name,$label = '') {
+    /**
+     * 初始化
+     *
+     * @param  string  $name
+     * @return void
+     */
+    function __construct($name) {
         $this->component = 'dropdownStyleAction';
         $this->name = $name;
+    }
 
-        if(empty($label) || !count($label)) {
-            $this->label = $name;
-        } else {
-            $label = Arr::get($label, 0, ''); //[0];
-            $this->label = $label;
-        }
+    /**
+     * 下拉菜单属性
+     *
+     * @param  Closure  $callback
+     * @return $this
+     */
+    public function options($callback = null)
+    {
+        $option = new Option;
+        $this->overlay = $callback($option);
+        return $this;
+    }
 
-        $action = \request()->route()->getName();
-        $action = Str::replaceFirst('api/','',$action);
-        $action = Str::replaceLast('/index','/action',$action);
+    /**
+     * Prepare the element for JSON serialization.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $this->key(__CLASS__.json_encode($this->name));
 
-        $this->action = $action;
+        return array_merge([
+            'name' => $this->name,
+            'overlay' => $this->overlay
+        ], parent::jsonSerialize());
     }
 }

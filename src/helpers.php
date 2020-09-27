@@ -38,6 +38,46 @@ if(!function_exists('success')) {
 }
 
 /**
+* 前端跳转链接
+* @author tangtanglove <dai_hang_love@126.com>
+*/
+if(!function_exists('frontendUrl')) {
+    function frontendUrl($api ='',$isEngineUrl = true)
+    {
+        $url = '';
+        if($isEngineUrl) {
+            $url = '/quark/engine?api='.$api;
+        } else {
+            $url = $api;
+        }
+
+        return $url;
+    }
+}
+
+/**
+* 后端跳转链接
+* @author tangtanglove <dai_hang_love@126.com>
+*/
+if(!function_exists('backendUrl')) {
+    function backendUrl($api ='',$withToken = true)
+    {
+        $url = '';
+        if($withToken) {
+            if(strpos($api,'?') !== false) {
+                $url = url($api.'&token='.get_admin_token());
+            } else {
+                $url = url($api.'?token='.get_admin_token());
+            }
+        } else {
+            $url = url($api);
+        }
+        
+        return $url;
+    }
+}
+
+/**
 * 把返回的数据集转换成Tree
 * @param array $list 要转换的数据集
 * @param string $pid parent标记字段

@@ -3,7 +3,6 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
-use Str;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use QuarkCMS\QuarkAdmin\Components\Table\Column;
@@ -189,6 +188,37 @@ class Table extends Element
     }
 
     /**
+     * 解析每一行的行为
+     *
+     * @return $this
+     */
+    protected function parseRowActions($row)
+    {
+        $columns = $this->columns;
+        foreach ($columns as $key => $value) {
+            // 解析action回调函数
+            if($value->actionCallback) {
+                $actionCallback = call_user_func_array($value->actionCallback,[$row]);
+                $actions = $actionCallback->actions();
+                foreach ($actions as $actionKey => $actionValue) {
+                    $actionValueArray = $actionValue->jsonSerialize();
+                    if($actionValueArray['component'] === 'aStyleAction' || $actionValueArray['component'] === 'buttonStyleAction') {
+                        $actionValueArray['api'] = str_replace('{id}',$row['id'],$actionValueArray['api']);
+                        $actionValueArray['href'] = str_replace('{id}',$row['id'],$actionValueArray['href']);
+                    } else {
+                        // dump($actionCallback);
+                    }
+
+                    $actions[$actionKey] = $actionValueArray;
+                }
+                $row[$value->name] = $actions;
+            }
+        }
+
+        return $row;
+    }
+
+    /**
      * 根据column显示规则解析每一行的数据
      *
      * @return $this
@@ -208,18 +238,10 @@ class Table extends Element
 
                 // 解析link规则
                 if($value->link) {
-                    if($value->link === true) {
-                        $item['title'] = $row[$value->name];
-                        $action = \request()->route()->getName();
-                        $action = Str::replaceFirst('api/','',$action);
-                        $action = urlencode(Str::replaceLast('/index','/edit',$action));
-                        $item['link'] = '/quark/engine?api='.$action.'&id='.$row['id'];
-                        $row[$value->name] = $item;
-                    } else {
-                        $item['title'] = $row[$value->name];
-                        $item['link'] = str_replace('{id}',$row['id'],$value->link);
-                        $row[$value->name] = $item;
-                    }
+                    $item['title'] = $row[$value->name];
+                    $item['href'] = str_replace('{id}',$row['id'],$value->link['href']);
+                    $item['target'] = $value->link['target'];
+                    $row[$value->name] = $item;
                 }
 
                 // 解析image规则
@@ -247,18 +269,6 @@ class Table extends Element
                 if($value->displayCallback) {
                     $row[$value->name] = call_user_func_array($value->displayCallback,[$row[$value->name]]);
                 }
-            }
-
-            // 解析action回调函数
-            if($value->actionCallback) {
-                $actionCallback = call_user_func_array($value->actionCallback,[$row]);
-                $actions = $actionCallback->actions();
-                foreach ($actions as $actionKey => $actionValue) {
-                    $actionValueArray = $actionValue->jsonSerialize();
-                    $actionValueArray['api'] = str_replace('{id}',$row['id'],$actionValueArray['api']);
-                    $actions[$actionKey] = $actionValueArray;
-                }
-                $row[$value->name] = $actions;
             }
         }
 
@@ -288,6 +298,10 @@ class Table extends Element
         }
 
         foreach ($data as $key => $value) {
+            // 解析每一行的行为
+            $value = $this->parseRowActions($value);
+
+            // 解析每一行的数据
             $datasource[$key] = $this->parseRowData($value);
         }
 

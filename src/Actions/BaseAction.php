@@ -5,6 +5,7 @@ namespace QuarkCMS\QuarkAdmin\Actions;
 use QuarkCMS\QuarkAdmin\Element;
 use QuarkCMS\QuarkAdmin\Components\Modal;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
+use Illuminate\Support\Str;
 
 class BaseAction extends Element
 {
@@ -13,7 +14,7 @@ class BaseAction extends Element
      *
      * @var string
      */
-    public $link;
+    public $href;
 
     /**
      * 触发行为打开弹窗
@@ -60,12 +61,31 @@ class BaseAction extends Element
     /**
      * 设置跳转链接
      *
-     * @param  string  $link
+     * @param  string  $href
+     * @param  string  $href
      * @return $this
      */
-    public function link($link = null)
+    public function link($href = null, $target = '_self')
     {
-        $this->link = $link;
+        $this->href($href);
+        $this->target($target);
+        return $this;
+    }
+
+    /**
+     * 设置编辑的跳转链接
+     *
+     * @param  string  $target
+     * @return $this
+     */
+    public function editLink($target='_self')
+    {
+        $action = \request()->route()->getName();
+        $action = Str::replaceFirst('api/','',$action);
+        $action = Str::replaceLast('/index','/edit',$action);
+        $href = '/quark/engine?api='.$action.'&id={id}';
+        $this->link($href, $target);
+        
         return $this;
     }
 
