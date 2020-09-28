@@ -132,6 +132,57 @@ class Table extends Element
     }
 
     /**
+     * 解析表格行执行行为
+     *
+     * @return $this
+     */
+    public function parseRowExecuteActionRules($actions,$key)
+    {
+        $action = null;
+
+        foreach ($actions as $rowActionKey => $rowActionValue) {
+            $actionValueArray = $rowActionValue->jsonSerialize();
+            if($actionValueArray['component'] === 'dropdownStyle') {
+
+                // 获取dropdown样式的行为
+                if($actionValueArray['overlay']) {
+                    foreach ($actionValueArray['overlay'] as $overlayKey => $overlayValue) {
+                        $overlayActions = $overlayValue->actions();
+                        if($overlayActions) {
+                            $getAction = $this->parseRowExecuteActionRules($overlayActions,$key);
+                            if($getAction) {
+                                $action = $getAction;
+                            }
+                        }
+                    }
+                }
+            } elseif($actionValueArray['component'] === 'selectStyle') {
+
+                // 获取select样式的行为
+                if($actionValueArray['options']) {
+                    foreach ($actionValueArray['options'] as $optionKey => $optionValue) {
+                        $optionActions = $optionValue->actions();
+                        if($optionActions) {
+                            $getAction = $this->parseRowExecuteActionRules($optionActions,$key);
+                            if($getAction) {
+                                $action = $getAction;
+                            }
+                        }
+                    }
+                }
+            } else {
+
+                // 获取a、button样式的行为
+                if($key === $actionValueArray['key']) {
+                    $action = $rowActionValue;
+                }
+            }
+        }
+
+        return $action;
+    }
+
+    /**
      * 获取表格行行为
      *
      * @return $this
@@ -146,12 +197,7 @@ class Table extends Element
             if($value->actionCallback) {
                 $actionCallback = call_user_func_array($value->actionCallback,[$row]);
                 $rowActions = $actionCallback->actions();
-                foreach ($rowActions as $rowActionKey => $rowActionValue) {
-                    $actionValueArray = $rowActionValue->jsonSerialize();
-                    if($key === $actionValueArray['key']) {
-                        $action = $rowActionValue;
-                    }
-                }
+                $action = $this->parseRowExecuteActionRules($rowActions,$key);
             }
         }
 
@@ -163,7 +209,7 @@ class Table extends Element
      *
      * @return $this
      */
-    public function executeAction()
+    public function executeRowAction()
     {
         $id = request('id');
         $key = request('key');
@@ -188,6 +234,44 @@ class Table extends Element
     }
 
     /**
+     * 解析行行为规则
+     *
+     * @return $this
+     */
+    protected function parseRowActionRules($row,$actions)
+    {
+        foreach ($actions as $actionKey => $actionValue) {
+            $actionValueArray = $actionValue->jsonSerialize();
+            if($actionValueArray['component'] === 'dropdownStyle') {
+
+                //解析dropdown样式
+                if($actionValueArray['overlay']) {
+                    foreach ($actionValueArray['overlay'] as $overlayKey => $overlayValue) {
+                        $overlayActions = $overlayValue->actions();
+                        if($overlayActions) {
+                            $actionValueArray['overlay'] = $this->parseRowActionRules($row, $overlayActions);
+                        }
+                    }
+                }
+            } elseif($actionValueArray['component'] === 'selectStyle') {
+
+                //解析select样式
+                $actionValueArray['api'] = str_replace('{id}',$row['id'],$actionValueArray['api']);
+                $actionValueArray['href'] = str_replace('{id}',$row['id'],$actionValueArray['href']);
+            } else {
+
+                //解析通用样式
+                $actionValueArray['api'] = str_replace('{id}',$row['id'],$actionValueArray['api']);
+                $actionValueArray['href'] = str_replace('{id}',$row['id'],$actionValueArray['href']);
+            }
+
+            $actions[$actionKey] = $actionValueArray;
+        }
+
+        return $actions;
+    }
+
+    /**
      * 解析每一行的行为
      *
      * @return $this
@@ -200,18 +284,7 @@ class Table extends Element
             if($value->actionCallback) {
                 $actionCallback = call_user_func_array($value->actionCallback,[$row]);
                 $actions = $actionCallback->actions();
-                foreach ($actions as $actionKey => $actionValue) {
-                    $actionValueArray = $actionValue->jsonSerialize();
-                    if($actionValueArray['component'] === 'aStyleAction' || $actionValueArray['component'] === 'buttonStyleAction') {
-                        $actionValueArray['api'] = str_replace('{id}',$row['id'],$actionValueArray['api']);
-                        $actionValueArray['href'] = str_replace('{id}',$row['id'],$actionValueArray['href']);
-                    } else {
-                        // dump($actionCallback);
-                    }
-
-                    $actions[$actionKey] = $actionValueArray;
-                }
-                $row[$value->name] = $actions;
+                $row[$value->name] = $this->parseRowActionRules($row,$actions);
             }
         }
 

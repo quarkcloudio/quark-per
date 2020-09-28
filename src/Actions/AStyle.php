@@ -2,11 +2,10 @@
 
 namespace QuarkCMS\QuarkAdmin\Actions;
 
-use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Components\Traits\A;
 
-class AStyleAction extends BaseAction
+class AStyle extends BaseAction
 {
     use A;
 
@@ -19,7 +18,7 @@ class AStyleAction extends BaseAction
     function __construct($name) {
         $this->name = $name;
         $this->style = ['padding'=>'0px 5px'];
-        $this->component = 'aStyleAction';
+        $this->component = 'aStyle';
     }
 
     /**

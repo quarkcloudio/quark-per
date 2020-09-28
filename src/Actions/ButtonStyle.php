@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Components\Traits\Button;
 
-class ButtonStyleAction extends BaseAction
+class ButtonStyle extends BaseAction
 {
     use Button;
 
@@ -17,7 +17,7 @@ class ButtonStyleAction extends BaseAction
      * @return void
      */
     function __construct($name) {
-        $this->component = 'buttonStyleAction';
+        $this->component = 'buttonStyle';
         $this->name = $name;
     }
 

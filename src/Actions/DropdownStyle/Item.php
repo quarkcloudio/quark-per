@@ -1,13 +1,12 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Components\Dropdown;
+namespace QuarkCMS\QuarkAdmin\Actions\DropdownStyle;
 
-use QuarkCMS\QuarkAdmin\Element;
 use QuarkCMS\QuarkAdmin\Components\Traits\A as BaseA;
 use QuarkCMS\QuarkAdmin\Actions\BaseAction;
 use Illuminate\Support\Str;
 
-class Option extends BaseAction
+class Item extends BaseAction
 {
     use BaseA;
 
@@ -18,20 +17,8 @@ class Option extends BaseAction
      * @return void
      */
     function __construct($name = null) {
-        $this->component = 'option';
+        $this->component = 'itemStyle';
         $this->name = $name;
-    }
-
-    /**
-     * 设置name
-     *
-     * @param  string  $name
-     * @return $this
-     */
-    public function name($name)
-    {
-        $this->name = $name;
-        return $this;
     }
 
     /**
@@ -41,7 +28,7 @@ class Option extends BaseAction
      */
     public function jsonSerialize()
     {
-        $this->key(json_encode($this->name));
+        $this->key(__CLASS__.json_encode($this->name));
 
         $api = \request()->route()->getName();
         $api = Str::replaceFirst('api/','',$api);
@@ -53,7 +40,9 @@ class Option extends BaseAction
             'name' => $this->name,
             'href' => $this->href,
             'target' => $this->target,
-            'api' => $this->api
+            'api' => $this->api,
+            'confirm' => $this->confirm,
+            'popconfirm' => $this->popconfirm
         ], parent::jsonSerialize());
     }
 }

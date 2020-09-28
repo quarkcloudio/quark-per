@@ -29,10 +29,11 @@ class Action
      * @var array
      */
     protected static $registerClasses = [
-        'a' => Actions\AStyleAction::class,
-        'button' => Actions\ButtonStyleAction::class,
-        'dropdown' => Actions\DropdownStyleAction::class,
-        'select' => Actions\SelectStyleAction::class,
+        'a' => Actions\AStyle::class,
+        'button' => Actions\ButtonStyle::class,
+        'dropdown' => Actions\DropdownStyle::class,
+        'item' => Actions\DropdownStyle\Item::class,
+        'select' => Actions\SelectStyle::class,
     ];
 
     /**

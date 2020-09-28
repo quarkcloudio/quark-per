@@ -4,9 +4,9 @@ namespace QuarkCMS\QuarkAdmin\Actions;
 
 use QuarkCMS\QuarkAdmin\Element;
 use QuarkCMS\QuarkAdmin\Components\Traits\Dropdown;
-use QuarkCMS\QuarkAdmin\Components\Dropdown\Option;
+use QuarkCMS\QuarkAdmin\Action;
 
-class DropdownStyleAction extends Element
+class DropdownStyle extends Element
 {
     use Dropdown;
 
@@ -17,7 +17,7 @@ class DropdownStyleAction extends Element
      * @return void
      */
     function __construct($name) {
-        $this->component = 'dropdownStyleAction';
+        $this->component = 'dropdownStyle';
         $this->name = $name;
     }
 
@@ -27,10 +27,9 @@ class DropdownStyleAction extends Element
      * @param  Closure  $callback
      * @return $this
      */
-    public function options($callback = null)
+    public function overlay($callback = null)
     {
-        $option = new Option;
-        $this->overlay = $callback($option);
+        $this->overlay[] = $callback(new Action);
         return $this;
     }
 

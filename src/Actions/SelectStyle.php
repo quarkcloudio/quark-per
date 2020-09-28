@@ -5,7 +5,7 @@ namespace QuarkCMS\QuarkAdmin\Actions;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 
-class DropdownStyleAction extends BaseAction
+class SelectStyle extends BaseAction
 {
     public  $label,
             $name,

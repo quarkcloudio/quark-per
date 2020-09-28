@@ -228,8 +228,8 @@ class Controller extends BaseController
      */
     public function action(Request $request)
     {
-        // 执行表格定义的行为
-        $result = $this->table()->executeAction();
+        // 执行表格定义的每一行行为
+        $result = $this->table()->executeRowAction();
 
         if($result) {
             return success('操作成功！');
