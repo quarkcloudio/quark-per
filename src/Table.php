@@ -31,11 +31,46 @@ class Table extends Element
     public $columns;
     
     /**
-     * 是否开启搜索
+     * table 工具栏，设为 false 时不显示,{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}
      *
-     * @var bool
+     * @var array
+     */
+    public $options;
+
+    /**
+     * 是否显示搜索表单，传入对象时为搜索表单的配置
+     *
+     * @var bool|array
      */
     public $search = true;
+
+    /**
+     * 转化 moment 格式数据为特定类型，false 不做转化,"string" | "number" | false
+     *
+     * @var bool|string
+     */
+    public $dateFormatter = "string";
+
+    /**
+     * 空值时的显示，不设置 则默认显示 -
+     *
+     * @var bool|string
+     */
+    public $columnEmptyText = "-";
+
+    /**
+     * 透传 ProUtils 中的 ListToolBar 配置项
+     *
+     * @var array
+     */
+    public $toolbar = null;
+
+    /**
+     * 自定义表格的主体函数
+     *
+     * @var array
+     */
+    public $tableExtraRender = null;
 
     /**
      * 表格数据
@@ -109,9 +144,22 @@ class Table extends Element
     }
 
     /**
-     * 是否开启搜索
+     * table 工具栏，设为 false 时不显示,{ fullScreen: true, reload:true, setting: true}
      *
-     * @param  bool  $search
+     * @param  array  $options
+     * @return $this
+     */
+    public function options($options)
+    {
+        $this->options = $options;
+
+        return $this;
+    }
+
+    /**
+     * 是否显示搜索表单，传入对象时为搜索表单的配置
+     *
+     * @param  bool|array  $search
      * @return $this
      */
     public function search($search = true)
