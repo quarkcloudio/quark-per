@@ -31,11 +31,11 @@ class Table extends Element
     public $columns;
     
     /**
-     * table 工具栏，设为 false 时不显示,{{ fullScreen: boolean \| function, reload: boolean \| function,setting: true }}
+     * table 工具栏，设为 false 时不显示,{{ fullScreen: true, reload: true ,setting: true }}
      *
      * @var array
      */
-    public $options;
+    public $options = ['fullScreen' => true, 'reload' => true, 'setting' => true];
 
     /**
      * 是否显示搜索表单，传入对象时为搜索表单的配置
@@ -49,14 +49,14 @@ class Table extends Element
      *
      * @var bool|string
      */
-    public $dateFormatter = "string";
+    public $dateFormatter = 'string';
 
     /**
      * 空值时的显示，不设置 则默认显示 -
      *
      * @var bool|string
      */
-    public $columnEmptyText = "-";
+    public $columnEmptyText = '-';
 
     /**
      * 透传 ProUtils 中的 ListToolBar 配置项
@@ -133,20 +133,30 @@ class Table extends Element
     /**
      * 表格列描述
      *
-     * @param string $name
-     * @param string $label
-     *
+     * @param string $attribute
+     * @param string $title
      * @return Column
      */
-    public function column($name, $label = '')
+    public function column($attribute, $title = '')
     {
-        return $this->__call($name, array_filter([$label]));
+        return $this->__call($attribute, array_filter([$title]));
     }
 
     /**
-     * table 工具栏，设为 false 时不显示,{ fullScreen: true, reload:true, setting: true}
+     * 批量设置表格列
      *
-     * @param  array  $options
+     * @param array $columns
+     * @return $this
+     */
+    public function columns($columns)
+    {
+        $this->columns = $columns;
+    }
+
+    /**
+     * table 工具栏，设为 false 时不显示,{ fullScreen: true, reload: true ,setting: true}
+     *
+     * @param  array|bool  $options
      * @return $this
      */
     public function options($options)
@@ -170,6 +180,92 @@ class Table extends Element
     }
 
     /**
+     * 转化 moment 格式数据为特定类型，false 不做转化,"string" | "number" | false
+     *
+     * @param  string  $dateFormatter
+     * @return $this
+     */
+    public function dateFormatter($dateFormatter)
+    {
+        $this->dateFormatter = $dateFormatter;
+
+        return $this;
+    }
+
+    /**
+     * 空值时的显示，不设置 则默认显示 -
+     *
+     * @param  string  $columnEmptyText
+     * @return $this
+     */
+    public function columnEmptyText($columnEmptyText)
+    {
+        $this->columnEmptyText = $columnEmptyText;
+
+        return $this;
+    }
+
+    /**
+     * 透传 ProUtils 中的 ListToolBar 配置项
+     *
+     * @param  array  $toolbar
+     * @return $this
+     */
+    public function toolbar($toolbar)
+    {
+        $this->toolbar = $toolbar;
+
+        return $this;
+    }
+
+    /**
+     * 自定义表格的主体函数
+     *
+     * @param  array  $tableExtraRender
+     * @return $this
+     */
+    public function tableExtraRender($tableExtraRender)
+    {
+        $this->tableExtraRender = $tableExtraRender;
+
+        return $this;
+    }
+
+    /**
+     * 表格数据
+     *
+     * @param  array|string  $datasource
+     * @return $this
+     */
+    public function datasource($datasource)
+    {
+        $this->datasource = $datasource;
+
+        return $this;
+    }
+
+    /**
+     * 表格分页
+     *
+     * @param  number  $current
+     * @param  number  $pageSize
+     * @param  number  $total
+     * @param  number  $defaultCurrent
+     * @return $this
+     */
+    public function pagination($current, $pageSize, $total, $defaultCurrent = 1)
+    {
+        $pagination['defaultCurrent'] = $defaultCurrent;
+        $pagination['current'] = $current;
+        $pagination['pageSize'] = $pageSize;
+        $pagination['total'] = $total;
+
+        $this->pagination = $pagination;
+
+        return $this;
+    }
+
+    /**
      * 读取模型
      *
      * @return $this
@@ -182,7 +278,9 @@ class Table extends Element
     /**
      * 解析表格行执行行为
      *
-     * @return $this
+     * @param  array  $actions
+     * @param  string  $key
+     * @return array
      */
     public function parseRowExecuteActionRules($actions,$key)
     {
@@ -233,7 +331,9 @@ class Table extends Element
     /**
      * 获取表格行行为
      *
-     * @return $this
+     * @param  string|number  $id
+     * @param  string  $key
+     * @return object
      */
     public function getRowExecuteAction($id, $key)
     {
@@ -255,7 +355,7 @@ class Table extends Element
     /**
      * 执行行为
      *
-     * @return $this
+     * @return bool
      */
     public function executeRowAction()
     {
@@ -284,7 +384,9 @@ class Table extends Element
     /**
      * 解析行行为规则
      *
-     * @return $this
+     * @param  array  $row
+     * @param  object  $actions
+     * @return array
      */
     protected function parseRowActionRules($row,$actions)
     {
@@ -322,7 +424,8 @@ class Table extends Element
     /**
      * 解析每一行的行为
      *
-     * @return $this
+     * @param  array  $row
+     * @return array
      */
     protected function parseRowActions($row)
     {
@@ -332,7 +435,7 @@ class Table extends Element
             if($value->actionCallback) {
                 $actionCallback = call_user_func_array($value->actionCallback,[$row]);
                 $actions = $actionCallback->actions();
-                $row[$value->name] = $this->parseRowActionRules($row,$actions);
+                $row[$value->attribute] = $this->parseRowActionRules($row,$actions);
             }
         }
 
@@ -342,35 +445,36 @@ class Table extends Element
     /**
      * 根据column显示规则解析每一行的数据
      *
-     * @return $this
+     * @param  array  $row
+     * @return array
      */
     protected function parseRowData($row)
     {
         $columns = $this->columns;
         foreach ($columns as $key => $value) {
-            if(isset($row[$value->name])) {
+            if(isset($row[$value->attribute])) {
 
                 // 解析using规则
                 if($value->using) {
-                    if(isset($value->using[$row[$value->name]])) {
-                        $row[$value->name] = $value->using[$row[$value->name]];
+                    if(isset($value->using[$row[$value->attribute]])) {
+                        $row[$value->attribute] = $value->using[$row[$value->attribute]];
                     }
                 }
 
                 // 解析link规则
                 if($value->link) {
-                    $item['title'] = $row[$value->name];
+                    $item['title'] = $row[$value->attribute];
                     $item['href'] = str_replace('{id}',$row['id'],$value->link['href']);
                     $item['target'] = $value->link['target'];
-                    $row[$value->name] = $item;
+                    $row[$value->attribute] = $item;
                 }
 
                 // 解析image规则
                 if($value->image) {
                     if($value->image['path']) {
-                        $row[$value->name] = $value->image['path'];
+                        $row[$value->attribute] = $value->image['path'];
                     } else {
-                        $row[$value->name] = get_picture($row[$value->name]);
+                        $row[$value->attribute] = get_picture($row[$value->attribute]);
                     }
                 }
 
@@ -381,14 +485,14 @@ class Table extends Element
                     if($value->qrcode['content']) {
                         $content = '&data='.$value->qrcode['content'];
                     } else {
-                        $content = '&data='.$row[$value->name];
+                        $content = '&data='.$row[$value->attribute];
                     }
-                    $row[$value->name] = $url.$size.$content;
+                    $row[$value->attribute] = $url.$size.$content;
                 }
 
                 // 解析display回调函数
                 if($value->displayCallback) {
-                    $row[$value->name] = call_user_func_array($value->displayCallback,[$row[$value->name]]);
+                    $row[$value->attribute] = call_user_func_array($value->displayCallback,[$row[$value->attribute]]);
                 }
             }
         }
@@ -399,25 +503,25 @@ class Table extends Element
     /**
      * 填充数据
      *
-     * @param  array  $data
      * @return $this
      */
     public function fillData()
     {
-        $data = $this->model->data();
+        if(!empty($this->datasource)) {
+            $data = $this->datasource;
+        } else {
+            $data = $this->model->data();
+        }
 
         if(isset($data['current_page'])) {
-            // 存在分页
-            $pagination['defaultCurrent'] = 1;
-            $pagination['current'] = $data['current_page'];
-            $pagination['pageSize'] = $data['per_page'];
-            $pagination['total'] = $data['total'];
-            $this->pagination = $pagination;
+            // 存在分页，则设置分页
+            $this->pagination($data['current_page'], $data['per_page'], $data['total']);
 
             // 重设数据
             $data = $data['data'];
         }
 
+        $datasource = null;
         foreach ($data as $key => $value) {
             // 解析每一行的行为
             $value = $this->parseRowActions($value);
@@ -426,11 +530,11 @@ class Table extends Element
             $datasource[$key] = $this->parseRowData($value);
         }
 
-        $this->datasource = $datasource;
+        $this->datasource($datasource);
     }
 
     /**
-     * Dynamically add columns to the table view.
+     * 动态添加列
      *
      * @param $method
      * @param $parameters
@@ -448,7 +552,7 @@ class Table extends Element
     }
 
     /**
-     * Prepare the element for JSON serialization.
+     * 组件json序列化
      *
      * @return array
      */
@@ -464,7 +568,12 @@ class Table extends Element
             'rowKey' => $this->rowKey,
             'headerTitle' => $this->headerTitle,
             'columns' => $this->columns,
+            'options' => $this->options,
             'search' => $this->search,
+            'dateFormatter' => $this->dateFormatter,
+            'columnEmptyText' => $this->columnEmptyText,
+            'toolbar' => $this->toolbar,
+            'tableExtraRender' => $this->tableExtraRender,
             'datasource' => $this->datasource,
             'pagination' => $this->pagination
         ], parent::jsonSerialize());

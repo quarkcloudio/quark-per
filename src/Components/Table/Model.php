@@ -69,6 +69,34 @@ class Model
      */
     protected function get()
     {
+        // search todo
+        $search = request('search');
+        $filter = request('filter');
+        $sorter = request('sorter');
+
+        if(!empty($filter)) {
+            foreach ($filter as $filterKey => $filterValue) {
+                if(!empty($filterValue)) {
+                    $this->model = $this->model->whereIn($filterKey,$filterValue);
+                }
+            }
+        }
+
+        if(!empty($sorter)) {
+            foreach ($sorter as $sorterKey => $sorterValue) {
+                if($sorterValue === 'ascend' || $sorterValue === 'descend') {
+                    if($sorterValue === 'descend') {
+                        $orderBy = 'desc';
+                    } else {
+                        $orderBy = 'asc';
+                    }
+                    $this->model = $this->model->orderBy($sorterKey,$orderBy);
+                }
+            }
+        } else {
+            $this->model = $this->model->orderBy('id','desc');
+        }
+
         $this->queries->unique()->each(function ($query) {
             $this->model = call_user_func_array([$this->model, $query['method']], $query['arguments']);
         });
