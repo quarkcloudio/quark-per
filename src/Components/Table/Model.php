@@ -14,6 +14,13 @@ class Model
     protected $model;
 
     /**
+     * table object.
+     *
+     * @var object
+     */
+    protected $table = null;
+
+    /**
      * @var array
      */
     protected $data = [];
@@ -23,10 +30,10 @@ class Model
      *
      * @param EloquentModel $model
      */
-    public function __construct(EloquentModel $model = null)
+    public function __construct(EloquentModel $model = null,$table = null)
     {
         $this->model = $model;
-
+        $this->table = $table;
         $this->queries = collect();
     }
 
@@ -63,27 +70,150 @@ class Model
     }
 
     /**
+     * parseOperator
+     *
+     * @param $items
+     * @param $inputs
+     *
+     * @return void
+     */
+    protected function parseOperator($items,$inputs)
+    {
+        foreach ($items as $key => $item) {
+            if(isset($inputs[$item->name]) || (isset($inputs[$item->name.'_start']) && isset($inputs[$item->name.'_end']))) {
+                switch ($item->operator) {
+                    case 'equal':
+                        $this->model = $this->model->where($item->name,$inputs[$item->name]);
+                        break; 
+
+                    case 'like':
+                        $this->model = $this->model->where($item->name,'like','%'.$inputs[$item->name].'%');
+                        break;
+
+                    case 'gt':
+                        $this->model = $this->model->where($item->name,'>',$inputs[$item->name]);
+                        break;
+
+                    case 'lt':
+                        $this->model = $this->model = $this->model->where($item->name,'<',$inputs[$item->name]);
+                        break;
+
+                    case 'between':
+                        if($item->component == 'input') {
+                            $this->model = $this->model->whereBetween($item->name, [$inputs[$item->name.'_start'], $inputs[$item->name.'_end']]);
+                        } else {
+                            $this->model = $this->model->whereBetween($item->name, [$inputs[$item->name][0], $inputs[$item->name][1]]);
+                        }
+                        break;
+
+                    case 'in':
+                        $this->model = $this->model->whereIn($item->name, $inputs[$item->name]);
+                        break;
+
+                    case 'notIn':
+                        $this->model = $this->model->whereNotIn($item->name, $inputs[$item->name]);
+                        break;
+
+                    case 'scope':
+                        foreach ($item->options as $optionKey => $option) {
+                            if($option['value'] == $inputs[$item->name]) {
+                                if(isset($option['method'])) {
+                                    foreach ($option['method'] as $methodKey => $method) {
+                                        $methodName = array_key_first($method);
+                                        $params = $method[$methodName];
+                                        $this->model = $this->model->$methodName(...$params);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+
+                    case 'where':
+                        foreach ($item->methods as $methodKey => $method) {
+                            $methodName = array_key_first($method);
+                            $params = $method[$methodName];
+                            $params = json_decode(str_replace('{input}', $inputs[$item->name], json_encode($params)),true);
+                            $this->model = $this->model->$methodName(...$params);
+                        }
+                        break;
+
+                    case 'group':
+                        foreach ($item->options as $optionKey => $option) {
+                            $operator = $inputs[$item->name.'_start'];
+                            $value = $inputs[$item->name.'_end'];
+                            switch ($operator) {
+                                case 'equal':
+                                    $this->model = $this->model->where($item->name,$value);
+                                    break;
+
+                                case 'notEqual':
+                                    $this->model = $this->model->where($item->name,'<>',$value);
+                                    break;
+
+                                case 'gt':
+                                    $this->model = $this->model->where($item->name,'>',$value);
+                                    break;
+
+                                case 'lt':
+                                    $this->model = $this->model->where($item->name,'<',$value);
+                                    break;
+
+                                case 'nlt':
+                                    $this->model = $this->model->where($item->name,'>=',$value);
+                                    break;
+
+                                case 'ngt':
+                                    $this->model = $this->model->where($item->name,'<=',$value);
+                                    break;
+
+                                case 'like':
+                                    $this->model = $this->model->where($item->name,'like','%'.$value.'%');
+                                    break;
+
+                                default:
+
+                                    break;
+                            }
+                        }
+                        break;
+
+                    default:
+                        $this->model = $this->model->where($item->name,$inputs[$item->name]);
+                        break;
+                }
+            }
+        }
+    }
+
+    /**
      * @throws \Exception
      *
      * @return Collection
      */
     protected function get()
     {
-        // search todo
-        $search = request('search');
-        $filter = request('filter');
-        $sorter = request('sorter');
+        if(request()->has('search')) {
+            $searchInputs = request('search');
+            // 搜索
+            $search = $this->table->search->jsonSerialize();
+            // 解析操作符
+            $this->parseOperator($search['items'],$searchInputs);
+        }
 
-        if(!empty($filter)) {
-            foreach ($filter as $filterKey => $filterValue) {
+        if(request()->has('filter')) {
+            $filterInputs = request('filter');
+            // 过滤
+            foreach ($filterInputs as $filterKey => $filterValue) {
                 if(!empty($filterValue)) {
                     $this->model = $this->model->whereIn($filterKey,$filterValue);
                 }
             }
         }
 
-        if(!empty($sorter)) {
-            foreach ($sorter as $sorterKey => $sorterValue) {
+        if(request()->has('sorter')) {
+            $sorterInputs = request('sorter');
+            // 排序
+            foreach ($sorterInputs as $sorterKey => $sorterValue) {
                 if($sorterValue === 'ascend' || $sorterValue === 'descend') {
                     if($sorterValue === 'descend') {
                         $orderBy = 'desc';

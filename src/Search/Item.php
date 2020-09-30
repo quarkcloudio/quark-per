@@ -1,6 +1,6 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Table\Search;
+namespace QuarkCMS\QuarkAdmin\Search;
 
 use Exception;
 
@@ -14,12 +14,7 @@ class Item
             $style,
             $component,
             $operator,
-            $advanced,
             $placeholder;
-
-    function __construct() {
-
-    }
 
     /**
      * 控件样式
@@ -128,7 +123,7 @@ class Item
     /**
      * select
      *
-     * @param  string $options
+     * @param  array $options
      * @return object
      */
     public function select($options)
@@ -150,7 +145,7 @@ class Item
     /**
      * multipleSelect
      *
-     * @param  string $options
+     * @param  array $options
      * @return object
      */
     public function multipleSelect($options)
@@ -179,19 +174,6 @@ class Item
     {
         $this->component = 'datetime';
         $this->options = $options;
-
-        return $this;
-    }
-
-    /**
-     * advanced
-     *
-     * @param  bool $advanced
-     * @return object
-     */
-    public function advanced($advanced = true)
-    {
-        $this->advanced = $advanced;
 
         return $this;
     }

@@ -20,7 +20,7 @@ class AdminController extends Controller
     protected function table()
     {
         $table = new Table(new Admin);
-        $table->headerTitle($this->title)->search(false);
+        $table->headerTitle($this->title);
         
         $table->column('id','序号');
         $table->column('avatar','头像')->tooltip('用户头像')->image();
@@ -79,6 +79,44 @@ class AdminController extends Controller
         //     $action->button('导出日志')->link();
         //     return $action;
         // });
+
+        // // 批量操作
+        // $table->batchActions(function($action) {
+        //     // 跳转默认编辑页面
+        //     $action->button('删除')
+        //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+        //     ->model()
+        //     ->where('id','{id}')
+        //     ->delete();
+
+        //     // 下拉菜单形式的行为
+        //     $action->dropdown('更多')->overlay(function($action) {
+        //         $action->item('详情')->editLink();
+        //         $action->item('删除')
+        //         ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+        //         ->model()
+        //         ->where('id','{id}')
+        //         ->delete();
+        //         return $action;
+        //     });
+
+        //     return $action;
+        // });
+
+        // 搜索
+        $table->search(function($search) {
+
+            $search->where('username', '搜索内容',function ($model) {
+                $model->where('username', 'like', "%{input}%");
+            })->placeholder('名称');
+
+            $search->equal('status', '所选状态')
+            ->select([''=>'全部', 1=>'正常', 0=>'已禁用'])
+            ->placeholder('选择状态')
+            ->width(110);
+
+            $search->between('last_login_time', '登录时间')->datetime();
+        });
 
         $table->model()->paginate(request('pageSize',10));
 

@@ -1,10 +1,9 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Table\Search\Fields;
+namespace QuarkCMS\QuarkAdmin\Search\Fields;
 
 use Illuminate\Support\Arr;
-use QuarkCMS\QuarkAdmin\Table\Search\Item;
-use Exception;
+use QuarkCMS\QuarkAdmin\Search\Item;
 
 class NotIn extends Item
 {

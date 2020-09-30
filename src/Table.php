@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use QuarkCMS\QuarkAdmin\Components\Table\Column;
+use QuarkCMS\QuarkAdmin\Search;
 
 class Table extends Element
 {
@@ -42,7 +43,7 @@ class Table extends Element
      *
      * @var bool|array
      */
-    public $search = true;
+    public $search = false;
 
     /**
      * 转化 moment 格式数据为特定类型，false 不做转化,"string" | "number" | false
@@ -110,7 +111,8 @@ class Table extends Element
     public function __construct(Eloquent $model)
     {
         $this->component = 'table';
-        $this->model = new Model($model);
+        $this->model = new Model($model,$this);
+        $this->search = new Search;
         $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
 
@@ -172,11 +174,11 @@ class Table extends Element
      * @param  bool|array  $search
      * @return $this
      */
-    public function search($search = true)
+    public function search(Closure $callback = null)
     {
-        $this->search = $search;
+        $callback($this->search);
 
-        return $this;
+        return $this->search;
     }
 
     /**
@@ -538,7 +540,6 @@ class Table extends Element
      *
      * @param $method
      * @param $parameters
-     *
      * @return Column
      */
     public function __call($method, $parameters)
