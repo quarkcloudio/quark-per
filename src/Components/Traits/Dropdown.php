@@ -14,6 +14,13 @@ trait Dropdown
     public $name;
 
     /**
+     * 显示模式
+     *
+     * @var string
+     */
+    public $mode = 'a';
+
+    /**
      * 下拉框箭头是否显示
      *
      * @var bool
@@ -47,6 +54,18 @@ trait Dropdown
      * @var Array<click|hover|contextMenu>
      */
     public $trigger = ['click'];
+
+    /**
+     * 下拉框显示模式,a|button
+     *
+     * @param  string  $mode
+     * @return $this
+     */
+    public function mode($mode)
+    {
+        $this->mode = $mode;
+        return $this;
+    }
 
     /**
      * 下拉框箭头是否显示

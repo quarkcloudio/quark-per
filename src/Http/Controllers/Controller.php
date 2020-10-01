@@ -235,53 +235,22 @@ class Controller extends BaseController
             return error('参数错误！');
         }
 
-        if(!is_array($id)) {
-            $result = $this->table()->executeRowAction($id,$key);
-        } else {
+        if(is_array($id)) {
+
+            // 批量操作
             $result = $this->table()->executeBatchAction($id,$key);
+        } elseif($id === '{id}') {
+
+            // 工具栏操作
+            $result = $this->table()->executeToolBarAction($key);
+        } else {
+            
+            // 行操作
+            $result = $this->table()->executeRowAction($id,$key);
         }
 
         if($result) {
             return success('操作成功！');
-        } else {
-            return error('操作失败！');
-        }
-    }
-
-    /**
-     * 删除数据方法
-     *
-     * @param int $id
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request)
-    {
-        $result = $this->form()->destroy();
-
-        if($result) {
-            return success('删除成功！');
-        } else {
-            return error('删除失败！');
-        }
-    }
-
-    /**
-     * 应用信息
-     * @author  tangtanglove <dai_hang_love@126.com>
-     */
-    public function appInfo(Request $request)
-    {
-        $logo = null;
-        if(web_config('WEB_SITE_LOGO')) {
-            $logo = get_picture(web_config('WEB_SITE_LOGO'));
-        }
-        $webInfo['logo'] = $logo;
-        $webInfo['name'] = web_config('WEB_SITE_NAME');
-        $webInfo['description'] = web_config('WEB_SITE_DESCRIPTION');
-
-        if($webInfo) {
-            return success('操作成功！','',$webInfo);
         } else {
             return error('操作失败！');
         }

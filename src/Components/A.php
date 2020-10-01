@@ -16,7 +16,6 @@ class A extends Element
      * @return void
      */
     function __construct($name) {
-        $this->style = ['padding'=>'5px 0px'];
         $this->component = 'a';
         $this->name = $name;
     }

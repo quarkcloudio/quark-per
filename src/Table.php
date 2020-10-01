@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use QuarkCMS\QuarkAdmin\Components\Table\Column;
+use QuarkCMS\QuarkAdmin\Components\Table\ToolBar;
 use QuarkCMS\QuarkAdmin\Search;
 use QuarkCMS\QuarkAdmin\Action;
 
@@ -122,6 +123,7 @@ class Table extends Element
         $this->model = new Model($model,$this);
         $this->search = new Search;
         $this->batchAction = new Action;
+        $this->toolbar = new ToolBar;
         $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
 
@@ -219,14 +221,12 @@ class Table extends Element
     /**
      * 透传 ProUtils 中的 ListToolBar 配置项
      *
-     * @param  array  $toolbar
+     * @param  void
      * @return $this
      */
-    public function toolbar($toolbar)
+    public function toolbar()
     {
-        $this->toolbar = $toolbar;
-
-        return $this;
+        return $this->toolbar;
     }
 
     /**
@@ -300,14 +300,14 @@ class Table extends Element
     }
 
     /**
-     * 解析批量操作的行为
+     * 解析批量操作以及工具栏的行为
      *
      * @param  array  $actions
      * @return array
      */
-    protected function parseBatchActions($actions)
+    protected function parseActions($actions)
     {
-        $batchActions = [];
+        $getActions = [];
         foreach ($actions as $actionKey => $actionValue) {
             $actionValueArray = $actionValue->jsonSerialize();
             if($actionValueArray['component'] === 'dropdownStyle') {
@@ -328,24 +328,34 @@ class Table extends Element
                 }
             }
 
-            $batchActions[$actionKey] = $actionValueArray;
+            $getActions[$actionKey] = $actionValueArray;
         }
 
-        return $batchActions;
+        return $getActions;
     }
 
     /**
-     * 获取表格批量操作行为
+     * 执行工具栏操作行为
      *
-     * @param  array  $actions
-     * @return object
+     * @return bool
      */
-    public function getBatchExecuteAction($key)
+    public function executeToolBarAction($key)
     {
-        $action = null;
-        $batchActions = $this->batchAction->actions();
-        $action = $this->parseRowExecuteActionRules($batchActions,$key);
-        return $action;
+        $toolbarActions = $this->toolbar->action->actions();
+
+        if(empty($key) || empty($toolbarActions)) {
+            return false;
+        }
+
+        $action = $this->parseExecuteActionRules($toolbarActions,$key);
+
+        if(isset($action->model->queries)) {
+            $action->model->queries->unique()->each(function ($query) {
+                $this->eloquentModel = call_user_func_array([$this->eloquentModel, $query['method']], $query['arguments']);
+            });
+        }
+
+        return true;
     }
 
     /**
@@ -355,11 +365,14 @@ class Table extends Element
      */
     public function executeBatchAction($id,$key)
     {
-        if(empty($id) || empty($key)) {
+        $batchActions = $this->batchAction->actions();
+
+        if(empty($id) || empty($key) || empty($batchActions)) {
             return false;
         }
 
-        $action = $this->getBatchExecuteAction($key);
+        $action = $this->parseExecuteActionRules($batchActions,$key);
+
         if(isset($action->model->queries)) {
             $action->model->queries->unique()->each(function ($query) use ($id) {
                 if($id) {
@@ -377,13 +390,13 @@ class Table extends Element
     }
 
     /**
-     * 解析表格行执行行为
+     * 解析执行行为
      *
      * @param  array  $actions
      * @param  string  $key
      * @return array
      */
-    public function parseRowExecuteActionRules($actions,$key)
+    public function parseExecuteActionRules($actions,$key)
     {
         $action = null;
 
@@ -396,7 +409,7 @@ class Table extends Element
                     foreach ($actionValueArray['overlay'] as $overlayKey => $overlayValue) {
                         $overlayActions = $overlayValue->actions();
                         if($overlayActions) {
-                            $getAction = $this->parseRowExecuteActionRules($overlayActions,$key);
+                            $getAction = $this->parseExecuteActionRules($overlayActions,$key);
                             if($getAction) {
                                 $action = $getAction;
                             }
@@ -410,7 +423,7 @@ class Table extends Element
                     foreach ($actionValueArray['options'] as $optionKey => $optionValue) {
                         $optionActions = $optionValue->actions();
                         if($optionActions) {
-                            $getAction = $this->parseRowExecuteActionRules($optionActions,$key);
+                            $getAction = $this->parseExecuteActionRules($optionActions,$key);
                             if($getAction) {
                                 $action = $getAction;
                             }
@@ -446,7 +459,7 @@ class Table extends Element
             if($value->actionCallback) {
                 $actionCallback = call_user_func_array($value->actionCallback,[$row]);
                 $rowActions = $actionCallback->actions();
-                $action = $this->parseRowExecuteActionRules($rowActions,$key);
+                $action = $this->parseExecuteActionRules($rowActions,$key);
             }
         }
 
@@ -655,25 +668,73 @@ class Table extends Element
      */
     public function jsonSerialize()
     {
+        // 获取表格列
+        $columns = $this->columns;
+
         // 设置组件唯一标识
-        $this->key(__CLASS__.$this->headerTitle.json_encode($this->columns));
+        $this->key(__CLASS__.$this->headerTitle.json_encode($this->model).json_encode($columns));
+
+        // 行主键
+        $rowKey = $this->rowKey;
+
+        // 表格标题
+        $headerTitle = $this->headerTitle;
+
+        // 表格工具栏设置属性
+        $options = $this->options;
+
+        // 转化 moment 格式数据为特定类型
+        $dateFormatter = $this->dateFormatter;
+
+        // 空值时的显示，不设置 则默认显示 -
+        $columnEmptyText = $this->columnEmptyText;
+
+        $table = cache($this->key);
+
+        if(empty($table)) {
+
+            // 表格搜索表单
+            $table['search'] = $this->search;
+
+            // 批量操作
+            $table['batchActions'] = $this->parseActions($this->batchAction->actions());
+
+            // 获取工具栏
+            $toolbar = $this->toolbar->jsonSerialize();
+
+            // 解析工具栏操作
+            $toolbar['actions'] = $this->parseActions($this->toolbar->action->actions());
+            $table['toolbar'] = $toolbar;
+
+            // 存储到缓存中
+            cache([$this->key => $table], 3600);
+        }
+
+        // 自定义表格的主体函数
+        $tableExtraRender = $this->tableExtraRender;
 
         // 填充数据
         $this->fillData();
 
+        // 表格数据
+        $datasource = $this->datasource;
+
+        // 表格分页
+        $pagination = $this->pagination;
+
         return array_merge([
-            'rowKey' => $this->rowKey,
-            'headerTitle' => $this->headerTitle,
-            'columns' => $this->columns,
-            'options' => $this->options,
-            'search' => $this->search,
-            'batchActions' => $this->parseBatchActions($this->batchAction->actions()),
-            'dateFormatter' => $this->dateFormatter,
-            'columnEmptyText' => $this->columnEmptyText,
-            'toolbar' => $this->toolbar,
-            'tableExtraRender' => $this->tableExtraRender,
-            'datasource' => $this->datasource,
-            'pagination' => $this->pagination
+            'rowKey' => $rowKey,
+            'headerTitle' => $headerTitle,
+            'columns' => $columns,
+            'options' => $options,
+            'search' => $table['search'],
+            'batchActions' => $table['batchActions'],
+            'dateFormatter' => $dateFormatter,
+            'columnEmptyText' => $columnEmptyText,
+            'toolbar' => $table['toolbar'],
+            'tableExtraRender' => $tableExtraRender,
+            'datasource' => $datasource,
+            'pagination' => $pagination
         ], parent::jsonSerialize());
     }
 }

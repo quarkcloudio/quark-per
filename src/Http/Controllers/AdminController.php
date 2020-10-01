@@ -71,14 +71,24 @@ class AdminController extends Controller
             return $action;
         });
 
-        // $table->toolBar()->actions(function($action) {
+        $table->toolBar()->actions(function($action) {
 
-        //     // 跳转默认创建页面
-        //     $action->button('创建管理员')->createLink();
+            // 跳转默认创建页面
+            $action->button('创建管理员')->type('primary')->icon('home')->createLink();
 
-        //     $action->button('导出日志')->link();
-        //     return $action;
-        // });
+            // 下拉菜单形式的行为
+            $action->dropdown('更多操作')->mode('button')->overlay(function($action) {
+                $action->item('详情')->createLink();
+                $action->item('清空数据')
+                ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+                ->model()
+                ->where('status',1)
+                ->delete();
+                return $action;
+            });
+
+            return $action;
+        });
 
         // 批量操作
         $table->batchActions(function($action) {

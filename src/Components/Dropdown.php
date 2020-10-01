@@ -31,6 +31,7 @@ class Dropdown extends Element
 
         return array_merge([
             'name' => $this->name,
+            'mode' => $this->mode,
             'arrow' => $this->arrow,
             'disabled' => $this->disabled,
             'overlay' => $this->overlay,

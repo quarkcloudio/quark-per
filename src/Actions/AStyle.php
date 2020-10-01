@@ -17,7 +17,6 @@ class AStyle extends BaseAction
      */
     function __construct($name) {
         $this->name = $name;
-        $this->style = ['padding'=>'0px 5px'];
         $this->component = 'aStyle';
     }
 

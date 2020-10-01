@@ -44,7 +44,12 @@ class DropdownStyle extends Element
 
         return array_merge([
             'name' => $this->name,
-            'overlay' => $this->overlay
+            'mode' => $this->mode,
+            'arrow' => $this->arrow,
+            'disabled' => $this->disabled,
+            'overlay' => $this->overlay,
+            'placement' => $this->placement,
+            'trigger' => $this->trigger,
         ], parent::jsonSerialize());
     }
 }
