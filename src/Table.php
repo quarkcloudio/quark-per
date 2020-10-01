@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use QuarkCMS\QuarkAdmin\Components\Table\Column;
 use QuarkCMS\QuarkAdmin\Search;
+use QuarkCMS\QuarkAdmin\Action;
 
 class Table extends Element
 {
@@ -44,6 +45,13 @@ class Table extends Element
      * @var bool|array
      */
     public $search = false;
+
+    /**
+     * 表格的批量操作行为
+     *
+     * @var object
+     */
+    public $batchAction = false;
 
     /**
      * 转化 moment 格式数据为特定类型，false 不做转化,"string" | "number" | false
@@ -113,6 +121,7 @@ class Table extends Element
         $this->component = 'table';
         $this->model = new Model($model,$this);
         $this->search = new Search;
+        $this->batchAction = new Action;
         $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
 
@@ -278,6 +287,96 @@ class Table extends Element
     }
 
     /**
+     * 表格的批量操作
+     *
+     * @param  Closure  $callback
+     * @return $this
+     */
+    public function batchActions(Closure $callback = null)
+    {
+        $callback($this->batchAction);
+
+        return $this;
+    }
+
+    /**
+     * 解析批量操作的行为
+     *
+     * @param  array  $actions
+     * @return array
+     */
+    protected function parseBatchActions($actions)
+    {
+        $batchActions = [];
+        foreach ($actions as $actionKey => $actionValue) {
+            $actionValueArray = $actionValue->jsonSerialize();
+            if($actionValueArray['component'] === 'dropdownStyle') {
+
+                // 获取dropdown样式的行为
+                if($actionValueArray['overlay']) {
+                    foreach ($actionValueArray['overlay'] as $overlayKey => $overlayValue) {
+                        $actionValueArray['overlay'] = $overlayValue->actions();
+                    }
+                }
+            } elseif($actionValueArray['component'] === 'selectStyle') {
+
+                // 获取select样式的行为
+                if($actionValueArray['options']) {
+                    foreach ($actionValueArray['options'] as $optionKey => $optionValue) {
+                        $actionValueArray['options'] = $optionValue->actions();
+                    }
+                }
+            }
+
+            $batchActions[$actionKey] = $actionValueArray;
+        }
+
+        return $batchActions;
+    }
+
+    /**
+     * 获取表格批量操作行为
+     *
+     * @param  array  $actions
+     * @return object
+     */
+    public function getBatchExecuteAction($key)
+    {
+        $action = null;
+        $batchActions = $this->batchAction->actions();
+        $action = $this->parseRowExecuteActionRules($batchActions,$key);
+        return $action;
+    }
+
+    /**
+     * 执行批量操作行为
+     *
+     * @return bool
+     */
+    public function executeBatchAction($id,$key)
+    {
+        if(empty($id) || empty($key)) {
+            return false;
+        }
+
+        $action = $this->getBatchExecuteAction($key);
+        if(isset($action->model->queries)) {
+            $action->model->queries->unique()->each(function ($query) use ($id) {
+                if($id) {
+                    foreach ($query['arguments'] as $key => $value) {
+                        if($value === '{ids}') {
+                            $query['arguments'][$key] = $id;
+                        }
+                    }
+                }
+                $this->eloquentModel = call_user_func_array([$this->eloquentModel, $query['method']], $query['arguments']);
+            });
+        }
+
+        return true;
+    }
+
+    /**
      * 解析表格行执行行为
      *
      * @param  array  $actions
@@ -355,15 +454,12 @@ class Table extends Element
     }
 
     /**
-     * 执行行为
+     * 执行每一行行为
      *
      * @return bool
      */
-    public function executeRowAction()
+    public function executeRowAction($id,$key)
     {
-        $id = request('id');
-        $key = request('key');
-
         if(empty($id) || empty($key)) {
             return false;
         }
@@ -571,6 +667,7 @@ class Table extends Element
             'columns' => $this->columns,
             'options' => $this->options,
             'search' => $this->search,
+            'batchActions' => $this->parseBatchActions($this->batchAction->actions()),
             'dateFormatter' => $this->dateFormatter,
             'columnEmptyText' => $this->columnEmptyText,
             'toolbar' => $this->toolbar,

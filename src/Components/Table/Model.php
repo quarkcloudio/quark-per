@@ -202,25 +202,29 @@ class Model
 
         if(request()->has('filter')) {
             $filterInputs = request('filter');
-            // 过滤
-            foreach ($filterInputs as $filterKey => $filterValue) {
-                if(!empty($filterValue)) {
-                    $this->model = $this->model->whereIn($filterKey,$filterValue);
+            if(is_array($filterInputs)) {
+                // 过滤
+                foreach ($filterInputs as $filterKey => $filterValue) {
+                    if(!empty($filterValue)) {
+                        $this->model = $this->model->whereIn($filterKey,$filterValue);
+                    }
                 }
             }
         }
 
         if(request()->has('sorter')) {
             $sorterInputs = request('sorter');
-            // 排序
-            foreach ($sorterInputs as $sorterKey => $sorterValue) {
-                if($sorterValue === 'ascend' || $sorterValue === 'descend') {
-                    if($sorterValue === 'descend') {
-                        $orderBy = 'desc';
-                    } else {
-                        $orderBy = 'asc';
+            if(is_array($sorterInputs)) {
+                // 排序
+                foreach ($sorterInputs as $sorterKey => $sorterValue) {
+                    if($sorterValue === 'ascend' || $sorterValue === 'descend') {
+                        if($sorterValue === 'descend') {
+                            $orderBy = 'desc';
+                        } else {
+                            $orderBy = 'asc';
+                        }
+                        $this->model = $this->model->orderBy($sorterKey,$orderBy);
                     }
-                    $this->model = $this->model->orderBy($sorterKey,$orderBy);
                 }
             }
         } else {

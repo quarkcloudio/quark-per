@@ -80,28 +80,28 @@ class AdminController extends Controller
         //     return $action;
         // });
 
-        // // 批量操作
-        // $table->batchActions(function($action) {
-        //     // 跳转默认编辑页面
-        //     $action->button('删除')
-        //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-        //     ->model()
-        //     ->where('id','{id}')
-        //     ->delete();
+        // 批量操作
+        $table->batchActions(function($action) {
+            // 跳转默认编辑页面
+            $action->a('批量删除')
+            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            ->model()
+            ->whereIn('id','{ids}')
+            ->delete();
 
-        //     // 下拉菜单形式的行为
-        //     $action->dropdown('更多')->overlay(function($action) {
-        //         $action->item('详情')->editLink();
-        //         $action->item('删除')
-        //         ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-        //         ->model()
-        //         ->where('id','{id}')
-        //         ->delete();
-        //         return $action;
-        //     });
+            // 下拉菜单形式的行为
+            $action->dropdown('批量操作')->overlay(function($action) {
+                $action->item('详情')->editLink();
+                $action->item('删除')
+                ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+                ->model()
+                ->whereIn('id','{ids}')
+                ->delete();
+                return $action;
+            });
 
-        //     return $action;
-        // });
+            return $action;
+        });
 
         // 搜索
         $table->search(function($search) {

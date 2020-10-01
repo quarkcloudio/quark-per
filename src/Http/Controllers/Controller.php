@@ -228,13 +228,23 @@ class Controller extends BaseController
      */
     public function action(Request $request)
     {
-        // 执行表格定义的每一行行为
-        $result = $this->table()->executeRowAction();
+        $id = request('id');
+        $key = request('key');
+
+        if(empty($id) || empty($key)) {
+            return error('参数错误！');
+        }
+
+        if(!is_array($id)) {
+            $result = $this->table()->executeRowAction($id,$key);
+        } else {
+            $result = $this->table()->executeBatchAction($id,$key);
+        }
 
         if($result) {
             return success('操作成功！');
         } else {
-            return success('操作失败！');
+            return error('操作失败！');
         }
     }
 
