@@ -5,12 +5,14 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\ActionLog;
 use QuarkCMS\QuarkAdmin\Models\Admin;
+use QuarkCMS\QuarkAdmin\Table;
+use QuarkCMS\QuarkAdmin\Action;
 use App\User;
 use Quark;
 
 class ActionLogController extends Controller
 {
-    public $title = '日志';
+    public $title = '日志列表';
 
     /**
      * 列表页面
@@ -20,44 +22,50 @@ class ActionLogController extends Controller
      */
     protected function table()
     {
-        $grid = Quark::grid(new ActionLog)
-        ->title($this->title);
+        $table = new Table(new ActionLog);
+        $table->headerTitle($this->title);
+        
+        $table->column('id','序号');
+        $table->column('admin.username','用户')->width(200);
+        $table->column('url','行为');
+        $table->column('ip','IP');
+        $table->column('created_at','发生时间');
+        $table->column('actions','操作')->width(180)->actions(function($row) {
 
-        $grid->column('admin.username','用户')->width(200);
-        $grid->column('url','行为');
-        $grid->column('ip','IP');
-        $grid->column('created_at','发生时间');
-        $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
-            $rowAction->menu('show', '显示');
-            $rowAction->menu('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+            // 创建行为对象
+            $action = new Action();
+
+            $action->a('删除')
+            ->withPopconfirm('确认要删除数据吗？')
+            ->model()
+            ->where('id','{id}')
+            ->delete();
+
+            return $action;
         });
 
-        // 头部操作
-        $grid->actions(function($action) {
-            $action->button('refresh', '刷新');
+        // 批量操作
+        $table->batchActions(function($action) {
+            // 跳转默认编辑页面
+            $action->a('批量删除')
+            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            ->model()
+            ->whereIn('id','{ids}')
+            ->delete();
+
+            return $action;
         });
 
-        // select样式的批量操作
-        $grid->batchActions(function($batch) {
-            $batch->option('', '批量操作');
-            $batch->option('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
-        })->style('select',['width'=>120]);
-
-        $grid->search(function($search) {
+        // 搜索
+        $table->search(function($search) {
             $search->where('name', '搜索内容',function ($query) {
                 $query->where('name', 'like', "%{input}%");
             })->placeholder('名称');
-        })->expand(false);
+        });
 
-        $grid->model()
-        ->where('type','ADMIN')
-        ->paginate(10);
+        $table->model()->where('type','ADMIN')->paginate(request('pageSize',10));
 
-        return $grid;
+        return $table;
     }
 
     /**

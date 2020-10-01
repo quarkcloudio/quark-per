@@ -672,7 +672,7 @@ class Table extends Element
         $columns = $this->columns;
 
         // 设置组件唯一标识
-        $this->key(__CLASS__.$this->headerTitle.json_encode($this->model).json_encode($columns));
+        $this->key(__CLASS__.$this->headerTitle.json_encode($columns));
 
         // 行主键
         $rowKey = $this->rowKey;
