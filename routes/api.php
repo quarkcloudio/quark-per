@@ -61,7 +61,7 @@ Route::group([
 	$router->post('admin/menu/destroy', 'MenuController@destroy')->name('api/admin/menu/destroy');
 
 	$router->get('admin/actionLog/index', 'ActionLogController@index')->name('api/admin/actionLog/index');
-	$router->post('admin/actionLog/destroy', 'ActionLogController@destroy')->name('api/admin/actionLog/destroy');
+	$router->any('admin/actionLog/action', 'ActionLogController@action')->name('api/admin/actionLog/action');
 	$router->get('admin/actionLog/show', 'ActionLogController@show')->name('api/admin/actionLog/show');
 
 	$router->get('admin/picture/index', 'PictureController@index')->name('api/admin/picture/index');

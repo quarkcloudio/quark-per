@@ -7,6 +7,7 @@ use Illuminate\Routing\Controller as BaseController;
 use QuarkCMS\QuarkAdmin\Container;
 use QuarkCMS\QuarkAdmin\Card;
 use QuarkCMS\QuarkAdmin\Table;
+use QuarkCMS\QuarkAdmin\Form;
 
 class Controller extends BaseController
 {
@@ -135,14 +136,25 @@ class Controller extends BaseController
     {
         $form = $this->form();
 
-        $content = Quark::content()
-        ->title($this->title())
-        ->subTitle($this->subTitle())
-        ->description($this->description())
-        ->breadcrumb($this->breadcrumb())
-        ->body(['form'=>$form->render()]);
+        // 初始化card组件
+        $card = new Card('测试',$form);
 
-        return success('获取成功！','',$content);
+        // 初始化容器
+        $container = new Container();
+
+        // 设置标题
+        $container->title($this->title());
+
+        // 设置二级标题
+        $container->subTitle($this->subTitle());
+
+        // 设置面包屑导航
+        $container->breadcrumb($this->breadcrumb());
+
+        // 设置内容
+        $container->content($card);
+
+        return success('获取成功！','',$container);
     }
 
     /**

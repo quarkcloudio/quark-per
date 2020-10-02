@@ -27,7 +27,7 @@ class ActionLogController extends Controller
         
         $table->column('id','序号');
         $table->column('admin.username','用户')->width(200);
-        $table->column('url','行为');
+        $table->column('url','行为')->width(200);
         $table->column('ip','IP');
         $table->column('created_at','发生时间');
         $table->column('actions','操作')->width(180)->actions(function($row) {
