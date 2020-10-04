@@ -1,8 +1,8 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Form\Fields;
+namespace QuarkCMS\QuarkAdmin\Components\Form\Fields;
 
-use QuarkCMS\QuarkAdmin\Form\Item;
+use QuarkCMS\QuarkAdmin\Components\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
@@ -24,31 +24,6 @@ class ID extends Item
         }
 
         $this->placeholder = '请输入'.$this->label;
-    }
-
-    /**
-     * 创建组件
-     *
-     * @param  string $name
-     * @param  string $label
-     * @return object
-     */
-    static function make($name,$label = '')
-    {
-        $self = new self();
-
-        $self->name = $name;
-        if(empty($label)) {
-            $self->label = $name;
-        } else {
-            $self->label = $label;
-        }
-
-        $self->placeholder = '请输入'.$label;
-
-        // 删除空属性
-        $self->unsetNullProperty();
-        return $self;
     }
 
     public function display($display)

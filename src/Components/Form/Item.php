@@ -1,72 +1,222 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Form;
+namespace QuarkCMS\QuarkAdmin\Components\Form;
 
+use QuarkCMS\QuarkAdmin\Element;
 use Exception;
 
-class Item
+class Item extends Element
 {
-    public  $colon,
-            $dependencies,
-            $value,
-            $defaultValue,
-            $extra,
-            $getValueFromEvent,
-            $hasFeedback,
-            $help,
-            $htmlFor,
-            $noStyle,
-            $label,
-            $labelAlign,
-            $labelCol,
-            $name,
-            $normalize,
-            $required,
-            $rules,
-            $ruleMessages,
-            $creationRules,
-            $creationRuleMessages,
-            $updateRules,
-            $updateRuleMessages,
-            $frontendRules,
-            $shouldUpdate,
-            $trigger,
-            $validateStatus,
-            $validateTrigger,
-            $valuePropName,
-            $wrapperCol,
-            $style,
-            $component;
+    /**
+     * 会在 label 旁增加一个 icon，悬浮后展示配置的信息
+     *
+     * @var string
+     */
+    public $tooltip = null;
 
-    function __construct() {
-        $this->colon = true;
-    }
+    /**
+     * Field 的长度，我们归纳了常用的 Field 长度以及适合的场景，支持了一些枚举 "xs" , "s" , "m" , "l" , "x"
+     *
+     * @var string
+     */
+    public $width = null;
 
     /**
      * 配合 label 属性使用，表示是否显示 label 后面的冒号
      *
-     * @param  bool $show
+     * @var bool
+     */
+    public $colon = true;
+
+    /**
+     * 设置保存值。
+     *
+     * @var bool|string|number|array
+     */
+    public $value = null;
+
+    /**
+     * 设置默认值。
+     *
+     * @var bool|string|number|array
+     */
+    public $defaultValue = null;
+
+    /**
+     * 额外的提示信息，和 help 类似，当需要错误信息和提示文案同时出现时，可以使用这个。
+     *
+     * @var string
+     */
+    public $extra = null;
+
+    /**
+     * 配合 validateStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用
+     *
+     * @var string
+     */
+    public $hasFeedback;
+
+    /**
+     * 额外的提示信息。
+     *
+     * @var string
+     */
+    public $help = null;
+
+    /**
+     * 为 true 时不带样式，作为纯字段控件使用
+     *
+     * @var bool
+     */
+    public $noStyle = false;
+
+    /**
+     * label 标签的文本
+     *
+     * @var string
+     */
+    public $label = null;
+
+    /**
+     * 标签文本对齐方式,left | right
+     *
+     * @var string
+     */
+    public $labelAlign = 'right';
+
+    /**
+     * label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}。
+     * 你可以通过 Form 的 labelCol 进行统一设置。当和 Form 同时设置时，以 Item 为准
+     *
+     * @var array
+     */
+    public $labelCol = [];
+
+    /**
+     * 字段名，支持数组
+     *
+     * @var string|array
+     */
+    public $name = null;
+
+    /**
+     * 是否必填，如不设置，则会根据校验规则自动生成
+     *
+     * @var bool
+     */
+    public $required = false;
+
+    /**
+     * 校验规则，设置字段的校验逻辑
+     *
+     * @var array
+     */
+    public $rules = null;
+
+    /**
+     * 校验规则的提示信息
+     *
+     * @var array
+     */
+    public $ruleMessages = null;
+
+    /**
+     * 创建的校验规则，设置字段的校验逻辑
+     *
+     * @var array
+     */
+    public $creationRules = null;
+
+    /**
+     * 创建的校验规则提示信息
+     *
+     * @var array
+     */
+    public $creationRuleMessages = null;
+
+    /**
+     * 更新的校验规则，设置字段的校验逻辑
+     *
+     * @var array
+     */
+    public $updateRules = null;
+
+    /**
+     * 更新的校验规则提示信息
+     *
+     * @var array
+     */
+    public $updateRuleMessages = null;
+
+    /**
+     * 前台的校验规则
+     *
+     * @var array
+     */
+    public $frontendRules = null;
+
+    /**
+     * 子节点的值的属性，如 Switch 的是 'checked'
+     *
+     * @var string
+     */
+    public $valuePropName = null;
+
+    /**
+     * 需要为输入控件设置布局样式时，使用该属性，用法同 labelCol。
+     * 你可以通过 Form 的 wrapperCol 进行统一设置。当和 Form 同时设置时，以 Item 为准。
+     *
+     * @var array
+     */
+    public $wrapperCol = null;
+
+    /**
+     * 初始化
+     *
+     * @return void
+     */
+    function __construct()
+    {
+
+    }
+
+    /**
+     * 会在 label 旁增加一个 icon，悬浮后展示配置的信息
+     *
+     * @param  string $tooltip
      * @return $this
      */
-    public function colon($show = true)
+    public function tooltip($tooltip)
     {
-        $show ? $this->colon = true : $this->colon = false;
+        $this->tooltip = $tooltip;
+        return $this;
+    }
+
+    /**
+     * Field 的长度，我们归纳了常用的 Field 长度以及适合的场景，支持了一些枚举 "xs" , "s" , "m" , "l" , "x"
+     *
+     * @param  string $width
+     * @return $this
+     */
+    public function width($width)
+    {
+        if(!in_array($width,['xs','s','m','l','x'])) {
+            throw new Exception("argument must be 'xs','s','m','l','x'!");
+        }
+
+        $this->width = $width;
         return $this;
     }
 
     /**
      * 配合 label 属性使用，表示是否显示 label 后面的冒号
      *
-     * @param  bool $fileds
+     * @param  bool $colon
      * @return $this
      */
-    public function dependencies($fileds)
+    public function colon($colon = true)
     {
-        if(!is_array($fileds)) {
-            throw new Exception('argument must be an array!');
-        }
-
-        $this->dependencies = $fileds;
+        $colon ? $this->colon = true : $this->colon = false;
         return $this;
     }
 
@@ -95,26 +245,14 @@ class Item
     }
 
     /**
-     * 配合 validateStatus 属性使用，展示校验状态图标，建议只配合 Input 组件使用
+     * 配合 help 属性使用，展示校验状态图标，建议只配合 Input 组件使用
      *
-     * @param  bool $hasFeedback
+     * @param  bool $help
      * @return $this
      */
     public function help($help = '')
     {
         $this->help = $help;
-        return $this;
-    }
-
-    /**
-     * 控件样式
-     *
-     * @param  array $style
-     * @return $this
-     */
-    public function style($style = [])
-    {
-        $this->style = $style;
         return $this;
     }
 

@@ -1,8 +1,8 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Form\Fields;
+namespace QuarkCMS\QuarkAdmin\Components\Form\Fields;
 
-use QuarkCMS\QuarkAdmin\Form\Item;
+use QuarkCMS\QuarkAdmin\Components\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
@@ -23,7 +23,7 @@ class Text extends Item
             $allowClear;
 
     function __construct($name,$label = '') {
-        $this->component = 'input';
+        $this->component = 'text';
         $this->type = 'text';
         $this->name = $name;
 
@@ -35,36 +35,8 @@ class Text extends Item
         }
 
         $this->placeholder = '请输入'.$this->label;
-
-        $style['width'] = 200;
-        $this->style = $style;
     }
-
-    /**
-     * 创建组件
-     *
-     * @param  string $name
-     * @param  string $label
-     * @return object
-     */
-    static function make($name,$label = '')
-    {
-        $self = new self();
-
-        $self->name = $name;
-        if(empty($label)) {
-            $self->label = $name;
-        } else {
-            $self->label = $label;
-        }
-
-        $self->placeholder = '请输入'.$label;
-
-        // 删除空属性
-        $self->unsetNullProperty();
-        return $self;
-    }
-
+    
     /**
      * placeholder
      *
@@ -204,5 +176,22 @@ class Text extends Item
         $style['width'] = $value;
         $this->style = $style;
         return $this;
+    }
+
+    /**
+     * Prepare the element for JSON serialization.
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $this->key(json_encode($this));
+
+        return array_merge([
+            'label' => $this->label,
+            'name' => $this->name,
+            'placeholder' => $this->placeholder,
+            'maxLength' => $this->maxLength
+        ], parent::jsonSerialize());
     }
 }

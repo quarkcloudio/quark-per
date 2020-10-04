@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Admin;
+use QuarkCMS\QuarkAdmin\Card;
 use QuarkCMS\QuarkAdmin\Table;
 use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Form;
@@ -111,7 +112,6 @@ class AdminController extends Controller
                 return $action;
             });
 
-            return $action;
         });
 
         // 搜索
@@ -131,7 +131,9 @@ class AdminController extends Controller
 
         $table->model()->paginate(request('pageSize',10));
 
-        return $table;
+        // 放到card组件
+        $card = new Card(null,$table);
+        return $card;
     }
 
     /**
@@ -144,44 +146,17 @@ class AdminController extends Controller
     {
         $form = new Form(new Admin);
 
-        $form->title('测试');
-        
-        // $form->id('id','ID');
+        $form->style(['margin' => '25px','witdh' => '100%']);
 
-        // $form->editor('content','内容');
+        $form->id('id','ID');
+        $form->text('username','用户名')
+        ->rules(['required','min:6','max:20'],['required'=>'用户名必须填写','min'=>'用户名不能少于6个字符','max'=>'用户名不能超过20个字符'])
+        ->creationRules(["unique:admins"],['unique'=>'用户名已经存在'])
+        ->updateRules(["unique:admins,username,{{id}}"],['unique'=>'用户名已经存在']);
 
-        // $form->image('avatar','头像')->button('上传头像');
-
-        // $form->text('username','用户名')
-        // ->rules(['required','min:6','max:20'],['required'=>'用户名必须填写','min'=>'用户名不能少于6个字符','max'=>'用户名不能超过20个字符'])
-        // ->creationRules(["unique:admins"],['unique'=>'用户名已经存在'])
-        // ->updateRules(["unique:admins,username,{{id}}"],['unique'=>'用户名已经存在']);
-
-        // $form->text('nickname','昵称')
-        // ->rules(['required','max:20'],['required'=>'昵称必须填写','max'=>'昵称不能超过20个字符']);
-
-        // $form->radio('sex','性别')
-        // ->options(['1' => '男', '2'=> '女'])
-        // ->default(1);
-
-        // $form->text('email','邮箱')
-        // ->rules(['required','email','max:255'],['required'=>'邮箱必须填写','email'=>'邮箱格式错误','max'=>'邮箱不能超过255个字符'])
-        // ->creationRules(["unique:admins"],['unique'=>'邮箱已经存在',])
-        // ->updateRules(["unique:admins,email,{{id}}"],['unique'=>'邮箱已经存在']);
-
-        // $form->text('phone','手机号')
-        // ->rules(['required','max:11'],['required'=>'手机号必须填写','max'=>'手机号不能超过11个字符'])
-        // ->creationRules(["unique:admins"],['unique'=>'手机号已经存在'])
-        // ->updateRules(["unique:admins,phone,{{id}}"],['unique'=>'手机号已经存在']);
-
-        // $form->text('password','密码')
-        // ->creationRules(["required"],['required'=>'密码不能为空']);
-
-        // $form->switch('status','状态')->options([
-        //     'on'  => '正常',
-        //     'off' => '禁用'
-        // ])->default(true);
-
-        return $form;
+        // 放到card组件
+        $card = new Card('测试',$form);
+        $card->headerBordered();
+        return $card;
     }
 }

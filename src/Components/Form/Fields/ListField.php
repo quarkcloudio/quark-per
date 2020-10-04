@@ -1,9 +1,9 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Form\Fields;
+namespace QuarkCMS\QuarkAdmin\Components\Form\Fields;
 
-use QuarkCMS\QuarkAdmin\Form\Item;
-use QuarkCMS\QuarkAdmin\Form;
+use QuarkCMS\QuarkAdmin\Components\Form\Item;
+use QuarkCMS\QuarkAdmin\Components\Form;
 use Illuminate\Support\Arr;
 use Closure;
 use Exception;
@@ -26,29 +26,6 @@ class ListField extends Item
             $label = Arr::get($label, 0, ''); //[0];
             $this->label = $label;
         }
-    }
-
-    /**
-     * 创建组件
-     *
-     * @param  string $name
-     * @param  string $label
-     * @return object
-     */
-    static function make($name,$label = '')
-    {
-        $self = new self();
-
-        $self->name = $name;
-        if(empty($label)) {
-            $self->label = $name;
-        } else {
-            $self->label = $label;
-        }
-
-        // 删除空属性
-        $self->unsetNullProperty();
-        return $self;
     }
 
     public function button($text)

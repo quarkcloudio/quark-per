@@ -76,9 +76,6 @@ class Controller extends BaseController
     {
         $table = $this->table();
 
-        // 初始化card组件
-        $card = new Card(null,$table);
-
         // 初始化容器
         $container = new Container();
 
@@ -92,7 +89,7 @@ class Controller extends BaseController
         $container->breadcrumb($this->breadcrumb());
 
         // 设置内容
-        $container->content($card);
+        $container->content($table);
 
         return success('获取成功！','',$container);
     }
@@ -136,9 +133,6 @@ class Controller extends BaseController
     {
         $form = $this->form();
 
-        // 初始化card组件
-        $card = new Card('测试',$form);
-
         // 初始化容器
         $container = new Container();
 
@@ -152,7 +146,7 @@ class Controller extends BaseController
         $container->breadcrumb($this->breadcrumb());
 
         // 设置内容
-        $container->content($card);
+        $container->content($form);
 
         return success('获取成功！','',$container);
     }
