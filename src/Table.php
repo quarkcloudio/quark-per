@@ -71,7 +71,7 @@ class Table extends Element
     /**
      * 透传 ProUtils 中的 ListToolBar 配置项
      *
-     * @var array
+     * @var object
      */
     public $toolbar = null;
 
@@ -394,7 +394,7 @@ class Table extends Element
      *
      * @param  array  $actions
      * @param  string  $key
-     * @return array
+     * @return array|object
      */
     public function parseExecuteActionRules($actions,$key)
     {
