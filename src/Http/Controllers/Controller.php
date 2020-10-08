@@ -88,8 +88,11 @@ class Controller extends BaseController
         // 设置面包屑导航
         $container->breadcrumb($this->breadcrumb());
 
+        // 放到card组件
+        $card = new Card(null,$table);
+
         // 设置内容
-        $container->content($table);
+        $container->content($card);
 
         return success('获取成功！','',$container);
     }

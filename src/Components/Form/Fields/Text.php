@@ -17,8 +17,6 @@ class Text extends Item
             $size,
             $suffix,
             $type,
-            $onChange,
-            $onPressEnter,
             $placeholder,
             $allowClear;
 
@@ -166,19 +164,6 @@ class Text extends Item
     }
 
     /**
-     * 输入框宽度
-     * 
-     * @param  number|string $value
-     * @return object
-     */
-    public function width($value = '100%')
-    {
-        $style['width'] = $value;
-        $this->style = $style;
-        return $this;
-    }
-
-    /**
      * Prepare the element for JSON serialization.
      *
      * @return array
@@ -191,7 +176,13 @@ class Text extends Item
             'label' => $this->label,
             'name' => $this->name,
             'placeholder' => $this->placeholder,
-            'maxLength' => $this->maxLength
+            'maxLength' => $this->maxLength,
+            'disabled' => $this->disabled,
+            'addonAfter' => $this->addonAfter,
+            'size' => $this->size,
+            'prefix' => $this->prefix,
+            'suffix' => $this->suffix,
+            'type' => $this->type
         ], parent::jsonSerialize());
     }
 }

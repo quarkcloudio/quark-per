@@ -131,9 +131,7 @@ class AdminController extends Controller
 
         $table->model()->paginate(request('pageSize',10));
 
-        // 放到card组件
-        $card = new Card(null,$table);
-        return $card;
+        return $table;
     }
 
     /**
