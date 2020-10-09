@@ -3,8 +3,10 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
+use Validator;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 
 class Form extends Element
@@ -78,6 +80,20 @@ class Form extends Element
      * @var string
      */
     public $layout = 'horizontal';
+
+    /**
+     * label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}
+     *
+     * @var array
+     */
+    public $labelCol = ['span' => 2];
+
+    /**
+     * 需要为输入控件设置布局样式时，使用该属性，用法同 labelCol
+     *
+     * @var string
+     */
+    public $wrapperCol = ['span' => 14];
 
     /**
      * 表格提交的地址
@@ -170,9 +186,31 @@ class Form extends Element
      * @param  array  $initialValues
      * @return $this
      */
-    public function initialValues($initialValues)
+    public function initialValues($initialValues = null)
     {
-        $this->initialValues = $initialValues;
+        $data = [];
+
+        if(isset($this->items)) {
+            foreach ($this->items as $key => $item) {
+                if(isset($item->name)) {
+                    if(isset($item->name)) {
+                        if(isset($item->defaultValue)) {
+                            $data[$item->name] = $item->defaultValue;
+                        }
+
+                        if(isset($initialValues[$item->name])) {
+                            $data[$item->name] = $initialValues[$item->name];
+                        }
+
+                        if(isset($item->value)) {
+                            $data[$item->name] = $item->value;
+                        }
+                    }
+                }
+            }
+        }
+
+        $this->initialValues = $data;
         return $this;
     }
 
@@ -248,7 +286,6 @@ class Form extends Element
         return $this;
     }
 
-
     /**
      *  自动格式数据，例如 moment 的表单,支持 string 和 number 两种模式
      *
@@ -258,6 +295,59 @@ class Form extends Element
     public function dateFormatter($dateFormatter)
     {
         $this->dateFormatter = $dateFormatter;
+        return $this;
+    }
+
+    /**
+     *  表单布局，horizontal|vertical
+     *
+     * @param  string  $layout
+     * @return $this
+     */
+    public function layout($layout)
+    {
+        if(!in_array($layout,['horizontal', 'vertical'])) {
+            throw new Exception("argument must be in 'horizontal', 'vertical'!");
+        }
+
+        if($layout === 'vertical') {
+            $this->labelCol = null;
+            $this->wrapperCol = null;
+        }
+
+        $this->layout = $layout;
+        return $this;
+    }
+
+    /**
+     *  label 标签布局，同 <Col> 组件，设置 span offset 值，如 {span: 3, offset: 12} 或 sm: {span: 3, offset: 12}
+     *
+     * @param  array  $labelCol
+     * @return $this
+     */
+    public function labelCol($labelCol)
+    {
+        if($layout === 'vertical') {
+            throw new Exception("If layout set vertical mode,can't set labelCol!");
+        }
+
+        $this->labelCol = $labelCol;
+        return $this;
+    }
+
+    /**
+     *  需要为输入控件设置布局样式时，使用该属性，用法同 labelCol
+     *
+     * @param  array  $wrapperCol
+     * @return $this
+     */
+    public function wrapperCol($wrapperCol)
+    {
+        if($layout === 'vertical') {
+            throw new Exception("If layout set vertical mode,can't set wrapperCol!");
+        }
+
+        $this->wrapperCol = $wrapperCol;
         return $this;
     }
 
@@ -293,6 +383,98 @@ class Form extends Element
     public function model()
     {
         return $this->model;
+    }
+
+    /**
+     * 判断是否为创建页面
+     *
+     * @return bool
+     */
+    public function isCreating(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), ['/create', '/store']);
+    }
+
+    /**
+     * 判断是否为编辑页面
+     *
+     * @return bool
+     */
+    public function isEditing(): bool
+    {
+        return Str::endsWith(\request()->route()->getName(), '/edit', '/update');
+    }
+
+    /**
+     * 验证提交数据库前的值
+     *
+     * @param array $data
+     *
+     * @return array
+     */
+    public function validator($data = null)
+    {
+        $items = $this->items;
+
+        if(empty($data)) {
+            $data = request()->all();
+        }
+
+        foreach ($items as $key => $value) {
+
+            // 通用验证规则
+            if($value->rules) {
+                foreach ($value->rules as &$rule) {
+                    if (is_string($rule) && isset($data['id'])) {
+                        $rule = str_replace('{{id}}', $data['id'], $rule);
+                    }
+                }
+                $rules[$value->name] = $value->rules;
+                $validator = Validator::make($data,$rules,$value->ruleMessages);
+                if ($validator->fails()) {
+                    $errors = $validator->errors()->getMessages();
+                    foreach($errors as $key => $value) {
+                        $errorMsg = $value[0];
+                    }
+                    return $errorMsg;
+                }
+            }
+
+            // 新增数据，验证规则
+            if($this->isCreating()) {
+                if($value->creationRules) {
+                    $creationRules[$value->name] = $value->creationRules;
+                    $validator = Validator::make($data,$creationRules,$value->creationRuleMessages);
+                    if ($validator->fails()) {
+                        $errors = $validator->errors()->getMessages();
+                        foreach($errors as $key => $value) {
+                            $errorMsg = $value[0];
+                        }
+                        return $errorMsg;
+                    }
+                }
+            }
+
+            // 编辑数据，验证规则
+            if($this->isEditing()) {
+                if($value->updateRules) {
+                    foreach ($value->updateRules as &$rule) {
+                        if (is_string($rule)) {
+                            $rule = str_replace('{{id}}', $data['id'], $rule);
+                        }
+                    }
+                    $updateRules[$value->name] = $value->updateRules;
+                    $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
+                    if ($validator->fails()) {
+                        $errors = $validator->errors()->getMessages();
+                        foreach($errors as $key => $value) {
+                            $errorMsg = $value[0];
+                        }
+                        return $errorMsg;
+                    }
+                }
+            }
+        }
     }
 
     /**
@@ -353,6 +535,8 @@ class Form extends Element
             'size' => $this->size,
             'dateFormatter' => $this->dateFormatter,
             'layout' => $this->layout,
+            'labelCol' => $this->labelCol,
+            'wrapperCol' => $this->wrapperCol,
             'items' => $this->items,
         ], parent::jsonSerialize());
     }

@@ -3,6 +3,8 @@
 namespace QuarkCMS\QuarkAdmin\Components\Form;
 
 use QuarkCMS\QuarkAdmin\Element;
+use Illuminate\Support\Str;
+use Illuminate\Support\Arr;
 use Exception;
 
 class Item extends Element
@@ -333,6 +335,141 @@ class Item extends Element
     }
 
     /**
+     * 解析成前端验证规则
+     *
+     * @param array $rules
+     *
+     * @return array
+     */
+    protected function parseFrontendRules($rules,$messages)
+    {
+        $result = false;
+
+        foreach ($rules as $key => $value) {
+
+            if(strpos($value,':') !== false) {
+                $arr = explode(':',$value);
+                $rule = $arr[0];
+            } else {
+                $rule = $value;
+            }
+
+            $data = false;
+
+            switch ($rule) {
+                case 'required':
+                    // 必填
+                    $data['required'] = true;
+                    $data['message'] = $messages['required'];
+                    break;
+
+                case 'min':
+                    // 最小字符串数
+                    $data['min'] =  (int)$arr[1];
+                    $data['message'] = $messages['min'];
+                    break;
+
+                case 'max':
+                    // 最大字符串数
+                    $data['max'] =  (int)$arr[1];
+                    $data['message'] = $messages['max'];
+                    break;
+
+                case 'email':
+                    // 必须为邮箱
+                    $data['type'] = 'email';
+                    $data['message'] = $messages['email'];
+                    break;
+
+                case 'numeric':
+                    // 必须为数字
+                    $data['type'] = 'number';
+                    $data['message'] = $messages['numeric'];
+                    break;
+
+                case 'url':
+                    // 必须为url
+                    $data['type'] = 'url';
+                    $data['message'] = $messages['url'];
+                    break;
+
+                case 'integer':
+                    // 必须为整数
+                    $data['type'] = 'integer';
+                    $data['message'] = $messages['integer'];
+                    break;
+
+                case 'date':
+                    // 必须为日期
+                    $data['type'] = 'date';
+                    $data['message'] = $messages['date'];
+                    break;
+
+                case 'boolean':
+                    // 必须为布尔值
+                    $data['type'] = 'boolean';
+                    $data['message'] = $messages['boolean'];
+                    break;
+
+                default:
+                    $data = false;
+                    break;
+            }
+
+            if($data) {
+                $result[] = $data;
+            }
+        }
+
+        return $result;
+    }
+
+    /**
+     * 设置前端验证规则
+     *
+     * @param void
+     *
+     * @return void
+     */
+    protected function setFrontendRules()
+    {
+        $frontendRules = [];
+        $rules = $creationRules = $updateRules = null;
+
+        // 判断是否为创建页控制器
+        $isCreating = Str::endsWith(\request()->route()->getName(), ['/create', '/store']);
+
+        // 判断是否为编辑页控制器
+        $isEditing = Str::endsWith(\request()->route()->getName(), '/edit', '/update');
+
+        if(!empty($this->rules)) {
+            $rules = $this->parseFrontendRules($this->rules,$this->ruleMessages);
+        }
+
+        if($isCreating && !empty($this->creationRules)) {
+            $creationRules = $this->parseFrontendRules($this->creationRules,$this->creationRuleMessages);
+        }
+
+        if($isEditing && !empty($this->updateRules)) {
+            $updateRules = $this->parseFrontendRules($this->updateRules,$this->updateRuleMessages);
+        }
+
+        if($rules) {
+            $frontendRules = Arr::collapse([$frontendRules, $rules]);
+        }
+
+        if($creationRules) {
+            $frontendRules = Arr::collapse([$frontendRules, $creationRules]);
+        }
+
+        if($updateRules) {
+            $frontendRules = Arr::collapse([$frontendRules, $updateRules]);
+        }
+
+        $this->frontendRules = $frontendRules;
+    }
+
+    /**
      * 校验规则，设置字段的校验逻辑
      * 
      * @param  array|$this $rules
@@ -342,6 +479,9 @@ class Item extends Element
     {
         $this->rules = $rules;
         $this->ruleMessages = $messages;
+
+        // 设置前端规则
+        $this->setFrontendRules();
         return $this;
     }
 
@@ -355,6 +495,9 @@ class Item extends Element
     {
         $this->creationRules = $rules;
         $this->creationRuleMessages = $messages;
+
+        // 设置前端规则
+        $this->setFrontendRules();
         return $this;
     }
 
@@ -368,6 +511,9 @@ class Item extends Element
     {
         $this->updateRules = $rules;
         $this->updateRuleMessages = $messages;
+
+        // 设置前端规则
+        $this->setFrontendRules();
         return $this;
     }
 
@@ -436,12 +582,22 @@ class Item extends Element
         return $this;
     }
 
-    protected function unsetNullProperty()
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
     {
-        foreach ($this as $key => $value) {
-            if(empty($value)) {
-                unset($this->$key);
-            }
-        }
+        $this->key(__CLASS__.$this->name.$this->label);
+
+        return array_merge([
+            'label' => $this->label,
+            'name' => $this->name,
+            'disabled' => $this->disabled,
+            'frontendRules' => $this->frontendRules,
+            'value' => $this->value,
+            'defaultValue' => $this->defaultValue
+        ], parent::jsonSerialize());
     }
 }

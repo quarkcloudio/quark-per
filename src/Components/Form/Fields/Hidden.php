@@ -25,12 +25,6 @@ class Hidden extends Item
      */
     public function jsonSerialize()
     {
-        $this->key(__CLASS__.$this->name.$this->label);
-
-        return array_merge([
-            'name' => $this->name,
-            'value' => $this->value,
-            'defaultValue' => $this->defaultValue
-        ], parent::jsonSerialize());
+        return parent::jsonSerialize();
     }
 }

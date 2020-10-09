@@ -141,19 +141,12 @@ class Image extends Item
      */
     public function jsonSerialize()
     {
-        $this->key(__CLASS__.$this->name.$this->label);
-
         return array_merge([
-            'label' => $this->label,
-            'name' => $this->name,
-            'disabled' => $this->disabled,
             'mode' => $this->mode,
             'button' => $this->button,
             'limitSize' => $this->limitSize,
             'limitType' => $this->limitType,
-            'limitNum' => $this->limitNum,
-            'value' => $this->value,
-            'defaultValue' => $this->defaultValue
+            'limitNum' => $this->limitNum
         ], parent::jsonSerialize());
     }
 }

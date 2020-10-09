@@ -84,16 +84,9 @@ class Checkbox extends Item
      */
     public function jsonSerialize()
     {
-        $this->key(__CLASS__.$this->name.$this->label);
-
         return array_merge([
-            'label' => $this->label,
-            'name' => $this->name,
-            'disabled' => $this->disabled,
             'layout' => $this->layout,
             'options' => $this->options,
-            'value' => $this->value,
-            'defaultValue' => $this->defaultValue
         ], parent::jsonSerialize());
     }
 }

@@ -216,21 +216,14 @@ class Text extends Item
      */
     public function jsonSerialize()
     {
-        $this->key(__CLASS__.$this->name.$this->label);
-
         return array_merge([
-            'label' => $this->label,
-            'name' => $this->name,
             'placeholder' => $this->placeholder,
             'maxLength' => $this->maxLength,
-            'disabled' => $this->disabled,
             'addonAfter' => $this->addonAfter,
             'size' => $this->size,
             'prefix' => $this->prefix,
             'suffix' => $this->suffix,
-            'type' => $this->type,
-            'value' => $this->value,
-            'defaultValue' => $this->defaultValue
+            'type' => $this->type
         ], parent::jsonSerialize());
     }
 }

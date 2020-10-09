@@ -134,7 +134,12 @@ class Controller extends BaseController
      */
     public function create(Request $request)
     {
-        $form = $this->form();
+        $form = $this->form()->initialValues();
+
+        // 放到card组件
+        $card = new Card('测试',$form);
+
+        $card->headerBordered();
 
         // 初始化容器
         $container = new Container();
@@ -149,7 +154,7 @@ class Controller extends BaseController
         $container->breadcrumb($this->breadcrumb());
 
         // 设置内容
-        $container->content($form);
+        $container->content($card);
 
         return success('获取成功！','',$container);
     }

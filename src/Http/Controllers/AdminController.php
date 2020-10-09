@@ -202,9 +202,6 @@ class AdminController extends Controller
         ->type('password')
         ->creationRules(["required"],['required'=>'密码不能为空']);
 
-        // 放到card组件
-        $card = new Card('测试',$form);
-        $card->headerBordered();
-        return $card;
+        return $form;
     }
 }
