@@ -7,10 +7,22 @@ use QuarkCMS\QuarkAdmin\Search\Item;
 
 class Where extends Item
 {
-
+    /**
+     * 动态调用的方法
+     *
+     * @var array
+     */
     public $methods = [];
 
-    function __construct($name,$label = '',$callback = null) {
+    /**
+     * 初始化
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @param  Closure  $callback
+     * @return void
+     */
+    public function __construct($name,$label = '',$callback = null) {
         $this->component = 'input';
         $this->name = $name;
         $this->operator = 'where';
@@ -25,10 +37,38 @@ class Where extends Item
         $callback($this);
     }
 
-    public function __call($method, $arguments)
+    /**
+     * 动态添加方法
+     *
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return $this
+     */
+    public function __call($method, $parameters)
     {
-        $this->methods[][$method] = $arguments;
+        $this->methods[][$method] = $parameters;
 
         return $this;
+    }
+
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $this->key(__CLASS__.$this->name.$this->label);
+
+        return array_merge([
+            'name' => $this->name,
+            'label' => $this->label,
+            'value' => $this->value,
+            'defaultValue' => $this->defaultValue,
+            'rules' => $this->rules,
+            'placeholder' => $this->placeholder,
+            'options' => $this->options,
+            'methods' => $this->methods
+        ], parent::jsonSerialize());
     }
 }

@@ -182,7 +182,7 @@ class Table extends Element
     /**
      * 是否显示搜索表单，传入对象时为搜索表单的配置
      *
-     * @param  bool|array  $search
+     * @param  Closure  $callback
      * @return $this
      */
     public function search(Closure $callback = null)

@@ -107,6 +107,13 @@ class Item extends Element
     public $required = false;
 
     /**
+     * 控件是否禁用
+     *
+     * @var bool
+     */
+    public $disabled = false;
+
+    /**
      * 校验规则，设置字段的校验逻辑
      *
      * @var array
@@ -169,16 +176,6 @@ class Item extends Element
      * @var array
      */
     public $wrapperCol = null;
-
-    /**
-     * 初始化
-     *
-     * @return void
-     */
-    function __construct()
-    {
-
-    }
 
     /**
      * 会在 label 旁增加一个 icon，悬浮后展示配置的信息
@@ -291,7 +288,7 @@ class Item extends Element
             throw new Exception("argument must be 'left' or 'right'!");
         }
 
-        $this->labelAlign = $labelAlign;
+        $this->labelAlign = $align;
         return $this;
     }
 
@@ -424,6 +421,18 @@ class Item extends Element
     public function default($value)
     {
         $this->defaultValue = $value;
+        return $this;
+    }
+
+    /**
+     * 是否禁用状态，默认为 false
+     * 
+     * @param  bool $status
+     * @return object
+     */
+    public function disabled($status = true)
+    {
+        $status ? $this->disabled = true : $this->disabled = false;
         return $this;
     }
 

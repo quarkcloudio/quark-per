@@ -7,10 +7,22 @@ use QuarkCMS\QuarkAdmin\Search\Item;
 
 class Group extends Item
 {
-
+    /**
+     * 下拉菜单属性
+     *
+     * @var array
+     */
     public $options = [];
 
-    function __construct($name,$label = '',$callback = null) {
+    /**
+     * 初始化
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @param  Closure  $callback
+     * @return void
+     */
+    public function __construct($name,$label = '',$callback = null) {
         $this->component = 'inputGroup';
         $this->name = $name;
         $this->operator = 'group';
@@ -25,7 +37,12 @@ class Group extends Item
         $callback($this);
     }
 
-    // 所有
+    /**
+     * 查询所有的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function all($label = '')
     {
         $option['label'] = $label;
@@ -35,7 +52,12 @@ class Group extends Item
         return $this;
     }
 
-    // 等于
+    /**
+     * 查询等于的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function equal($label = '')
     {
         $option['label'] = $label;
@@ -45,7 +67,12 @@ class Group extends Item
         return $this;
     }
 
-    // 不等于
+    /**
+     * 查询不等于的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function notEqual($label = '')
     {
         $option['label'] = $label;
@@ -55,7 +82,12 @@ class Group extends Item
         return $this;
     }
 
-    // 大于
+    /**
+     * 查询大于的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function gt($label = '')
     {
         $option['label'] = $label;
@@ -65,7 +97,12 @@ class Group extends Item
         return $this;
     }
 
-    // 小于
+    /**
+     * 查询小于的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function lt($label = '')
     {
         $option['label'] = $label;
@@ -75,7 +112,12 @@ class Group extends Item
         return $this;
     }
 
-    // 大于等于
+    /**
+     * 查询大于等于的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function nlt($label = '')
     {
         $option['label'] = $label;
@@ -85,7 +127,12 @@ class Group extends Item
         return $this;
     }
 
-    // 小于等于
+    /**
+     * 查询小于等于的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function ngt($label = '')
     {
         $option['label'] = $label;
@@ -95,7 +142,12 @@ class Group extends Item
         return $this;
     }
 
-    // like查询
+    /**
+     * 查询like的条件
+     *
+     * @param  string  $label
+     * @return $this
+     */
     public function like($label = '')
     {
         $option['label'] = $label;
@@ -105,12 +157,39 @@ class Group extends Item
         return $this;
     }
 
-    public function __call($method, $arguments)
+    /**
+     * 动态添加方法
+     *
+     * @param  string  $method
+     * @param  array   $parameters
+     * @return $this
+     */
+    public function __call($method, $parameters)
     {
         if(count($this->options)) {
-            $this->options[count($this->options)-1]['method'][][$method] = $arguments;
+            $this->options[count($this->options)-1]['method'][][$method] = $parameters;
         }
 
         return $this;
+    }
+
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        $this->key(__CLASS__.$this->name.$this->label);
+
+        return array_merge([
+            'name' => $this->name,
+            'label' => $this->label,
+            'value' => $this->value,
+            'defaultValue' => $this->defaultValue,
+            'rules' => $this->rules,
+            'placeholder' => $this->placeholder,
+            'options' => $this->options
+        ], parent::jsonSerialize());
     }
 }

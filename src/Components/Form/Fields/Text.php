@@ -8,21 +8,79 @@ use Exception;
 
 class Text extends Item
 {
-    public  $addonAfter,
-            $addonBefore,
-            $disabled,
-            $id,
-            $maxLength,
-            $prefix,
-            $size,
-            $suffix,
-            $type,
-            $placeholder,
-            $allowClear;
+    /**
+     * 带标签的 input，设置后置标签。例如：'http://'
+     *
+     * @var string
+     */
+    public $addonAfter = null;
 
-    function __construct($name,$label = '') {
+    /**
+     * 带标签的 input，设置前置标签。例如：'.com'
+     *
+     * @var string
+     */
+    public $addonBefore = null;
+
+    /**
+     * 最大长度
+     *
+     * @var bumber
+     */
+    public $maxLength = null;
+
+    /**
+     * 带有前缀图标的 input
+     *
+     * @var string
+     */
+    public $prefix = null;
+
+    /**
+     * 控件大小。注：标准表单内的输入框大小限制为 large。可选 large default small
+     *
+     * @var string
+     */
+    public $size = null;
+
+    /**
+     * 带有后缀图标的 input
+     *
+     * @var string
+     */
+    public $suffix = null;
+
+    /**
+     * 声明 input 类型，同原生 input 标签的 type 属性，见：MDN(请直接使用 Input.TextArea 代替 type="textarea")。
+     *
+     * @var string
+     */
+    public $type = 'text';
+
+    /**
+     * 控件占位符
+     *
+     * @var string
+     */
+    public $placeholder = null;
+
+    /**
+     * 可以点击清除图标删除内容
+     *
+     * @var bool
+     */
+    public $allowClear = false;
+
+    /**
+     * 初始化Input组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */ 
+    function __construct($name,$label = '')
+    {
         $this->component = 'text';
-        $this->type = 'text';
         $this->name = $name;
 
         if(empty($label) || !count($label)) {
@@ -36,7 +94,7 @@ class Text extends Item
     }
     
     /**
-     * placeholder
+     * 控件占位符
      *
      * @param  string $placeholder
      * @return object
@@ -68,18 +126,6 @@ class Text extends Item
     public function addonBefore($addonBefore = '')
     {
         $this->addonBefore = $addonBefore;
-        return $this;
-    }
-
-    /**
-     * 是否禁用状态，默认为 false
-     * 
-     * @param  bool $status
-     * @return object
-     */
-    public function disabled($status = true)
-    {
-        $status ? $this->disabled = true : $this->disabled = false;
         return $this;
     }
 
@@ -164,13 +210,13 @@ class Text extends Item
     }
 
     /**
-     * Prepare the element for JSON serialization.
+     * 组件json序列化
      *
      * @return array
      */
     public function jsonSerialize()
     {
-        $this->key(json_encode($this));
+        $this->key(__CLASS__.$this->name.$this->label);
 
         return array_merge([
             'label' => $this->label,
@@ -182,7 +228,9 @@ class Text extends Item
             'size' => $this->size,
             'prefix' => $this->prefix,
             'suffix' => $this->suffix,
-            'type' => $this->type
+            'type' => $this->type,
+            'value' => $this->value,
+            'defaultValue' => $this->defaultValue
         ], parent::jsonSerialize());
     }
 }

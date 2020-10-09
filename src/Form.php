@@ -113,7 +113,7 @@ class Form extends Element
      * @var array
      */
     public static $formFields = [
-        'id' => Components\Form\Fields\ID::class,
+        'hidden' => Components\Form\Fields\Hidden::class,
         'display' => Components\Form\Fields\Display::class,
         'text' => Components\Form\Fields\Text::class,
         'textarea' => Components\Form\Fields\TextArea::class,

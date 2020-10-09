@@ -21,7 +21,7 @@ class Dropdown extends Element
     }
 
     /**
-     * Prepare the element for JSON serialization.
+     * 组件json序列化
      *
      * @return array
      */

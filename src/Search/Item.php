@@ -3,30 +3,65 @@
 namespace QuarkCMS\QuarkAdmin\Search;
 
 use Exception;
+use QuarkCMS\QuarkAdmin\Element;
 
-class Item
+class Item extends Element
 {
-    public  $value,
-            $defaultValue,
-            $label,
-            $name,
-            $rules,
-            $style,
-            $component,
-            $operator,
-            $placeholder;
+    /**
+     * 设置保存值。
+     *
+     * @var array|string|number|bool
+     */
+    public $value = null;
 
     /**
-     * 控件样式
+     * 设置默认值。
      *
-     * @param  array $style
-     * @return $this
+     * @var array|string|number|bool
      */
-    public function style($style = [])
-    {
-        $this->style = $style;
-        return $this;
-    }
+    public $defaultValue = null;
+
+    /**
+     * label 标签的文本
+     *
+     * @var string
+     */
+    public $label = null;
+
+    /**
+     * 字段名，支持数组
+     *
+     * @var string|array
+     */
+    public $name = null;
+
+    /**
+     * 下拉菜单类型属性
+     *
+     * @var array
+     */
+    public $options = [];
+
+    /**
+     * 校验规则，设置字段的校验逻辑
+     *
+     * @var string|array
+     */
+    public $rules;
+
+    /**
+     * 查询操作符
+     *
+     * @var string
+     */
+    public $operator;
+
+    /**
+     * 控件占位符
+     *
+     * @var string
+     */
+    public $placeholder;
 
     /**
      * label 标签的文本
@@ -121,7 +156,7 @@ class Item
     }
 
     /**
-     * select
+     * 下拉菜单控件
      *
      * @param  array $options
      * @return object
@@ -143,7 +178,7 @@ class Item
     }
 
     /**
-     * multipleSelect
+     * 多选下拉菜单控件
      *
      * @param  array $options
      * @return object
@@ -165,7 +200,7 @@ class Item
     }
 
     /**
-     * datetime
+     * 时间控件
      *
      * @param  string $options
      * @return object
@@ -178,6 +213,12 @@ class Item
         return $this;
     }
 
+    /**
+     * 删除空属性
+     *
+     * @param  void
+     * @return void
+     */
     protected function unsetNullProperty()
     {
         foreach ($this as $key => $value) {
