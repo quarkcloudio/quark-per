@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
+tiuse Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Container;
 use QuarkCMS\QuarkAdmin\Card;
 use QuarkCMS\QuarkAdmin\Table;
@@ -139,7 +140,7 @@ class Controller extends BaseController
         ->initialValues();
 
         // 放到card组件
-        $card = new Card('测试',$form);
+        $card = new Card($form->title,$form);
 
         $card->headerBordered();
 
@@ -176,7 +177,7 @@ class Controller extends BaseController
         $action = Str::replaceFirst('api/','',$action);
         $action = Str::replaceLast('/store','/index',$action);
 
-        $url = "/quark/engine?api=".$action."&component=table";
+        $url = "/quark/engine?api=".$action;
 
         if($result['status'] == 'success') {
             return success('操作成功！',$url);

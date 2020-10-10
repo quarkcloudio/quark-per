@@ -13,6 +13,13 @@ use QuarkCMS\QuarkAdmin\Components\Table\Model;
 class Form extends Element
 {
     /**
+     * 表单标题
+     *
+     * @var string
+     */
+    public $title = null;
+
+    /**
      * 配置 Form.Item 的 colon 的默认值。表示是否显示 label 后面的冒号 (只有在属性 layout 为 horizontal 时有效)
      *
      * @var bool
@@ -166,6 +173,41 @@ class Form extends Element
     {
         $this->component = 'form';
         $this->model = new Model($model,$this);
+        $this->initApi();
+        return $this;
+    }
+
+    /**
+     * 初始化api
+     *
+     * @param  void
+     * @return void
+     */
+    protected function initApi()
+    {
+        $action = \request()->route()->getName();
+        $action = Str::replaceFirst('api/','',$action);
+
+        if($this->isCreating()) {
+            $action = Str::replaceLast('/create','/store',$action);
+        }
+
+        if($this->isEditing()) {
+            $action = Str::replaceLast('/edit','/update',$action);
+        }
+
+        $this->api($action);
+    }
+
+    /**
+     *  配置表单标题
+     *
+     * @param  string  $title
+     * @return $this
+     */
+    public function title($title)
+    {
+        $this->title = $title;
         return $this;
     }
 
@@ -526,6 +568,7 @@ class Form extends Element
         $this->key();
 
         return array_merge([
+            'api' => $this->api,
             'colon' => $this->colon,
             'initialValues' => $this->initialValues,
             'labelAlign' => $this->labelAlign,

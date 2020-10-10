@@ -12,7 +12,7 @@ use Spatie\Permission\Models\Role;
 
 class AdminController extends Controller
 {
-    public $title = '管理员列表';
+    public $title = '管理员';
 
     /**
      * 列表页面
@@ -23,7 +23,7 @@ class AdminController extends Controller
     protected function table()
     {
         $table = new Table(new Admin);
-        $table->headerTitle($this->title);
+        $table->headerTitle($this->title.'列表');
         
         $table->column('id','序号');
         $table->column('avatar','头像')->tooltip('用户头像')->image();
@@ -146,6 +146,14 @@ class AdminController extends Controller
         $id = request('id');
 
         $form = new Form(new Admin);
+
+        if($form->isCreating()) {
+            $title = '新增'.$this->title;
+        } else {
+            $title = '编辑'.$this->title;
+        }
+
+        $form->title($title);
 
         $form->hidden('id');
         

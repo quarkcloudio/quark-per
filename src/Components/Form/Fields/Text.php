@@ -220,6 +220,7 @@ class Text extends Item
             'placeholder' => $this->placeholder,
             'maxLength' => $this->maxLength,
             'addonAfter' => $this->addonAfter,
+            'allowClear' => $this->allowClear,
             'size' => $this->size,
             'prefix' => $this->prefix,
             'suffix' => $this->suffix,
