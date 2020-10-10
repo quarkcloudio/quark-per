@@ -8,9 +8,21 @@ use Exception;
 
 class SwitchField extends Item
 {
-    public  $options;
+    /**
+     * switch控件的属性。
+     *
+     * @var array
+     */
+    public $options;
 
-    function __construct($name,$label = '') {
+    /**
+     * 初始化开关组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */ 
+    public function __construct($name,$label = '') {
         $this->component = 'switch';
         $this->name = $name;
 
@@ -22,10 +34,28 @@ class SwitchField extends Item
         }
     }
 
+    /**
+     * 设置开关属性
+     *
+     * @param  array $options
+     * @return $this
+     */
     public function options($options)
     {
         $this->options = $options;
 
         return $this;
+    }
+
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return array_merge([
+            'options' => $this->options,
+        ], parent::jsonSerialize());
     }
 }

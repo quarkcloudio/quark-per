@@ -134,7 +134,9 @@ class Controller extends BaseController
      */
     public function create(Request $request)
     {
-        $form = $this->form()->initialValues();
+        $form = $this->form()
+        ->style(['margin' => '25px','witdh' => '100%'])
+        ->initialValues();
 
         // 放到card组件
         $card = new Card('测试',$form);

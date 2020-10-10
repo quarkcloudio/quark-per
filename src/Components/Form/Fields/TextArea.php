@@ -2,16 +2,40 @@
 
 namespace QuarkCMS\QuarkAdmin\Components\Form\Fields;
 
-use QuarkCMS\QuarkAdmin\Components\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
-class TextArea extends Item
+class TextArea extends Text
 {
-    public  $autosize,
-            $rows;
+    /**
+     * autoSize 属性适用于 textarea 节点，并且只有高度会自动变化。另外 autoSize 可以设定为一个对象，指定最小行数和最大行数。
+     *
+     * @var bool|array
+     */
+    public $autoSize = true;
 
-    function __construct($name,$label = '') {
+    /**
+     * 指定最小行数。
+     *
+     * @var number
+     */
+    public $minRows = null;
+
+    /**
+     * 指定最大行数。
+     *
+     * @var number
+     */
+    public $maxRows = null;
+
+    /**
+     * 初始化TextArea组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */ 
+    public function __construct($name,$label = '') {
         $this->component = 'textArea';
         $this->name = $name;
 
@@ -26,39 +50,60 @@ class TextArea extends Item
     }
 
     /**
-     * placeholder
+     * autoSize 属性适用于 textarea 节点，并且只有高度会自动变化。另外 autoSize 可以设定为一个对象，指定最小行数和最大行数。
      *
-     * @param  string $placeholder
-     * @return object
+     * @param  bool|array $autosize
+     * @return $this
      */
-    public function placeholder($placeholder = '')
+    public function autoSize($autoSize)
     {
-        $this->placeholder = $placeholder;
-        return $this;
-    }
-
-    public function autosize($autosize)
-    {
-        $this->autosize = $autosize;
-        return $this;
-    }
-
-    public function rows($rows)
-    {
-        $this->rows = $rows;
+        $this->autoSize = $autoSize;
         return $this;
     }
 
     /**
-     * 输入框宽度
-     * 
-     * @param  number|string $value
-     * @return object
+     * 指定最小行数。
+     *
+     * @param  number $rows
+     * @return $this
      */
-    public function width($value = '100%')
+    public function minRows($rows)
     {
-        $style['width'] = $value;
-        $this->style = $style;
+        $this->minRows = $rows;
         return $this;
+    }
+
+    /**
+     * 指定最大行数。
+     *
+     * @param  number $rows
+     * @return $this
+     */
+    public function maxRows($rows)
+    {
+        $this->maxRows = $rows;
+        return $this;
+    }
+
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        if($this->minRows) {
+            $this->autoSize['minRows'] = $this->minRows;
+        }
+
+        if($this->maxRows) {
+            $this->autoSize['maxRows'] = $this->maxRows;
+        }
+
+        return array_merge([
+            'placeholder' => $this->placeholder,
+            'maxLength' => $this->maxLength,
+            'autoSize' => $this->autoSize
+        ], parent::jsonSerialize());
     }
 }

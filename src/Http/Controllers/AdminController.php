@@ -147,16 +147,15 @@ class AdminController extends Controller
 
         $form = new Form(new Admin);
 
-        $form->style(['margin' => '25px','witdh' => '100%']);
-
         $form->hidden('id');
         
-        $form->image('avatar','头像')->button('上传头像');
+        // 默认单图上传
+        $form->image('avatar','头像')->help('只支持jpg、png格式文件')->button('上传头像');
 
         $form->text('username','用户名')
         ->rules(['required','min:6','max:20'],['required'=>'用户名必须填写','min'=>'用户名不能少于6个字符','max'=>'用户名不能超过20个字符'])
         ->creationRules(["unique:admins"],['unique'=>'用户名已经存在'])
-        ->updateRules(["unique:admins,username,{{id}}"],['unique'=>'用户名已经存在']);
+        ->updateRules(["unique:admins,username,{id}"],['unique'=>'用户名已经存在']);
 
         // 查询列表
         $roles = Role::where('guard_name','admin')->get()->toArray();
@@ -191,16 +190,21 @@ class AdminController extends Controller
         $form->text('email','邮箱')
         ->rules(['required','email','max:255'],['required'=>'邮箱必须填写','email'=>'邮箱格式错误','max'=>'邮箱不能超过255个字符'])
         ->creationRules(["unique:admins"],['unique'=>'邮箱已经存在',])
-        ->updateRules(["unique:admins,email,{{id}}"],['unique'=>'邮箱已经存在']);
+        ->updateRules(["unique:admins,email,{id}"],['unique'=>'邮箱已经存在']);
 
         $form->text('phone','手机号')
         ->rules(['required','max:11'],['required'=>'手机号必须填写','max'=>'手机号不能超过11个字符'])
         ->creationRules(["unique:admins"],['unique'=>'手机号已经存在'])
-        ->updateRules(["unique:admins,phone,{{id}}"],['unique'=>'手机号已经存在']);
+        ->updateRules(["unique:admins,phone,{id}"],['unique'=>'手机号已经存在']);
 
         $form->text('password','密码')
         ->type('password')
         ->creationRules(["required"],['required'=>'密码不能为空']);
+
+        $form->switch('status','状态')->options([
+            'on'  => '正常',
+            'off' => '禁用'
+        ])->default(true);
 
         return $form;
     }

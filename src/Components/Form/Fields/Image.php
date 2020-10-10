@@ -44,6 +44,13 @@ class Image extends Item
     public $limitNum = 3;
 
     /**
+     * 图片上传api接口
+     *
+     * @var string
+     */
+    public $api = '/api/admin/picture/upload';
+
+    /**
      * 初始化图片上传组件
      *
      * @param  string  $name
@@ -123,6 +130,18 @@ class Image extends Item
     }
 
     /**
+     * 上传的api接口
+     *
+     * @param  string  $api
+     * @return $this
+     */
+    public function api($api)
+    {
+        $this->api = $api;
+        return $this;
+    }
+
+    /**
      * 上传按钮的标题
      *
      * @param  string  $text
@@ -143,6 +162,7 @@ class Image extends Item
     {
         return array_merge([
             'mode' => $this->mode,
+            'api' => $this->api,
             'button' => $this->button,
             'limitSize' => $this->limitSize,
             'limitType' => $this->limitType,

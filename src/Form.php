@@ -3,10 +3,11 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
-use Validator;
+use Exception;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 
 class Form extends Element
@@ -327,7 +328,7 @@ class Form extends Element
      */
     public function labelCol($labelCol)
     {
-        if($layout === 'vertical') {
+        if($this->layout === 'vertical') {
             throw new Exception("If layout set vertical mode,can't set labelCol!");
         }
 
@@ -343,7 +344,7 @@ class Form extends Element
      */
     public function wrapperCol($wrapperCol)
     {
-        if($layout === 'vertical') {
+        if($this->layout === 'vertical') {
             throw new Exception("If layout set vertical mode,can't set wrapperCol!");
         }
 
@@ -426,7 +427,7 @@ class Form extends Element
             if($value->rules) {
                 foreach ($value->rules as &$rule) {
                     if (is_string($rule) && isset($data['id'])) {
-                        $rule = str_replace('{{id}}', $data['id'], $rule);
+                        $rule = str_replace('{id}', $data['id'], $rule);
                     }
                 }
                 $rules[$value->name] = $value->rules;
@@ -460,7 +461,7 @@ class Form extends Element
                 if($value->updateRules) {
                     foreach ($value->updateRules as &$rule) {
                         if (is_string($rule)) {
-                            $rule = str_replace('{{id}}', $data['id'], $rule);
+                            $rule = str_replace('{id}', $data['id'], $rule);
                         }
                     }
                     $updateRules[$value->name] = $value->updateRules;

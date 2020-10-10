@@ -594,6 +594,8 @@ class Item extends Element
         return array_merge([
             'label' => $this->label,
             'name' => $this->name,
+            'help' => $this->help,
+            'extra' => $this->extra,
             'disabled' => $this->disabled,
             'frontendRules' => $this->frontendRules,
             'value' => $this->value,

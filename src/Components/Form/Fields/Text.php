@@ -97,7 +97,7 @@ class Text extends Item
      * 控件占位符
      *
      * @param  string $placeholder
-     * @return object
+     * @return $this
      */
     public function placeholder($placeholder = '')
     {
@@ -109,7 +109,7 @@ class Text extends Item
      * 带标签的 input，设置后置标签。例如：'http://'
      *
      * @param  string $addonAfter
-     * @return object
+     * @return $this
      */
     public function addonAfter($addonAfter = '')
     {
@@ -121,7 +121,7 @@ class Text extends Item
      * 带标签的 input，设置前置标签。例如：'.com'
      *
      * @param  string $addonBefore
-     * @return object
+     * @return $this
      */
     public function addonBefore($addonBefore = '')
     {
@@ -133,7 +133,7 @@ class Text extends Item
      * 最大长度
      * 
      * @param  number $length
-     * @return object
+     * @return $this
      */
     public function maxLength($length = 0)
     {
@@ -149,7 +149,7 @@ class Text extends Item
      * 带有前缀图标的 input
      * 
      * @param  string $prefix
-     * @return object
+     * @return $this
      */
     public function prefix($prefix = '')
     {
@@ -161,7 +161,7 @@ class Text extends Item
      * 控件大小。注：标准表单内的输入框大小限制为 large。可选 large default small
      * 
      * @param  large|default|small $prefix
-     * @return object
+     * @return $this
      */
     public function size($size = 'default')
     {
@@ -177,7 +177,7 @@ class Text extends Item
      * 带有后缀图标的 input
      * 
      * @param  string $suffix
-     * @return object
+     * @return $this
      */
     public function suffix($suffix = '')
     {
@@ -189,7 +189,7 @@ class Text extends Item
      * 声明 input 类型，同原生 input 标签的 type 属性，见：MDN(请直接使用 Input.TextArea 代替 type="textarea")。
      * 
      * @param  string $type
-     * @return object
+     * @return $this
      */
     public function type($type = 'text')
     {
@@ -201,7 +201,7 @@ class Text extends Item
      * 可以点击清除图标删除内容
      * 
      * @param  string $allowClear
-     * @return object
+     * @return $this
      */
     public function allowClear($allowClear = true)
     {
