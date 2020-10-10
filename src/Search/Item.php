@@ -47,21 +47,21 @@ class Item extends Element
      *
      * @var string|array
      */
-    public $rules;
+    public $rules = [];
 
     /**
      * 查询操作符
      *
      * @var string
      */
-    public $operator;
+    public $operator = null;
 
     /**
      * 控件占位符
      *
      * @var string
      */
-    public $placeholder;
+    public $placeholder = null;
 
     /**
      * label 标签的文本
@@ -214,17 +214,23 @@ class Item extends Element
     }
 
     /**
-     * 删除空属性
+     * 组件json序列化
      *
-     * @param  void
-     * @return void
+     * @return array
      */
-    protected function unsetNullProperty()
+    public function jsonSerialize()
     {
-        foreach ($this as $key => $value) {
-            if(empty($value)) {
-                unset($this->$key);
-            }
-        }
+        $this->key(__CLASS__.$this->name.$this->label);
+
+        return array_merge([
+            'name' => $this->name,
+            'label' => $this->label,
+            'value' => $this->value,
+            'defaultValue' => $this->defaultValue,
+            'rules' => $this->rules,
+            'placeholder' => $this->placeholder,
+            'operator' => $this->operator,
+            'options' => $this->options
+        ], parent::jsonSerialize());
     }
 }

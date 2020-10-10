@@ -31,24 +31,4 @@ class NotIn extends Item
         $style['width'] = 157;
         $this->style = $style;
     }
-
-    /**
-     * 组件json序列化
-     *
-     * @return array
-     */
-    public function jsonSerialize()
-    {
-        $this->key(__CLASS__.$this->name.$this->label);
-
-        return array_merge([
-            'name' => $this->name,
-            'label' => $this->label,
-            'value' => $this->value,
-            'defaultValue' => $this->defaultValue,
-            'rules' => $this->rules,
-            'placeholder' => $this->placeholder,
-            'options' => $this->options
-        ], parent::jsonSerialize());
-    }
 }

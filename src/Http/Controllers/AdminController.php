@@ -77,7 +77,7 @@ class AdminController extends Controller
         $table->toolBar()->actions(function($action) {
 
             // 跳转默认创建页面
-            $action->button('创建管理员')->type('primary')->icon('home')->createLink();
+            $action->button('创建管理员')->type('primary')->icon('plus-circle')->createLink();
 
             // 下拉菜单形式的行为
             $action->dropdown('更多操作')->mode('button')->overlay(function($action) {
