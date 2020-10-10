@@ -4,7 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-tiuse Illuminate\Support\Str;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Container;
 use QuarkCMS\QuarkAdmin\Card;
 use QuarkCMS\QuarkAdmin\Table;
