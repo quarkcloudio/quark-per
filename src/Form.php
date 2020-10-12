@@ -609,14 +609,14 @@ class Form extends Element
             $this->data = $data;
         }
 
-        // 调用保存前回调函数
-        if(!empty($this->savingCallback)) {
-            call_user_func($this->savingCallback,$this);
-        }
-
         $errorMsg = $this->validator($this->data);
         if($errorMsg) {
             return error($errorMsg);
+        }
+
+        // 调用保存前回调函数
+        if(!empty($this->savingCallback)) {
+            call_user_func($this->savingCallback,$this);
         }
 
         $data = $this->parseSubmitData($this->data);
@@ -664,14 +664,14 @@ class Form extends Element
             $this->data = $data;
         }
 
-        // 调用保存前回调函数
-        if(!empty($this->savingCallback)) {
-            call_user_func($this->savingCallback,$this);
-        }
-
         $errorMsg = $this->validator($this->data);
         if($errorMsg) {
             return error($errorMsg);
+        }
+
+        // 调用保存前回调函数
+        if(!empty($this->savingCallback)) {
+            call_user_func($this->savingCallback,$this);
         }
 
         $data = $this->parseSubmitData($this->data);

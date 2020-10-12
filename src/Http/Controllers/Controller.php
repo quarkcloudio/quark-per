@@ -179,7 +179,7 @@ class Controller extends BaseController
             return error('参数错误！');
         }
 
-        $form = $this->form()->edit($id);
+        $form = $this->form()->style(['margin' => '25px','witdh' => '100%'])->edit($id);
 
         // 放到card组件
         $card = new Card($form->title,$form);

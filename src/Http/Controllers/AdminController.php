@@ -229,13 +229,22 @@ class AdminController extends Controller
                 $form->data = $data;
             }
 
+            if(isset($form->data['password'])) {
+                $form->data['password'] = bcrypt($form->data['password']);
+            }
+
             $form->data['avatar'] = $form->data['avatar']['id'];
         });
 
         // 保存数据后回调
         $form->saved(function ($form) {
             if($form->model()) {
-                return success('操作成功！',frontendUrl('admin/admin/index'));
+                if($form->isCreating()) {
+                    $form->model()->syncRoles(request('role_ids'));
+                } else {
+                    Admin::where('id',request('id'))->first()->syncRoles(request('role_ids'));
+                }
+                return success('操作成功！',frontend_url('admin/admin/index'));
             } else {
                 return error('操作失败，请重试！');
             }

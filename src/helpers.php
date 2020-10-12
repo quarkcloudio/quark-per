@@ -41,8 +41,8 @@ if(!function_exists('success')) {
 * 前端跳转链接
 * @author tangtanglove <dai_hang_love@126.com>
 */
-if(!function_exists('frontendUrl')) {
-    function frontendUrl($api ='',$isEngineUrl = true)
+if(!function_exists('frontend_url')) {
+    function frontend_url($api ='',$isEngineUrl = true)
     {
         $url = '';
         if($isEngineUrl) {
@@ -59,8 +59,8 @@ if(!function_exists('frontendUrl')) {
 * 后端跳转链接
 * @author tangtanglove <dai_hang_love@126.com>
 */
-if(!function_exists('backendUrl')) {
-    function backendUrl($api ='',$withToken = true)
+if(!function_exists('backend_url')) {
+    function backend_url($api ='',$withToken = true)
     {
         $url = '';
         if($withToken) {
