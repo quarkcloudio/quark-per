@@ -214,6 +214,33 @@ class AdminController extends Controller
             'off' => '禁用'
         ])->default(true);
 
+        // 编辑页面展示前回调
+        $form->editing(function ($form) {
+            if(isset($form->initialValues['avatar'])) {
+                $form->initialValues['avatar'] = get_picture($form->initialValues['avatar'],0,'all');
+            }
+        });
+
+        // 保存数据前回调
+        $form->saving(function ($form) {
+            if(isset($form->data['role_ids'])) {
+                $data = $form->data;
+                unset($data['role_ids']);
+                $form->data = $data;
+            }
+
+            $form->data['avatar'] = $form->data['avatar']['id'];
+        });
+
+        // 保存数据后回调
+        $form->saved(function ($form) {
+            if($form->model()) {
+                return success('操作成功！',frontendUrl('admin/admin/index'));
+            } else {
+                return error('操作失败，请重试！');
+            }
+        });
+
         return $form;
     }
 }

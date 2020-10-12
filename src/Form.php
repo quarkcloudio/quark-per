@@ -27,11 +27,18 @@ class Form extends Element
     public $colon = true;
 
     /**
-     * 表单默认值，只有初始化以及重置时生效
+     * 表单展示时默认值，只有初始化以及重置时生效
      *
      * @var array
      */
     public $initialValues = null;
+
+    /**
+     * 表单提交时的数据
+     *
+     * @var array
+     */
+    public $data = null;
 
     /**
      * label 标签的文本对齐方式,left | right
@@ -111,6 +118,13 @@ class Form extends Element
     public $api = null;
 
     /**
+     * Tab布局的表单
+     *
+     * @var array
+     */
+    public $tab = null;
+
+    /**
      * 表单项
      *
      * @var array
@@ -130,6 +144,34 @@ class Form extends Element
      * @var object
      */
     public $eloquentModel;
+
+    /**
+     * 创建页面显示前回调
+     *
+     * @var object
+     */
+    public $creatingCallback;
+
+    /**
+     * 编辑页面显示前回调
+     *
+     * @var object
+     */
+    public $editingCallback;
+
+    /**
+     * 数据保存前回调
+     *
+     * @var object
+     */
+    public $savingCallback;
+
+    /**
+     * 数据保存后回调
+     *
+     * @var object
+     */
+    public $savedCallback;
 
     /**
      * 表单字段控件
@@ -172,8 +214,14 @@ class Form extends Element
     public function __construct(Eloquent $model)
     {
         $this->component = 'form';
-        $this->model = new Model($model,$this);
+        $this->model = $model;
+
+        // 初始化表单提交地址
         $this->initApi();
+
+        // 初始化表单提交数据
+        $this->initData();
+
         return $this;
     }
 
@@ -197,6 +245,19 @@ class Form extends Element
         }
 
         $this->api($action);
+    }
+
+    /**
+     * 初始化提交表单数据
+     *
+     * @param  void
+     * @return void
+     */
+    protected function initData()
+    {
+        if(Str::endsWith(\request()->route()->getName(), ['/store', '/update'])) {
+            $this->data = request()->all();
+        }
     }
 
     /**
@@ -452,7 +513,6 @@ class Form extends Element
      * 验证提交数据库前的值
      *
      * @param array $data
-     *
      * @return array
      */
     public function validator($data = null)
@@ -460,7 +520,7 @@ class Form extends Element
         $items = $this->items;
 
         if(empty($data)) {
-            $data = request()->all();
+            $data = $this->data;
         }
 
         foreach ($items as $key => $value) {
@@ -521,10 +581,207 @@ class Form extends Element
     }
 
     /**
+     * 解析保存提交数据库前的值
+     *
+     * @param array $rules
+     * @return array
+     */
+    protected function parseSubmitData($data)
+    {
+        foreach ($data as $key => $value) {
+            if(is_array($value)) {
+                $data[$key] = json_encode($value);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
+     * 表单内置的保存方法
+     *
+     * @param array|null $data
+     * @return array
+     */
+    public function store($data = null)
+    {
+        if(!empty($data)) {
+            $this->data = $data;
+        }
+
+        // 调用保存前回调函数
+        if(!empty($this->savingCallback)) {
+            call_user_func($this->savingCallback,$this);
+        }
+
+        $errorMsg = $this->validator($this->data);
+        if($errorMsg) {
+            return error($errorMsg);
+        }
+
+        $data = $this->parseSubmitData($this->data);
+
+        $result = $this->model->create($data);
+
+        // 调用保存后回调函数
+        if(!empty($this->savedCallback)) {
+            $this->model = $result;
+            return call_user_func($this->savedCallback,$this);
+        }
+
+        return $result;
+    }
+
+    /**
+     * 表单内置的编辑方法
+     *
+     * @param string|null $id
+     * @return $this
+     */
+    public function edit($id = null)
+    {
+        if(empty($id)) {
+            $id = request('id');
+        }
+
+        $data = $this->model->findOrFail($id)->toArray();
+ 
+        // 给表单复制
+        $this->initialValues($data);
+
+        return $this;
+    }
+
+    /**
+     * 表单内置的更新方法
+     *
+     * @param array|null $data
+     * @return array
+     */
+    public function update($data = null)
+    {
+        if(!empty($data)) {
+            $this->data = $data;
+        }
+
+        // 调用保存前回调函数
+        if(!empty($this->savingCallback)) {
+            call_user_func($this->savingCallback,$this);
+        }
+
+        $errorMsg = $this->validator($this->data);
+        if($errorMsg) {
+            return error($errorMsg);
+        }
+
+        $data = $this->parseSubmitData($this->data);
+
+        $result = $this->model->where('id',$data['id'])->update($data);
+
+        // 调用保存后回调函数
+        if(!empty($this->savedCallback)) {
+            $this->model = $result;
+            return call_user_func($this->savedCallback,$this);
+        }
+
+        return $result;
+    }
+
+    /**
+     * 表单内置的删除方法
+     *
+     * @param string|null $id
+     * @return bool
+     */
+    public function destroy($id = null)
+    {
+        if(empty($id)) {
+            $id = request('id');
+        }
+
+        if(empty($id)) {
+            return $this->error('参数错误！');
+        }
+
+        $result = $this->model->destroy($id);
+        return $result;
+    }
+
+    /**
+     * tab布局的表单
+     *
+     * @return bool
+     */
+    public function tab($title,Closure $callback = null)
+    {
+        $callback($this);
+
+        $tab['title'] = $title;
+        if(isset($this->items)) {
+            $tab['items'] = $this->items;
+            $this->items = [];
+        }
+        $this->form['tab'][] = $tab;
+
+        return $this;
+    }
+
+    /**
+     * 创建页面显示前回调
+     *
+     * @param Closure $callback
+     * @return $this
+     */
+    public function creating(Closure $callback = null)
+    {
+        $this->creatingCallback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * 编辑页面显示前回调
+     *
+     * @param Closure $callback
+     * @return $this
+     */
+    public function editing(Closure $callback = null)
+    {
+        $this->editingCallback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * 保存数据前回调
+     *
+     * @param Closure $callback
+     * @return $this
+     */
+    public function saving(Closure $callback = null)
+    {
+        $this->savingCallback = $callback;
+
+        return $this;
+    }
+
+    /**
+     * 保存数据后回调
+     *
+     * @param Closure $callback
+     * @return $this
+     */
+    public function saved(Closure $callback = null)
+    {
+        $this->savedCallback = $callback;
+
+        return $this;
+    }
+
+    /**
      * 获取行为类
      *
      * @param string $method
-     *
      * @return bool|mixed
      */
     public static function getCalledClass($method)
@@ -542,7 +799,6 @@ class Form extends Element
      * 动态调用行为类
      *
      * @param string $method
-     *
      * @return bool|mixed
      */
     public function __call($method, $parameters)
@@ -566,6 +822,20 @@ class Form extends Element
     {
         // 设置组件唯一标识
         $this->key();
+
+        // 调用创建页面展示前回调函数
+        if(Str::endsWith(\request()->route()->getName(), ['/create'])) {
+            if(!empty($this->creatingCallback)) {
+                call_user_func($this->creatingCallback,$this);
+            }
+        }
+
+        // 调用编辑页面展示前回调函数
+        if(Str::endsWith(\request()->route()->getName(), ['/edit'])) {
+            if(!empty($this->editingCallback)) {
+                call_user_func($this->editingCallback,$this);
+            }
+        }
 
         return array_merge([
             'api' => $this->api,

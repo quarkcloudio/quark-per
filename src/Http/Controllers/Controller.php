@@ -7,8 +7,6 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Container;
 use QuarkCMS\QuarkAdmin\Card;
-use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Form;
 
 class Controller extends BaseController
 {
@@ -115,15 +113,7 @@ class Controller extends BaseController
 
         $show = $this->detail($id);
 
-        $content = Quark::content()
-        ->title($this->title())
-        ->subTitle($this->subTitle())
-        ->description($this->description())
-        ->breadcrumb($this->breadcrumb())
-        ->body($show->render());
-
-        return success('获取成功！','',$content);
-
+        return success('获取成功！','',$show);
     }
 
     /**
@@ -171,19 +161,7 @@ class Controller extends BaseController
      */
     public function store(Request $request)
     {
-        $result = $this->form()->store();
-
-        $action = \request()->route()->getName();
-        $action = Str::replaceFirst('api/','',$action);
-        $action = Str::replaceLast('/store','/index',$action);
-
-        $url = "/quark/engine?api=".$action;
-
-        if($result['status'] == 'success') {
-            return success('操作成功！',$url);
-        } else {
-            return error($result['msg']);
-        }
+        return $this->form()->store();
     }
 
     /**
@@ -203,14 +181,27 @@ class Controller extends BaseController
 
         $form = $this->form()->edit($id);
 
-        $content = Quark::content()
-        ->title($this->title())
-        ->subTitle($this->subTitle())
-        ->description($this->description())
-        ->breadcrumb($this->breadcrumb())
-        ->body(['form'=>$form->render()]);
+        // 放到card组件
+        $card = new Card($form->title,$form);
 
-        return success('获取成功！','',$content);
+        $card->headerBordered();
+
+        // 初始化容器
+        $container = new Container();
+
+        // 设置标题
+        $container->title($this->title());
+
+        // 设置二级标题
+        $container->subTitle($this->subTitle());
+
+        // 设置面包屑导航
+        $container->breadcrumb($this->breadcrumb());
+
+        // 设置内容
+        $container->content($card);
+        
+        return success('获取成功！','',$container);
     }
 
     /**
@@ -222,19 +213,7 @@ class Controller extends BaseController
      */
     public function update(Request $request)
     {
-        $result = $this->form()->update();
-
-        $action = \request()->route()->getName();
-        $action = Str::replaceFirst('api/','',$action);
-        $action = Str::replaceLast('/update','/index',$action);
-
-        $url = "/quark/engine?api=".$action."&component=table";
-
-        if($result['status'] == 'success') {
-            return success('操作成功！',$url);
-        } else {
-            return error($result['msg']);
-        }
+        return $this->form()->update();
     }
 
     /**
@@ -253,15 +232,12 @@ class Controller extends BaseController
         }
 
         if(is_array($id)) {
-
             // 批量操作
             $result = $this->table()->executeBatchAction($id,$key);
         } elseif($id === '{id}') {
-
             // 工具栏操作
             $result = $this->table()->executeToolBarAction($key);
         } else {
-            
             // 行操作
             $result = $this->table()->executeRowAction($id,$key);
         }

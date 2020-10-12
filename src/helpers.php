@@ -212,12 +212,22 @@ if(!function_exists('get_picture')) {
                     $url = $baseUrl.$_SERVER['HTTP_HOST'].Storage::url($picture['path']);
                 }
                 $result = $url;
-            } else {
-                if($field == 'realPath') {
-                    $result = storage_path('app/').$picture->path;
+            } elseif($field == 'realPath') {
+                $result = storage_path('app/').$picture->path;
+            } elseif($field == 'all') {
+                if(strpos($picture['path'],'http') !== false) {
+                    $url = $picture['path'];
                 } else {
-                    $result = $picture[$field];
+                    $baseUrl = 'http://';
+                    if(web_config('SSL_OPEN') == 1) {
+                        $baseUrl = 'https://';
+                    }
+                    $url = $baseUrl.$_SERVER['HTTP_HOST'].Storage::url($picture['path']);
                 }
+                $picture['url'] = $url;
+                $result = $picture;
+            } else {
+                $result = $picture[$field];
             }
             return $result;
         }
