@@ -6,10 +6,12 @@ use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use QuarkCMS\QuarkAdmin\Models\Menu;
-use Quark;
+use QuarkCMS\QuarkAdmin\Table;
+use QuarkCMS\QuarkAdmin\Action;
+use QuarkCMS\QuarkAdmin\Form;
 use DB;
 
-class RoleController extends QuarkController
+class RoleController extends Controller
 {
     public $title = '角色';
 
@@ -21,66 +23,85 @@ class RoleController extends QuarkController
      */
     protected function table()
     {
-        $grid = Quark::grid(new Role)->title($this->title);
-        $grid->column('name','名称')->link();
-        $grid->column('guard_name','guard名称')->link();
-        $grid->column('created_at','创建时间');
+        $table = new Table(new Role);
+        $table->headerTitle($this->title.'列表');
+        
+        $table->column('id','序号');
+        $table->column('name','名称')->editLink();
+        $table->column('guard_name','guard名称')->link();
+        $table->column('created_at','创建时间');
+        $table->column('actions','操作')->width(180)->actions(function($row) {
 
-        $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
-            $rowAction->menu('edit', '编辑');
-            $rowAction->menu('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+            // 创建行为对象
+            $action = new Action();
+
+            // 跳转默认编辑页面
+            $action->a('编辑')->editLink();
+
+            $action->a('删除')
+            ->withPopconfirm('确认要删除吗？')
+            ->model()
+            ->where('id','{id}')
+            ->delete();
+
+            return $action;
         });
 
-        // 头部操作
-        $grid->actions(function($action) {
-            $action->button('create', '创建');
-            $action->button('refresh', '刷新');
+        $table->toolBar()->actions(function($action) {
+
+            // 跳转默认创建页面
+            $action->button('创建角色')->type('primary')->icon('plus-circle')->createLink();
+
+            return $action;
         });
 
-        // select样式的批量操作
-        $grid->batchActions(function($batch) {
-            $batch->option('', '批量操作');
-            $batch->option('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
-        })->style('select',['width'=>120]);
+        // 批量操作
+        $table->batchActions(function($action) {
+            // 跳转默认编辑页面
+            $action->a('批量删除')
+            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            ->model()
+            ->whereIn('id','{ids}')
+            ->delete();
+        });
 
-        $grid->search(function($search) {
-            $search->where('name', '搜索内容',function ($query) {
-                $query->where('name', 'like', "%{input}%");
+        // 搜索
+        $table->search(function($search) {
+            $search->where('name', '搜索内容',function ($model) {
+                $model->where('name', 'like', "%{input}%");
             })->placeholder('名称');
-        })->expand(false);
+        });
 
-        $grid->disableAdvancedSearch();
+        $table->model()->orderBy('id','desc')->paginate(request('pageSize',10));
 
-        $grid->model()->paginate(10);
-
-        return $grid;
+        return $table;
     }
 
     /**
      * 表单页面
-     * 
+     *
      * @param  Request  $request
      * @return Response
      */
     protected function form()
     {
         $id = request('id');
-
-        $form = Quark::form(new Role);
-
-        $title = $form->isCreating() ? '创建'.$this->title : '编辑'.$this->title;
-        $form->title($title);
-        
-        $form->id('id','ID');
-
+        $form = new Form(new Role);
+        if($form->isCreating()) {
+            $title = '新增'.$this->title;
+        } else {
+            $title = '编辑'.$this->title;
+        }
+        $form->labelCol(['span' => 4])->title($title);
+        $form->hidden('id');
         $form->text('name','名称')
         ->rules(['required','max:20'],['required'=>'名称必须填写','max'=>'名称不能超过20个字符'])
         ->creationRules(["unique:roles"],['unique'=>'名称已经存在'])
-        ->updateRules(["unique:roles,name,{{id}}"],['unique'=>'名称已经存在']);
+        ->updateRules(["unique:roles,name,{id}"],['unique'=>'名称已经存在']);
+
+        $form->text('guard_name','Guard名称')
+        ->rules(['required','max:20'],['required'=>'Guard名称必须填写','max'=>'Guard名称不能超过20个字符'])
+        ->value('admin');
 
         // 查询列表
         $menus = Menu::where('status',1)->where('guard_name','admin')->select('name as title','id as key','pid')->get()->toArray();
@@ -109,79 +130,35 @@ class RoleController extends QuarkController
         ->data($menus)
         ->value($checkedMenus);
 
+        // 保存数据前回调
+        $form->saving(function ($form) {
+            if(isset($form->data['menu_ids'])) {
+                $data = $form->data;
+                unset($data['menu_ids']);
+                $form->data = $data;
+            }
+        });
+
+        // 保存数据后回调
+        $form->saved(function ($form) {
+            if($form->model()) {
+                // 根据菜单id获取所有权限
+                $permissions = Permission::whereIn('menu_id',request('menu_ids'))->pluck('id')->toArray();
+
+                if($form->isCreating()) {
+                    // 同步权限
+                    $form->model()->syncPermissions(array_filter(array_unique($permissions)));
+                } else {
+                    // 同步权限
+                    Role::where('id',request('id'))->first()->syncPermissions(array_filter(array_unique($permissions)));
+                }
+
+                return success('操作成功！',frontend_url('admin/role/index'));
+            } else {
+                return error('操作失败，请重试！');
+            }
+        });
+
         return $form;
-    }
-
-    /**
-     * 保存方法
-     * 
-     * @param  Request  $request
-     * @return Response
-     */
-    public function store(Request $request)
-    {
-        $name          =   $request->json('name','');
-        $menuIds       =   $request->json('menu_ids');
-        
-        if (empty($name)) {
-            return error('角色名称必须填写！');
-        }
-
-        $data['name'] = $name;
-        $data['guard_name'] = 'admin';
-
-        // 添加角色
-        $role = Role::create($data);
-
-        // 根据菜单id获取所有权限
-        $permissions = Permission::whereIn('menu_id',$menuIds)->pluck('id')->toArray();
-
-        // 同步权限
-        $result = $role->syncPermissions(array_filter(array_unique($permissions)));
-
-        if ($result) {
-            return success('操作成功！','/quark/engine?api=/admin/role/index&component=table');
-        } else {
-            return error('操作失败！');
-        }
-    }
-
-    /**
-     * 保存编辑数据
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function update(Request $request)
-    {
-        $id            =   $request->json('id','');
-        $name          =   $request->json('name','');
-        $menuIds       =   $request->json('menu_ids');
-        
-        if (empty($id)) {
-            return error('参数错误！');
-        }
-
-        if (empty($name)) {
-            return error('角色名称必须填写！');
-        }
-
-        $data['name'] = $name;
-        $data['guard_name'] = 'admin';
-
-        // 更新角色
-        $result = Role::where('id',$id)->update($data);
-
-        // 根据菜单id获取所有权限
-        $permissions = Permission::whereIn('menu_id',$menuIds)->pluck('id')->toArray();
-
-        // 同步权限
-        $result1 = Role::where('id',$id)->first()->syncPermissions(array_filter(array_unique($permissions)));
-
-        if ($result && $result1) {
-            return success('操作成功！','/quark/engine?api=/admin/role/index&component=table');
-        } else {
-            return error('操作失败！');
-        }
     }
 }

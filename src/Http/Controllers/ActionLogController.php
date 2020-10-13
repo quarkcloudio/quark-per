@@ -63,7 +63,10 @@ class ActionLogController extends Controller
             })->placeholder('名称');
         });
 
-        $table->model()->where('type','ADMIN')->paginate(request('pageSize',10));
+        $table->model()
+        ->where('type','ADMIN')
+        ->orderBy('id','desc')
+        ->paginate(request('pageSize',10));
 
         return $table;
     }

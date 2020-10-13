@@ -31,7 +31,7 @@ Route::group([
 	$router->any('admin/admin/action', 'AdminController@action')->name('api/admin/admin/action');
 
 	$router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');
-	$router->post('admin/permission/sync', 'PermissionController@sync')->name('api/admin/permission/sync');
+	$router->get('admin/permission/sync', 'PermissionController@sync')->name('api/admin/permission/sync');
 	$router->any('admin/permission/action', 'PermissionController@action')->name('api/admin/permission/action');
 	$router->post('admin/permission/destroy', 'PermissionController@destroy')->name('api/admin/permission/destroy');
 
@@ -69,11 +69,11 @@ Route::group([
 	$router->post('admin/picture/upload', 'PictureController@upload')->name('api/admin/picture/upload');
 	$router->get('admin/picture/download', 'PictureController@download')->name('api/admin/picture/download');
 	$router->any('admin/picture/action', 'PictureController@action')->name('api/admin/picture/action');
-	$router->post('admin/picture/delete', 'PictureController@delete')->name('api/admin/picture/delete');
+	$router->get('admin/picture/delete', 'PictureController@delete')->name('api/admin/picture/delete');
 
 	$router->any('admin/file/index', 'FileController@index')->name('api/admin/file/index');
 	$router->post('admin/file/upload', 'FileController@upload')->name('api/admin/file/upload');
 	$router->get('admin/file/download', 'FileController@download')->name('api/admin/file/download');
 	$router->post('admin/file/action', 'FileController@action')->name('api/admin/file/action');
-	$router->post('admin/file/delete', 'FileController@delete')->name('api/admin/file/delete');
+	$router->get('admin/file/delete', 'FileController@delete')->name('api/admin/file/delete');
 });

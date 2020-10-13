@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
-use QuarkCMS\QuarkAdmin\Components\Table\Model;
 
 class Form extends Element
 {
@@ -116,13 +115,6 @@ class Form extends Element
      * @var string
      */
     public $api = null;
-
-    /**
-     * Tab布局的表单
-     *
-     * @var array
-     */
-    public $tab = null;
 
     /**
      * 表单项
@@ -708,25 +700,6 @@ class Form extends Element
     }
 
     /**
-     * tab布局的表单
-     *
-     * @return bool
-     */
-    public function tab($title,Closure $callback = null)
-    {
-        $callback($this);
-
-        $tab['title'] = $title;
-        if(isset($this->items)) {
-            $tab['items'] = $this->items;
-            $this->items = [];
-        }
-        $this->form['tab'][] = $tab;
-
-        return $this;
-    }
-
-    /**
      * 创建页面显示前回调
      *
      * @param Closure $callback
@@ -842,6 +815,7 @@ class Form extends Element
             'colon' => $this->colon,
             'initialValues' => $this->initialValues,
             'labelAlign' => $this->labelAlign,
+            'title' => $this->title,
             'name' => $this->name,
             'preserve' => $this->preserve,
             'requiredMark' => $this->requiredMark,

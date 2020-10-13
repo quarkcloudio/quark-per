@@ -4,7 +4,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller as BaseController;
-use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Container;
 use QuarkCMS\QuarkAdmin\Card;
 
@@ -129,11 +128,6 @@ class Controller extends BaseController
         ->style(['margin' => '25px','witdh' => '100%'])
         ->initialValues();
 
-        // 放到card组件
-        $card = new Card($form->title,$form);
-
-        $card->headerBordered();
-
         // 初始化容器
         $container = new Container();
 
@@ -147,7 +141,7 @@ class Controller extends BaseController
         $container->breadcrumb($this->breadcrumb());
 
         // 设置内容
-        $container->content($card);
+        $container->content($form);
 
         return success('获取成功！','',$container);
     }
@@ -181,11 +175,6 @@ class Controller extends BaseController
 
         $form = $this->form()->style(['margin' => '25px','witdh' => '100%'])->edit($id);
 
-        // 放到card组件
-        $card = new Card($form->title,$form);
-
-        $card->headerBordered();
-
         // 初始化容器
         $container = new Container();
 
@@ -199,7 +188,7 @@ class Controller extends BaseController
         $container->breadcrumb($this->breadcrumb());
 
         // 设置内容
-        $container->content($card);
+        $container->content($form);
         
         return success('获取成功！','',$container);
     }

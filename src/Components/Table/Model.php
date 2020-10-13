@@ -227,8 +227,6 @@ class Model
                     }
                 }
             }
-        } else {
-            $this->model = $this->model->orderBy('id','desc');
         }
 
         $this->queries->unique()->each(function ($query) {

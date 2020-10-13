@@ -28,7 +28,7 @@ class Checkbox extends Item
      * @param  string  $name
      * @param  string  $label
      * @return void
-     */ 
+     */
     public function __construct($name,$label = '')
     {
         $this->component = 'checkbox';

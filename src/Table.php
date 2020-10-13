@@ -20,6 +20,13 @@ class Table extends Element
     public $rowKey = 'id';
 
     /**
+     * 树形表格
+     *
+     * @var bool|array
+     */
+    protected $tree = false;
+
+    /**
      * 表头标题
      *
      * @var string
@@ -252,6 +259,22 @@ class Table extends Element
     {
         $this->datasource = $datasource;
 
+        return $this;
+    }
+
+    /**
+     * tree形表格
+     *
+     * @param  array|string  $datasource
+     * @return $this
+     */
+    public function tree($pk='id',$pid = 'pid',$root=0)
+    {
+        $tree['pk'] = $pk;
+        $tree['pid'] = $pid;
+        $tree['root'] = $root;
+
+        $this->tree = $tree;
         return $this;
     }
 
@@ -718,6 +741,10 @@ class Table extends Element
 
         // 表格数据
         $datasource = $this->datasource;
+
+        if($this->tree) {
+            $datasource = list_to_tree($datasource,'id','pid','children',0);
+        }
 
         // 表格分页
         $pagination = $this->pagination;

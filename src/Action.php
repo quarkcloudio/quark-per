@@ -32,8 +32,7 @@ class Action
         'a' => Actions\AStyle::class,
         'button' => Actions\ButtonStyle::class,
         'dropdown' => Actions\DropdownStyle::class,
-        'item' => Actions\DropdownStyle\Item::class,
-        'select' => Actions\SelectStyle::class,
+        'item' => Actions\DropdownStyle\Item::class
     ];
 
     /**

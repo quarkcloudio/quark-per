@@ -4,13 +4,24 @@ namespace QuarkCMS\QuarkAdmin\Components\Form\Fields;
 
 use QuarkCMS\QuarkAdmin\Components\Form\Item;
 use Illuminate\Support\Arr;
-use Exception;
 
 class Tree extends Item
 {
+    /**
+     * 配置树形组件数据
+     *
+     * @var string
+     */
     public  $treeData;
-
-    function __construct($name,$label = '') {
+    
+    /**
+     * 初始化Tree组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($name,$label = '') {
         $this->component = 'tree';
         $this->name = $name;
 
@@ -22,9 +33,27 @@ class Tree extends Item
         }
     }
 
+    /**
+     * 设置树形组件数据
+     *
+     * @param  array $treeData
+     * @return $this
+     */
     public function data($treeData)
     {
         $this->treeData = $treeData;
         return $this;
+    }
+
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return array_merge([
+            'treeData' => $this->treeData
+        ], parent::jsonSerialize());
     }
 }

@@ -9,9 +9,10 @@ use QuarkCMS\QuarkAdmin\Models\File;
 use QuarkCMS\QuarkAdmin\Models\FileCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
-use Quark;
+use QuarkCMS\QuarkAdmin\Table;
+use QuarkCMS\QuarkAdmin\Action;
 
-class FileController extends QuarkController
+class FileController extends Controller
 {
     public $title = '文件';
 
@@ -23,54 +24,82 @@ class FileController extends QuarkController
      */
     protected function table()
     {
-        $grid = Quark::grid(new File)->title($this->title);
-        $grid->column('name','名称');
-        $grid->column('size','大小')->sorter();
-        $grid->column('ext','扩展名');
-        $grid->column('created_at','上传时间');
-        $grid->column('status','状态')->editable('switch',[
-            'on'  => ['value' => 1, 'text' => '正常'],
-            'off' => ['value' => 0, 'text' => '禁用']
-        ])->width(100);
+        $table = new Table(new File);
+        $table->headerTitle($this->title.'列表');
+        
+        $table->column('id','序号');
+        $table->column('name','名称');
+        $table->column('size','大小')->sorter();
+        $table->column('ext','扩展名');
+        $table->column('created_at','上传时间');
+        $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
+        $table->column('actions','操作')->width(180)->actions(function($row) {
 
-        $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
-            $rowAction->button('delete', '删除')
-            ->type('default',true)
-            ->size('small')
-            ->setAction('admin/file/delete')
-            ->withPopconfirm('确认要删除吗？');
-        },'button');
+            // 创建行为对象
+            $action = new Action();
 
-        // 头部操作
-        $grid->actions(function($action) {
-            $action->button('refresh', '刷新');
+            // 根据不同的条件定义不同的A标签形式行为
+            if($row['status'] === 1) {
+                $action->a('禁用')
+                ->withPopconfirm('确认要禁用数据吗？')
+                ->model()
+                ->where('id','{id}')
+                ->update(['status'=>0]);
+            } else {
+                $action->a('启用')
+                ->withPopconfirm('确认要启用数据吗？')
+                ->model()
+                ->where('id','{id}')
+                ->update(['status'=>1]);
+            }
+
+            // 下载文件
+            $action->a('下载')->link(backend_url('api/admin/file/download?id='.$row['id']),'_blank');
+
+            $action->a('删除')
+            ->withPopconfirm('确认要删除吗？')
+            ->api('admin/file/delete?id='.$row['id']);
+
+            return $action;
         });
 
-        // select样式的批量操作
-        $grid->batchActions(function($batch) {
-            $batch->option('', '批量操作');
-            $batch->option('resume', '启用')->model(function($model) {
-                $model->update(['status'=>1]);
-            });
-            $batch->option('forbid', '禁用')->model(function($model) {
-                $model->update(['status'=>0]);
-            });
-            $batch->option('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
-        })->style('select',['width'=>120]);
+        // 批量操作
+        $table->batchActions(function($action) {
+            $action->a('批量删除')
+            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            ->api('admin/file/delete');
 
-        $grid->search(function($search) {
-            $search->equal('status', '所选状态')->select([''=>'全部',1=>'正常',0=>'已禁用'])->placeholder('选择状态')->width(110);
-            $search->where('name', '搜索内容',function ($query) {
-                $query->where('name', 'like', "%{input}%");
+            $action->a('批量禁用')
+            ->withPopconfirm('确认要禁用吗？')
+            ->model()
+            ->whereIn('id','{ids}')
+            ->update(['status'=>0]);
+
+            $action->a('批量启用')
+            ->withPopconfirm('确认要启用吗？')
+            ->model()
+            ->whereIn('id','{ids}')
+            ->update(['status'=>1]);
+        });
+
+        // 搜索
+        $table->search(function($search) {
+
+            $search->where('name', '搜索内容',function ($model) {
+                $model->where('name', 'like', "%{input}%");
             })->placeholder('名称');
-            $search->between('created_at', '上传时间')->datetime()->advanced();
-        })->expand(false);
 
-        $grid->model()->paginate(10);
+            $search->equal('status', '所选状态')
+            ->select([''=>'全部', 1=>'正常', 0=>'已禁用'])
+            ->placeholder('选择状态')
+            ->width(110);
 
-        return $grid;
+            $search->between('created_at', '上传时间')->datetime();
+        });
+
+        $table->model()->orderBy('id','desc')->paginate(request('pageSize',10));
+
+        return $table;
     }
 
     /**
@@ -81,10 +110,9 @@ class FileController extends QuarkController
      */
     public function delete(Request $request)
     {
-        $id = $request->json('id');
-        $status = $request->json('status');
+        $id = $request->input('id');
 
-        if(empty($id) || empty($status)) {
+        if(empty($id)) {
             return error('参数错误！');
         }
 
@@ -98,25 +126,23 @@ class FileController extends QuarkController
 
         $files = $query->get();
 
-        if($status == -1) {
-            foreach ($files as $key => $file) {
-                // 阿里云存储
-                if(strpos($file->path,'http') !== false) {
-                    $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
-                    $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
-                    $endpoint = web_config('OSS_ENDPOINT');
-                    $bucket = web_config('OSS_BUCKET');
-        
-                    $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
+        foreach ($files as $key => $file) {
+            // 阿里云存储
+            if(strpos($file->path,'http') !== false) {
+                $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
+                $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
+                $endpoint = web_config('OSS_ENDPOINT');
+                $bucket = web_config('OSS_BUCKET');
+    
+                $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
 
-                    $path = explode('/',$file->path);
-                    $count = count($path);
-                    $object = $path[$count-2].'/'.$path[$count-1];
-                    
-                    $ossClient->deleteObject($bucket, $object);
-                } else {
-                    Storage::delete(storage_path('app/').$file->path);
-                }
+                $path = explode('/',$file->path);
+                $count = count($path);
+                $object = $path[$count-2].'/'.$path[$count-1];
+                
+                $ossClient->deleteObject($bucket, $object);
+            } else {
+                Storage::delete(storage_path('app/').$file->path);
             }
         }
 
@@ -128,7 +154,7 @@ class FileController extends QuarkController
             $query1->where('id',$id);
         }
 
-        $result = $query1->update(['status'=>$status]);
+        $result = $query1->delete();
 
         if ($result) {
             return success('操作成功！');

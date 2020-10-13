@@ -29,11 +29,12 @@ class AStyle extends BaseAction
     {
         $this->key(__CLASS__.json_encode($this->name));
 
-        $api = \request()->route()->getName();
-        $api = Str::replaceFirst('api/','',$api);
-        $api = Str::replaceLast('/index','/action',$api);
-
-        $this->api = $api.'?id={id}&key='.$this->key;
+        if(empty($this->api)) {
+            $api = \request()->route()->getName();
+            $api = Str::replaceFirst('api/','',$api);
+            $api = Str::replaceLast('/index','/action',$api);
+            $this->api = $api.'?id={id}&key='.$this->key;
+        }
 
         return array_merge([
             'name' => $this->name,

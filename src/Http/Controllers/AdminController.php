@@ -4,7 +4,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Admin;
-use QuarkCMS\QuarkAdmin\Card;
 use QuarkCMS\QuarkAdmin\Table;
 use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Form;
@@ -60,16 +59,22 @@ class AdminController extends Controller
             // 跳转默认编辑页面
             $action->a('编辑')->editLink();
 
+            $action->a('删除')
+            ->withPopconfirm('确认要删除吗？')
+            ->model()
+            ->where('id','{id}')
+            ->delete();
+
             // 下拉菜单形式的行为
-            $action->dropdown('更多')->overlay(function($action) {
-                $action->item('详情')->editLink();
-                $action->item('删除')
-                ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-                ->model()
-                ->where('id','{id}')
-                ->delete();
-                return $action;
-            });
+            // $action->dropdown('更多')->overlay(function($action) {
+            //     $action->item('详情')->editLink();
+            //     $action->item('删除')
+            //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            //     ->model()
+            //     ->where('id','{id}')
+            //     ->delete();
+            //     return $action;
+            // });
 
             return $action;
         });
@@ -80,15 +85,15 @@ class AdminController extends Controller
             $action->button('创建管理员')->type('primary')->icon('plus-circle')->createLink();
 
             // 下拉菜单形式的行为
-            $action->dropdown('更多操作')->mode('button')->overlay(function($action) {
-                $action->item('详情')->createLink();
-                $action->item('清空数据')
-                ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-                ->model()
-                ->where('status',1)
-                ->delete();
-                return $action;
-            });
+            // $action->dropdown('更多操作')->mode('button')->overlay(function($action) {
+            //     $action->item('详情')->createLink();
+            //     $action->item('清空数据')
+            //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            //     ->model()
+            //     ->where('status',1)
+            //     ->delete();
+            //     return $action;
+            // });
 
             return $action;
         });
@@ -103,16 +108,21 @@ class AdminController extends Controller
             ->delete();
 
             // 下拉菜单形式的行为
-            $action->dropdown('批量操作')->overlay(function($action) {
-                $action->item('详情')->editLink();
-                $action->item('删除')
-                ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            $action->dropdown('更多')->overlay(function($action) {
+                $action->item('禁用用户')
+                ->withConfirm('确认要禁用吗？','禁用后管理员将无法登陆后台，请谨慎操作！')
                 ->model()
                 ->whereIn('id','{ids}')
-                ->delete();
+                ->update(['status'=>0]);
+
+                $action->item('启用用户')
+                ->withConfirm('确认要启用吗？','启用后管理员将可以正常登录后台！')
+                ->model()
+                ->whereIn('id','{ids}')
+                ->update(['status'=>1]);
+
                 return $action;
             });
-
         });
 
         // 搜索
@@ -130,7 +140,7 @@ class AdminController extends Controller
             $search->between('last_login_time', '登录时间')->datetime();
         });
 
-        $table->model()->paginate(request('pageSize',10));
+        $table->model()->orderBy('id','desc')->paginate(request('pageSize',10));
 
         return $table;
     }
