@@ -180,6 +180,11 @@ class MenuController extends Controller
 
         $form->icon('icon','图标')->width(200);
 
+        $form->select('type','渲染组件')
+        ->width(200)
+        ->options(['default'=>'无组件','engine'=>'引擎组件'])
+        ->default('engine');
+
         $form->text('path','路由')->help('前端路由或后端api');
 
         $permissions = Permission::all();
