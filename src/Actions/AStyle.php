@@ -42,7 +42,8 @@ class AStyle extends BaseAction
             'target' => $this->target,
             'api' => $this->api,
             'confirm' => $this->confirm,
-            'popconfirm' => $this->popconfirm
+            'popconfirm' => $this->popconfirm,
+            'modal' => $this->modal
         ], parent::jsonSerialize());
     }
 }

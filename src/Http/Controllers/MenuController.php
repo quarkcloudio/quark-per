@@ -51,7 +51,7 @@ class MenuController extends Controller
             }
 
             // 跳转默认编辑页面
-            $action->a('编辑')->modalForm();
+            $action->a('编辑')->modalForm(backend_url('admin/menu/edit?id='.$row['id']));
 
             if($row['show'] === 1) {
                 $action->a('隐藏')
@@ -81,7 +81,7 @@ class MenuController extends Controller
             $action->button('创建菜单')
             ->type('primary')
             ->icon('plus-circle')
-            ->modalForm();
+            ->modalForm(backend_url('admin/menu/create'));
             return $action;
         });
 

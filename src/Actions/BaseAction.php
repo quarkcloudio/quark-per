@@ -3,7 +3,6 @@
 namespace QuarkCMS\QuarkAdmin\Actions;
 
 use QuarkCMS\QuarkAdmin\Element;
-use QuarkCMS\QuarkAdmin\Components\Modal;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use Illuminate\Support\Str;
 
@@ -21,7 +20,7 @@ class BaseAction extends Element
      *
      * @var array
      */
-    public $modal;
+    public $modal = null;
 
     /**
      * 执行行为前的确认操作
@@ -107,18 +106,14 @@ class BaseAction extends Element
     }
 
     /**
-     * 设置打开弹窗
+     * 弹窗表单
      *
-     * @param  string  $title
-     * @param  Closure  $callback
+     * @param  string|array  $modal
      * @return $this
      */
-    public function withModal($title, $callback = null)
+    public function modalForm($modal)
     {
-        $modal = new Modal;
-        $modal->title($title);
-        $callback($modal);
-        $this->modal = $modal->render();
+        $this->modal = $modal;
         return $this;
     }
 
