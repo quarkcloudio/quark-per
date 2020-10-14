@@ -23,11 +23,25 @@ class Select extends Item
     public $mode = null;
 
     /**
+     * 控件大小。注：标准表单内的输入框大小限制为 large。可选 large default small
+     *
+     * @var string
+     */
+    public $size = null;
+
+    /**
      * 可以点击清除图标删除内容
      *
      * @var bool
      */
     public $allowClear = false;
+
+    /**
+     * 控件占位符
+     *
+     * @var string
+     */
+    public $placeholder = null;
 
     /**
      * 初始化下拉框组件
@@ -96,6 +110,18 @@ class Select extends Item
     }
 
     /**
+     * 控件占位符
+     *
+     * @param  string $placeholder
+     * @return $this
+     */
+    public function placeholder($placeholder = '')
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    /**
      * 控件大小。注：标准表单内的输入框大小限制为 large。可选 large default small
      * 
      * @param  large|default|small $prefix
@@ -119,6 +145,7 @@ class Select extends Item
     public function jsonSerialize()
     {
         return array_merge([
+            'options' => $this->options,
             'placeholder' => $this->placeholder,
             'allowClear' => $this->allowClear,
             'size' => $this->size,

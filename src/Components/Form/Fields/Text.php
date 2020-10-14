@@ -78,7 +78,7 @@ class Text extends Item
      * @param  string  $label
      * @return void
      */ 
-    function __construct($name,$label = '')
+    public function __construct($name,$label = '')
     {
         $this->component = 'text';
         $this->name = $name;

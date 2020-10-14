@@ -13,14 +13,14 @@ class Checkbox extends Item
      *
      * @var array
      */
-    public  $options;
+    public $options;
 
     /**
      * 配置 checkbox 的样子，支持垂直vertical 和 horizontal
      *
      * @var string
      */
-    public  $layout = 'vertical';
+    public $layout = 'vertical';
     
     /**
      * 初始化多选框组件

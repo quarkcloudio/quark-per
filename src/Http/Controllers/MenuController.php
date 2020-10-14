@@ -140,6 +140,8 @@ class MenuController extends Controller
      */
     protected function form()
     {
+        $id = request('id');
+
         $form = new Form(new Menu);
 
         if($form->isCreating()) {
@@ -157,6 +159,53 @@ class MenuController extends Controller
         $form->text('name','名称')
         ->rules(['required','max:20'],['required'=>'名称必须填写','max'=>'名称不能超过20个字符']);
 
+        // 查询列表
+        $menus = Menu::query()->where('guard_name','admin')
+        ->orderBy('sort', 'asc')
+        ->orderBy('id', 'asc')
+        ->get()
+        ->toArray();
+
+        $menuTrees = list_to_tree($menus,'id','pid','children',0);
+        $menuTreeLists = tree_to_ordered_list($menuTrees,0,'name','children');
+
+        $list[0] = '根节点';
+        foreach ($menuTreeLists as $key => $menuTreeList) {
+            $list[$menuTreeList['id']] = $menuTreeList['name'];
+        }
+
+        $form->select('pid','父节点')
+        ->options($list)
+        ->default(0);
+
+        $form->number('sort','排序')->default(0);
+
+        $form->icon('icon','图标')->default(0);
+
+        $form->select('type','渲染组件')
+        ->options(['default'=>'无组件','table'=>'列表组件','form'=>'表单组件','show'=>'详情组件'])
+        ->default('default');
+
+        $form->text('path','路由')->help('前端路由或后端api');
+
+        $permissions = Permission::all();
+
+        $getPermissions = [];
+        foreach ($permissions as $key => $permission) {
+            $getPermissions[$permission['id']] = $permission['name'];
+        }
+
+        $permissionIds = [];
+
+        if($id) {
+            $permissionIds= Permission::where('menu_id',$id)->pluck('id');
+        }
+
+        $form->select('permission_ids','绑定权限')
+        ->mode('tags')
+        ->options($getPermissions)
+        ->default($permissionIds);
+
         $form->switch('show','显示')->options([
             'on'  => '是',
             'off' => '否'
@@ -166,6 +215,34 @@ class MenuController extends Controller
             'on'  => '正常',
             'off' => '禁用'
         ])->default(true);
+
+        // 保存数据前回调
+        $form->saving(function ($form) {
+            if(isset($form->data['permission_ids'])) {
+                $data = $form->data;
+                unset($data['permission_ids']);
+                $form->data = $data;
+            }
+        });
+
+        // 保存数据后回调
+        $form->saved(function ($form) {
+            if($form->model()) {
+                if($form->isCreating()) {
+                    Permission::whereIn('id',request('permission_ids'))->update(['menu_id' => $form->model()->id]);
+                } else {
+
+                    // 先清空
+                    Permission::where('menu_id',request('id'))->update(['menu_id' => 0]);
+
+                    // 赋值
+                    Permission::whereIn('id',request('permission_ids'))->update(['menu_id' => request('id')]);
+                }
+                return success('操作成功！',frontend_url('admin/menu/index'));
+            } else {
+                return error('操作失败，请重试！');
+            }
+        });
 
         return $form;
     }
