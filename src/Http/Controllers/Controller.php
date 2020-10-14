@@ -124,9 +124,7 @@ class Controller extends BaseController
      */
     public function create(Request $request)
     {
-        $form = $this->form()
-        ->style(['margin' => '25px','witdh' => '100%'])
-        ->initialValues();
+        $form = $this->form()->initialValues();
 
         // 初始化容器
         $container = new Container();
@@ -173,7 +171,7 @@ class Controller extends BaseController
             return error('参数错误！');
         }
 
-        $form = $this->form()->style(['margin' => '25px','witdh' => '100%'])->edit($id);
+        $form = $this->form()->edit($id);
 
         // 初始化容器
         $container = new Container();

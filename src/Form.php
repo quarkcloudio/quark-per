@@ -19,6 +19,13 @@ class Form extends Element
     public $title = null;
 
     /**
+     * 表单宽度
+     *
+     * @var string|number
+     */
+    public $width = null;
+
+    /**
      * 配置 Form.Item 的 colon 的默认值。表示是否显示 label 后面的冒号 (只有在属性 layout 为 horizontal 时有效)
      *
      * @var bool
@@ -263,6 +270,19 @@ class Form extends Element
         $this->title = $title;
         return $this;
     }
+
+    /**
+     *  配置表单宽度
+     *
+     * @param  string  $width
+     * @return $this
+     */
+    public function width($width)
+    {
+        $this->width = $width;
+        return $this;
+    }
+
 
     /**
      *  配置 Form.Item 的 colon 的默认值。表示是否显示 label 后面的冒号 (只有在属性 layout 为 horizontal 时有效)
@@ -816,6 +836,7 @@ class Form extends Element
             'initialValues' => $this->initialValues,
             'labelAlign' => $this->labelAlign,
             'title' => $this->title,
+            'width' => $this->width,
             'name' => $this->name,
             'preserve' => $this->preserve,
             'requiredMark' => $this->requiredMark,
