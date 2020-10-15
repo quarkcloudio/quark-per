@@ -23,6 +23,13 @@ class BaseAction extends Element
     public $modal = null;
 
     /**
+     * 触发行为打开抽屉
+     *
+     * @var array
+     */
+    public $drawer = null;
+
+    /**
      * 执行行为前的确认操作
      *
      * @var array
@@ -114,6 +121,18 @@ class BaseAction extends Element
     public function modalForm($modal)
     {
         $this->modal = $modal;
+        return $this;
+    }
+
+    /**
+     * 抽屉表单
+     *
+     * @param  string|array  $drawer
+     * @return $this
+     */
+    public function drawerForm($drawer)
+    {
+        $this->drawer = $drawer;
         return $this;
     }
 

@@ -52,7 +52,8 @@ class ButtonStyle extends BaseAction
             'api' => $this->api,
             'confirm' => $this->confirm,
             'popconfirm' => $this->popconfirm,
-            'modal' => $this->modal
+            'modal' => $this->modal,
+            'drawer' => $this->drawer
         ], parent::jsonSerialize());
     }
 }
