@@ -4,8 +4,12 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Config;
+use QuarkCMS\QuarkAdmin\Table;
+use QuarkCMS\QuarkAdmin\Action;
+use QuarkCMS\QuarkAdmin\Form;
+use QuarkCMS\QuarkAdmin\TabForm;
+use QuarkCMS\QuarkAdmin\Container;
 use Cache;
-use Quark;
 
 class ConfigController extends Controller
 {
@@ -23,7 +27,9 @@ class ConfigController extends Controller
         ->distinct()
         ->pluck('group_name');
 
-        $form = Quark::form()->setAction('admin/config/saveWebsite');
+        $form = new TabForm(new Config);
+
+        $form->api('admin/config/saveWebsite');
 
         foreach ($groupNames as $key => $groupName) {
             if($groupName) {
@@ -60,7 +66,6 @@ class ConfigController extends Controller
                             case 'textarea':
                                 $form->textArea($config['name'],$config['title'])
                                 ->extra($config['remark'])
-                                ->width(400)
                                 ->value($config['value']);
                                 break;
                             case 'switch':
@@ -110,13 +115,24 @@ class ConfigController extends Controller
      */
      public function website(Request $request)
      {
-        $form = $this->websiteForm();
+        $form = $this->websiteForm()->initialValues();
 
-        $content = Quark::content()
-        ->title($this->title())
-        ->body(['form'=>$form->render()]);
+        // 初始化容器
+        $container = new Container();
 
-        return success('获取成功！','',$content);
+        // 设置标题
+        $container->title($this->title());
+
+        // 设置二级标题
+        $container->subTitle($this->subTitle());
+
+        // 设置面包屑导航
+        $container->breadcrumb($this->breadcrumb());
+
+        // 设置内容
+        $container->content($form);
+
+        return success('获取成功！','',$container);
     }
 
     /**
@@ -182,52 +198,100 @@ class ConfigController extends Controller
      */
     protected function table()
     {
-        $grid = Quark::grid(new Config)
-        ->title($this->title);
+        $table = new Table(new Config);
+        $table->headerTitle($this->title.'列表');
+        
+        $table->column('id','序号')->width(80);
+        $table->column('title','标题')->width(120);
+        $table->column('name','名称')->copyable();
+        $table->column('remark','备注')->ellipsis();
+        $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
+        $table->column('actions','操作')->width(120)->actions(function($row) {
 
-        $grid->column('title','标题')->link();
-        $grid->column('name','名称');
-        $grid->column('remark','备注');
-        $grid->column('status','状态')->editable('switch',[
-            'on'  => ['value' => 1, 'text' => '正常'],
-            'off' => ['value' => 0, 'text' => '禁用']
-        ])->width(100);
-        $grid->column('actions','操作')->width(100)->rowActions(function($rowAction) {
-            $rowAction->menu('edit', '编辑');
-            $rowAction->menu('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
+            // 创建行为对象
+            $action = new Action();
+
+            // 根据不同的条件定义不同的A标签形式行为
+            if($row['status'] === 1) {
+                $action->a('禁用')
+                ->withPopconfirm('确认要禁用数据吗？')
+                ->model()
+                ->where('id','{id}')
+                ->update(['status'=>0]);
+            } else {
+                $action->a('启用')
+                ->withPopconfirm('确认要启用数据吗？')
+                ->model()
+                ->where('id','{id}')
+                ->update(['status'=>1]);
+            }
+
+            // 跳转默认编辑页面
+            $action->a('编辑')->modalForm(backend_url('api/admin/config/edit?id='.$row['id']));
+
+            $action->a('删除')
+            ->withPopconfirm('确认要删除吗？')
+            ->model()
+            ->where('id','{id}')
+            ->delete();
+
+            return $action;
         });
 
-        // 头部操作
-        $grid->actions(function($action) {
-            $action->button('create', '新增');
-            $action->button('refresh', '刷新');
+        $table->toolBar()->actions(function($action) {
+
+            // 跳转默认创建页面
+            $action->button('创建配置')
+            ->type('primary')
+            ->icon('plus-circle')
+            ->modalForm(backend_url('api/admin/config/create'));
+
+            return $action;
         });
 
-        // select样式的批量操作
-        $grid->batchActions(function($batch) {
-            $batch->option('', '批量操作');
-            $batch->option('resume', '启用')->model(function($model) {
-                $model->update(['status'=>1]);
-            });
-            $batch->option('forbid', '禁用')->model(function($model) {
-                $model->update(['status'=>0]);
-            });
-            $batch->option('delete', '删除')->model(function($model) {
-                $model->delete();
-            })->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！');
-        })->style('select',['width'=>120]);
+        // 批量操作
+        $table->batchActions(function($action) {
+            // 跳转默认编辑页面
+            $action->a('批量删除')
+            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
+            ->model()
+            ->whereIn('id','{ids}')
+            ->delete();
 
-        $grid->search(function($search) {
-            $search->where('title', '搜索内容',function ($query) {
-                $query->where('title', 'like', "%{input}%");
+            // 下拉菜单形式的行为
+            $action->dropdown('更多')->overlay(function($action) {
+                $action->item('禁用配置')
+                ->withConfirm('确认要禁用吗？','禁用后配置将不再生效，请谨慎操作！')
+                ->model()
+                ->whereIn('id','{ids}')
+                ->update(['status'=>0]);
+
+                $action->item('启用配置')
+                ->withConfirm('确认要启用吗？','启用后配置将可以生效！')
+                ->model()
+                ->whereIn('id','{ids}')
+                ->update(['status'=>1]);
+
+                return $action;
+            });
+        });
+
+        // 搜索
+        $table->search(function($search) {
+
+            $search->where('title', '搜索内容',function ($model) {
+                $model->where('title', 'like', "%{input}%");
             })->placeholder('标题');
-        })->expand(false);
 
-        $grid->model()->paginate(10);
+            $search->equal('status', '所选状态')
+            ->select([''=>'全部', 1=>'正常', 0=>'已禁用'])
+            ->placeholder('选择状态')
+            ->width(110);
+        });
 
-        return $grid;
+        $table->model()->orderBy('id','desc')->paginate(request('pageSize',10));
+
+        return $table;
     }
 
     /**
@@ -240,10 +304,10 @@ class ConfigController extends Controller
     {
         $id = request('id');
 
-        $form = Quark::form(new Config);
+        $form = new Form(new Config);
 
         $title = $form->isCreating() ? '创建'.$this->title : '编辑'.$this->title;
-        $form->title($title);
+        $form->labelCol(['span' => 4])->title($title);
         
         $form->id('id','ID');
 
@@ -260,8 +324,7 @@ class ConfigController extends Controller
 
         $form->select('type','表单类型')
         ->options($options)
-        ->default('text')
-        ->width(200);
+        ->default('text');
 
         $form->text('name','名称')
         ->rules(['required','max:255'],['required'=>'名称必须填写','max'=>'名称不能超过255个字符'])

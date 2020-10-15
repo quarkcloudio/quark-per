@@ -83,7 +83,7 @@ class TabForm extends Form
             $tab['items'] = $this->items;
             $this->items = [];
         }
-        $this->form['tab'][] = $tab;
+        $this->tab[] = $tab;
 
         return $this;
     }

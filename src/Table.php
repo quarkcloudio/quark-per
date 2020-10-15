@@ -3,6 +3,7 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Closure;
+use Exception;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use QuarkCMS\QuarkAdmin\Components\Table\Column;
@@ -18,6 +19,13 @@ class Table extends Element
      * @var string
      */
     public $rowKey = 'id';
+
+    /**
+     * 表格元素的 table-layout 属性，设为 fixed 表示内容不会影响列的布局
+     *
+     * @var string
+     */
+    public $tableLayout = null;
 
     /**
      * 树形表格
@@ -133,6 +141,24 @@ class Table extends Element
         $this->toolbar = new ToolBar;
         $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
+
+        $this->tableLayout('fixed');
+
+        return $this;
+    }
+
+    /**
+     * 表格元素的 table-layout 属性，设为 fixed 表示内容不会影响列的布局,- | auto | fixed
+     *
+     * @param  string  $tableLayout
+     * @return $this
+     */
+    public function tableLayout($tableLayout)
+    {
+        if(!in_array($tableLayout,['auto', 'fixed'])) {
+            throw new Exception("argument must be in 'auto', 'fixed'!");
+        }
+        $this->tableLayout = $tableLayout;
 
         return $this;
     }
@@ -700,6 +726,9 @@ class Table extends Element
         // 行主键
         $rowKey = $this->rowKey;
 
+        // 表格元素的 table-layout 属性，设为 fixed 表示内容不会影响列的布局
+        $tableLayout = $this->tableLayout;
+
         // 表格标题
         $headerTitle = $this->headerTitle;
 
@@ -751,6 +780,7 @@ class Table extends Element
 
         return array_merge([
             'rowKey' => $rowKey,
+            'tableLayout' => $tableLayout,
             'headerTitle' => $headerTitle,
             'columns' => $columns,
             'options' => $options,

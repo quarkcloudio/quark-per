@@ -12,21 +12,21 @@ class TextArea extends Text
      *
      * @var bool|array
      */
-    public $autoSize = true;
+    public $autoSize = [];
 
     /**
      * 指定最小行数。
      *
      * @var number
      */
-    public $minRows = null;
+    public $minRows = 2;
 
     /**
      * 指定最大行数。
      *
      * @var number
      */
-    public $maxRows = null;
+    public $maxRows = 5;
 
     /**
      * 初始化TextArea组件

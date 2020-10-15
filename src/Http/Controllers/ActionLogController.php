@@ -25,12 +25,12 @@ class ActionLogController extends Controller
         $table = new Table(new ActionLog);
         $table->headerTitle($this->title);
         
-        $table->column('id','序号');
-        $table->column('admin.username','用户')->width(200);
-        $table->column('url','行为')->width(200);
+        $table->column('id','序号')->width(100);
+        $table->column('admin.username','用户')->width(120);
+        $table->column('url','行为')->ellipsis()->copyable()->width(350);
         $table->column('ip','IP');
         $table->column('created_at','发生时间');
-        $table->column('actions','操作')->width(180)->actions(function($row) {
+        $table->column('actions','操作')->width(120)->actions(function($row) {
 
             // 创建行为对象
             $action = new Action();

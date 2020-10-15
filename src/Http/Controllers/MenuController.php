@@ -183,7 +183,7 @@ class MenuController extends Controller
         $form->icon('icon','图标')->default(0);
 
         $form->select('type','渲染组件')
-        ->options(['default'=>'无组件','table'=>'列表组件','form'=>'表单组件','show'=>'详情组件'])
+        ->options(['default'=>'无组件','engine'=>'引擎组件'])
         ->default('default');
 
         $form->text('path','路由')->help('前端路由或后端api');
