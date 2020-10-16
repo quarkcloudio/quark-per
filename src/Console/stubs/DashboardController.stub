@@ -134,8 +134,8 @@ class DashboardController extends Controller
         $show->field('作者')->value('tangtanglove');
         $show->field('联系方式')->value('dai_hang_love@126.com');
         $show->field('官方网址')->link('http://www.quarkcms.com','_blank')->value('www.quarkcms.com');
-        $show->field('文档地址')->link('http://www.quarkcms.com/doc','_blank')->value('www.quarkcms.com/doc');
-        $show->field('BUG反馈')->link('https://github.com/quarkcms/quark-admin/issues','_blank')->value('BUG反馈');
+        $show->field('文档地址')->link('http://www.quarkcms.com','_blank')->value('查看文档');
+        $show->field('BUG反馈')->link('https://github.com/quarkcms/quark-admin/issues','_blank')->value('提交漏洞');
         $show->field('Github')->link('https://github.com/quarkcms/quark-admin','_blank')->value('Github');
 
         $content = Card::make()

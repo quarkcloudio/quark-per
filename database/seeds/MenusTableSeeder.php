@@ -14,7 +14,7 @@ class MenusTableSeeder extends Seeder
     {
         DB::table('menus')->insert([
             ['id' =>1,'name' => '控制台','guard_name' => 'admin','icon' => 'icon-home','type'=>'default','pid' => 0,'sort' => -2,'path' => '/dashboard','show'  => 1,'status' => 1],
-            ['id' =>2,'name' => '主页','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 1,'sort' => 0,'path' => '/dashboard/index','show'  => 1,'status' => 1],
+            ['id' =>2,'name' => '主页','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 1,'sort' => 0,'path' => 'admin/dashboard/index','show'  => 1,'status' => 1],
 
             ['id' =>13,'name' => '管理员','guard_name' => 'admin','icon' => 'icon-admin','type'=>'default','pid' => 0,'sort' => 0,'path' => '/admin','show'  => 1,'status' => 1],
             ['id' =>14,'name' => '管理员列表','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 13,'sort' => 0,'path' => 'admin/admin/index','show'  => 1,'status' => 1],
