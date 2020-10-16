@@ -324,7 +324,7 @@ class Card extends Element
      */
     public function jsonSerialize()
     {
-        $this->key(__CLASS__.$this->title.$this->subTitle);
+        $this->key(json_encode($this));
 
         return array_merge([
             'title' => $this->title,

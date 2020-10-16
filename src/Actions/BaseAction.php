@@ -79,6 +79,23 @@ class BaseAction extends Element
     }
 
     /**
+     * 设置详情的跳转链接
+     *
+     * @param  string  $target
+     * @return $this
+     */
+    public function showLink($target='_blank')
+    {
+        $action = \request()->route()->getName();
+        $action = Str::replaceFirst('api/','',$action);
+        $action = Str::replaceLast('/index','/show',$action);
+        $href = '/quark/engine?api='.$action.'&id={id}';
+        $this->link($href, $target);
+        
+        return $this;
+    }
+
+    /**
      * 设置创建的跳转链接
      *
      * @param  string  $target

@@ -142,8 +142,6 @@ class Table extends Element
         $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
 
-        $this->tableLayout('fixed');
-
         return $this;
     }
 

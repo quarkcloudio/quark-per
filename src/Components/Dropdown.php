@@ -15,7 +15,7 @@ class Dropdown extends Element
      * @param  string  $name
      * @return void
      */
-    function __construct($name) {
+    public function __construct($name) {
         $this->component = 'dropdown';
         $this->name = $name;
     }

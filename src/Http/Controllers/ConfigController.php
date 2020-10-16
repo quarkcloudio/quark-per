@@ -199,7 +199,7 @@ class ConfigController extends Controller
     protected function table()
     {
         $table = new Table(new Config);
-        $table->headerTitle($this->title.'列表');
+        $table->headerTitle($this->title.'列表')->tableLayout('fixed');
         
         $table->column('id','序号')->width(80);
         $table->column('title','标题')->width(120);

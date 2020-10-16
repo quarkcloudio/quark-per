@@ -152,6 +152,7 @@ class MenuController extends Controller
 
         $form->labelCol(['span' => 4])
         ->width('600px')
+        ->size('small')
         ->title($title);
 
         $form->hidden('id');

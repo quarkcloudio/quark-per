@@ -7,12 +7,12 @@ use QuarkCMS\QuarkAdmin\Models\ActionLog;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Table;
 use QuarkCMS\QuarkAdmin\Action;
+use QuarkCMS\QuarkAdmin\Show;
 use App\User;
-use Quark;
 
 class ActionLogController extends Controller
 {
-    public $title = '日志列表';
+    public $title = '日志';
 
     /**
      * 列表页面
@@ -23,7 +23,7 @@ class ActionLogController extends Controller
     protected function table()
     {
         $table = new Table(new ActionLog);
-        $table->headerTitle($this->title);
+        $table->headerTitle($this->title.'列表')->tableLayout('fixed');
         
         $table->column('id','序号')->width(100);
         $table->column('admin.username','用户')->width(120);
@@ -34,6 +34,8 @@ class ActionLogController extends Controller
 
             // 创建行为对象
             $action = new Action();
+
+            $action->a('详情')->showLink();
 
             $action->a('删除')
             ->withPopconfirm('确认要删除数据吗？')
@@ -79,17 +81,18 @@ class ActionLogController extends Controller
      */
     protected function detail($id)
     {
-        $show = Quark::show(ActionLog::findOrFail($id)->toArray())->title('详情页')->disableEdit();
+        $show = new Show(ActionLog::findOrFail($id)->toArray());
 
+        $show->title('详情页');
         $show->field('id','ID');
         $show->field('object_id','用户名');
-        $show->field('url','行为URL');
+        $show->field('url','行为');
         $show->field('ip','IP');
         $show->field('created_at','发生时间');
         $show->field('remark','备注');
 
         //渲染前回调
-        $show->rendering(function ($show) {
+        $show->showing(function ($show) {
             if($show->data['object_id']) {
                 if($show->data['type'] == 'ADMIN') {
                     $admin = Admin::where('id',$show->data['object_id'])->first();

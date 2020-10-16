@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use Quark;
+use QuarkCMS\QuarkAdmin\Container;
+use QuarkCMS\QuarkAdmin\Card;
+use QuarkCMS\QuarkAdmin\Show;
+use QuarkCMS\QuarkAdmin\Components\Statistic;
 use DB;
 
 class DashboardController extends Controller
@@ -15,182 +18,130 @@ class DashboardController extends Controller
      */
     public function index()
     {
-        $content = Quark::content();
+        $content[] = $this->statistic();
 
-        $content->row(function ($row) {
+        $shows[] = $this->systemInfo();
 
-            $row->gutter([16, 24]);
+        $shows[] = $this->teamInfo();
 
-            $row->col(6, function ($col) {
-                $col->card(null, function ($card) {
-                    $card->statistic('管理员数', function ($statistic) {
-                        $count = DB::table('admins')->where('status',1)->where('deleted_at',null)->count();
-                        $statistic->value($count)
-                        ->precision(0)
-                        ->valueStyle(['color' => '#3f8600']);
-                    });
-                });
-            });
+        $content[] = Card::make()
+        ->style(['marginTop'=>'8px'])
+        ->ghost()
+        ->gutter(8)
+        ->content($shows);
 
-            $row->col(6, function ($col) {
-                $col->card(null, function ($card) {
-                    $card->statistic('日志数量', function ($statistic) {
-                        $count = DB::table('action_logs')->where('status',1)->count();
-                        $statistic->value($count)->precision(0)->valueStyle(['color' => '#999999']);
-                    });
-                });
-            });
+        $container = Container::make('仪表盘',$content);
 
-            $row->col(6, function ($col) {
-                $col->card(null, function ($card) {
-                    $card->statistic('图片数量', function ($statistic) {
-                        $count = DB::table('pictures')->where('status',1)->count();
-                        $statistic->value($count)->precision(0)->valueStyle(['color' => '#cf1322']);
-                    });
-                });
-            });
+        return success('获取成功！','',$container);
+    }
 
-            $row->col(6, function ($col) {
-                $col->card(null, function ($card) {
-                    $card->statistic('文件数量', function ($statistic) {
-                        $count = DB::table('files')->where('status',1)->count();
-                        $statistic->value($count)->precision(0)->valueStyle(['color' => '#cf1322']);
-                    });
-                });
-            });
-        });
+    /**
+     * 统计卡牌
+     *
+     * @param  void
+     * @return array
+     */
+    protected function statistic()
+    {
+        $adminCount = DB::table('admins')->where('status',1)->where('deleted_at',null)->count();
+        $statistic1 = Statistic::make()
+        ->title('管理员数')
+        ->precision(0)
+        ->valueStyle(['color' => '#3f8600'])
+        ->value($adminCount);
 
-        $content->row(function ($row) {
+        $cards[] = Card::make()->style(['padding'=>'10px'])->colSpan(6)->content($statistic1);
 
-            $row->gutter([16, 24]);
+        $logCount = DB::table('action_logs')->where('status',1)->count();
+        $statistic2 = Statistic::make()
+        ->title('日志数量')
+        ->precision(0)
+        ->valueStyle(['color' => '#999999'])
+        ->value($logCount);
 
-            $row->col(12, function ($col) {
-                $col->card('系统信息', function ($card) {
+        $cards[] = Card::make()->style(['padding'=>'10px'])->colSpan(6)->content($statistic2);
 
-                    $columns = [
-                        [
-                            'title'=>'名称',
-                            'dataIndex'=>'name',
-                            'key'=>'name',
-                        ],
-                        [
-                            'title'=>'信息',
-                            'dataIndex'=>'info',
-                            'key'=>'info',
-                        ]
-                    ];
+        $pictureCount = DB::table('pictures')->where('status',1)->count();
+        $statistic3 = Statistic::make()
+        ->title('图片数量')
+        ->precision(0)->valueStyle(['color' => '#cf1322'])
+        ->value($pictureCount);
 
-                    if(strpos(PHP_OS,"Linux")!==false){
-                        $os = "linux";
-                    } else if(strpos(PHP_OS,"WIN")!==false){
-                        $os = "windows";
-                    }else{
-                        $os=PHP_OS;
-                    }
+        $cards[] = Card::make()->style(['padding'=>'10px'])->colSpan(6)->content($statistic3);
 
-                    $version = config('database.default')==='sqlite'?"sqlite_version()":"version()";
+        $fileCount = DB::table('files')->where('status',1)->count();
+        $statistic4 = Statistic::make()
+        ->title('文件数量')
+        ->precision(0)->valueStyle(['color' => '#cf1322'])
+        ->value($fileCount);
 
-                    $dataSource = [
-                        [
-                            'key'=> '1',
-                            'name'=> 'QuarkAdmin版本',
-                            'info'=> config('quark.version'),
-                        ],
-                        [
-                            'key'=> '2',
-                            'name'=> '服务器操作系统',
-                            'info'=> $os,
-                        ],
-                        [
-                            'key'=> '3',
-                            'name'=> 'Laravel版本',
-                            'info'=> app()::VERSION,
-                        ],
-                        [
-                            'key'=> '4',
-                            'name'=> '运行环境',
-                            'info'=> $_SERVER['SERVER_SOFTWARE'],
-                        ],
-                        [
-                            'key'=> '5',
-                            'name'=> 'MYSQL版本',
-                            'info'=> $version,
-                        ],
-                        [
-                            'key'=> '6',
-                            'name'=> '上传限制',
-                            'info'=> ini_get('upload_max_filesize'),
-                        ],
-                    ];
+        $cards[] = Card::make()
+        ->style(['padding'=>'10px'])
+        ->colSpan(6)
+        ->content($statistic4);
 
-                    $card->table()
-                    ->columns($columns)
-                    ->showHeader(false)
-                    ->pagination(false)
-                    ->dataSource($dataSource)
-                    ->size('small');
-                });
-            });
+        $content = Card::make()
+        ->ghost()
+        ->gutter(8)
+        ->content($cards);
 
-            $row->col(12, function ($col) {
-                $col->card('产品团队', function ($card) {
+        return $content;
+    }
 
-                    $columns = [
-                        [
-                            'title'=>'名称',
-                            'dataIndex'=>'name',
-                            'key'=>'name',
-                        ],
-                        [
-                            'title'=>'信息',
-                            'dataIndex'=>'info',
-                            'key'=>'info',
-                        ]
-                    ];
+    /**
+     * 系统信息
+     *
+     * @param  void
+     * @return array
+     */
+    protected function systemInfo()
+    {
+        $show = Show::make()->title('系统信息');
+        $show->field('QuarkAdmin版本')->value(config('admin.version'));
 
-                    $dataSource = [
-                        [
-                            'key'=> '1',
-                            'name'=> '作者',
-                            'info'=> 'tangtanglove',
-                        ],
-                        [
-                            'key'=> '2',
-                            'name'=> '联系方式',
-                            'info'=> 'dai_hang_love@126.com',
-                        ],
-                        [
-                            'key'=> '3',
-                            'name'=> '官方网址',
-                            'info'=> 'www.quarkcms.com',
-                        ],
-                        [
-                            'key'=> '4',
-                            'name'=> '文档地址',
-                            'info'=> 'www.quarkcms.com/doc',
-                        ],
-                        [
-                            'key'=> '5',
-                            'name'=> 'BUG反馈',
-                            'info'=> 'https://github.com/quarkcms/quark-admin/issues',
-                        ],
-                        [
-                            'key'=> '6',
-                            'name'=> 'Github',
-                            'info'=> 'https://github.com/quarkcms/quark-admin',
-                        ]
-                    ];
+        if(strpos(PHP_OS,"Linux")!==false) {
+            $os = "linux";
+        } else if(strpos(PHP_OS,"WIN")!==false) {
+            $os = "windows";
+        } else {
+            $os = PHP_OS;
+        }
+        $show->field('服务器操作系统')->value($os);
 
-                    $card->table()
-                    ->columns($columns)
-                    ->showHeader(false)
-                    ->pagination(false)
-                    ->dataSource($dataSource)
-                    ->size('small');
-                });
-            });
-        });
+        $show->field('Laravel版本')->value(app()::VERSION);
+        $show->field('运行环境')->value(substr($_SERVER['SERVER_SOFTWARE'],0,50));
 
-        return success('获取成功！','',$content);
+        $version = config('database.default') === 'sqlite' ? "sqlite_version()":"version()";
+        $show->field('MYSQL版本')->value(DB::select("select ".$version)[0]->$version);
+        $show->field('上传限制')->value(ini_get('upload_max_filesize'));
+
+        $content = Card::make()
+        ->colSpan(12)
+        ->content($show);
+
+        return $content;
+    }
+
+    /**
+     * 团队信息
+     *
+     * @param  void
+     * @return array
+     */
+    protected function teamInfo()
+    {
+        $show = Show::make()->title('团队信息');
+        $show->field('作者')->value('tangtanglove');
+        $show->field('联系方式')->value('dai_hang_love@126.com');
+        $show->field('官方网址')->link('http://www.quarkcms.com','_blank')->value('www.quarkcms.com');
+        $show->field('文档地址')->link('http://www.quarkcms.com/doc','_blank')->value('www.quarkcms.com/doc');
+        $show->field('BUG反馈')->link('https://github.com/quarkcms/quark-admin/issues','_blank')->value('BUG反馈');
+        $show->field('Github')->link('https://github.com/quarkcms/quark-admin','_blank')->value('Github');
+
+        $content = Card::make()
+        ->colSpan(12)
+        ->content($show);
+
+        return $content;
     }
 }

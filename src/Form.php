@@ -204,7 +204,7 @@ class Form extends Element
     ];
 
     /**
-     * 初始化容器
+     * 初始化表单组件
      *
      * @param  string  $name
      * @param  \Closure|array  $content
@@ -282,7 +282,6 @@ class Form extends Element
         $this->width = $width;
         return $this;
     }
-
 
     /**
      *  配置 Form.Item 的 colon 的默认值。表示是否显示 label 后面的冒号 (只有在属性 layout 为 horizontal 时有效)

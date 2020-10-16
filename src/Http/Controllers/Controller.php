@@ -112,7 +112,22 @@ class Controller extends BaseController
 
         $show = $this->detail($id);
 
-        return success('获取成功！','',$show);
+        // 初始化容器
+        $container = new Container();
+
+        // 设置标题
+        $container->title($this->title());
+
+        // 设置二级标题
+        $container->subTitle($this->subTitle());
+
+        // 设置面包屑导航
+        $container->breadcrumb($this->breadcrumb());
+
+        // 设置内容
+        $container->content($show);
+
+        return success('获取成功！','',$container);
     }
 
     /**

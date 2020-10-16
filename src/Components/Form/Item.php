@@ -338,7 +338,6 @@ class Item extends Element
      * 解析成前端验证规则
      *
      * @param array $rules
-     *
      * @return array
      */
     protected function parseFrontendRules($rules,$messages)
