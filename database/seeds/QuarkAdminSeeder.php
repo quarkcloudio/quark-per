@@ -1,11 +1,8 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Database;
-
 use Illuminate\Database\Seeder;
-use DB;
 
-class DatabaseSeeder extends Seeder
+class QuarkAdminSeeder extends Seeder
 {
     /**
      * Run the database seeds.

@@ -59,7 +59,7 @@ class InstallCommand extends Command
         $this->call('migrate');
 
         if (\QuarkCMS\QuarkAdmin\Models\Admin::count() == 0) {
-            $this->call('db:seed', ['--class' => \QuarkCMS\QuarkAdmin\Database\DatabaseSeeder::class]);
+            $this->call('db:seed', ['--class' => 'QuarkAdminSeeder']);
         }
     }
 
@@ -85,20 +85,6 @@ class InstallCommand extends Command
         $this->createDashboardController();
         $this->createUpgradeController();
         $this->createRoutesFile();
-    }
-
-    /**
-     * Create ExampleController.
-     *
-     * @return void
-     */
-    public function createExampleController()
-    {
-        $exampleController = $this->directory.'/ExampleController.php';
-        $contents = $this->getStub('ExampleController');
-
-        $this->laravel['files']->put($exampleController,$contents);
-        $this->line('<info>ExampleController file was created:</info> '.str_replace(base_path(), '', $exampleController));
     }
 
     /**

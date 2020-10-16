@@ -1,11 +1,9 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Database;
-
 use Illuminate\Database\Seeder;
-use DB;
+use Illuminate\Support\Facades\DB;
 
-class MenusengineSeeder extends Seeder
+class MenusTableSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,7 +12,7 @@ class MenusengineSeeder extends Seeder
      */
     public function run()
     {
-        DB::engine('menus')->insert([
+        DB::table('menus')->insert([
             ['id' =>1,'name' => '控制台','guard_name' => 'admin','icon' => 'icon-home','type'=>'default','pid' => 0,'sort' => -2,'path' => '/dashboard','show'  => 1,'status' => 1],
             ['id' =>2,'name' => '主页','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 1,'sort' => 0,'path' => '/dashboard/index','show'  => 1,'status' => 1],
 

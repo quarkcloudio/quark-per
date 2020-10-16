@@ -1,9 +1,7 @@
 <?php
 
-namespace QuarkCMS\QuarkAdmin\Database;
-
 use Illuminate\Database\Seeder;
-use DB;
+use Illuminate\Support\Facades\DB;
 
 class AdminsTableSeeder extends Seeder
 {

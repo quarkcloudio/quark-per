@@ -57,6 +57,7 @@ class QuarkServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__.'/../config' => config_path()], 'quark-admin-config');
             $this->publishes([__DIR__.'/../database/migrations' => database_path('migrations')], 'quark-admin-migrations');
+            $this->publishes([__DIR__.'/../database/seeds' => database_path('seeds')], 'quark-admin-seeds');
             $this->publishes([__DIR__.'/../public' => public_path('admin')], 'quark-admin-assets');
             $this->publishes([__DIR__.'/../resources' => resource_path('admin')], 'quark-admin-resources');
         }
