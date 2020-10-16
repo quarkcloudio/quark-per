@@ -3,23 +3,37 @@
 namespace QuarkCMS\QuarkAdmin\Components\Form\Fields;
 
 use QuarkCMS\QuarkAdmin\Components\Form\Item;
-use QuarkCMS\QuarkAdmin\Components\Form;
+use QuarkCMS\QuarkAdmin\Form;
 use Illuminate\Support\Arr;
 use Closure;
 use Exception;
 
 class ListField extends Item
 {
-    public  $items;
+    /**
+     * 表单项
+     *
+     * @var array
+     */
+    public $items = null;
 
-    public  $button;
+    /**
+     * 按钮名称
+     *
+     * @var string
+     */
+    public $button = '添加字段';
 
-    function __construct($name,$label = '') {
+    /**
+     * 初始化组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($name,$label = '') {
         $this->component = 'list';
         $this->name = $name;
-
-        $this->button = '添加字段';
-
         if(empty($label) || !count($label)) {
             $this->label = $name;
         } else {
@@ -28,19 +42,43 @@ class ListField extends Item
         }
     }
 
+    /**
+     * 按钮名称
+     *
+     * @param  string  $text
+     * @return $this
+     */
     public function button($text)
     {
         $this->button = $text;
         return $this;
     }
 
+    /**
+     * 表单项
+     *
+     * @param  Closure  $callback
+     * @return $this
+     */
     public function item(Closure $callback = null)
     {
-        $form = new form();
-
+        $form = new Form();
         $callback($form);
+        $this->items = $form->items;
 
-        $this->items = $form->form['items'];
         return $this;
+    }
+
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return array_merge([
+            'button' => $this->button,
+            'items' => $this->items
+        ], parent::jsonSerialize());
     }
 }

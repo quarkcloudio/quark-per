@@ -81,7 +81,6 @@ class InstallCommand extends Command
         $this->makeDir('/');
         $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
-        $this->createExampleController();
         $this->createDashboardController();
         $this->createUpgradeController();
         $this->createRoutesFile();

@@ -8,7 +8,14 @@ use Exception;
 
 class Editor extends Item
 {
-    function __construct($name,$label = '') {
+    /**
+     * 初始化组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($name,$label = '') {
         $this->component = 'editor';
         $this->name = $name;
 
@@ -30,7 +37,7 @@ class Editor extends Item
      * 宽度
      * 
      * @param  number|string $value
-     * @return object
+     * @return $this
      */
     public function width($value = '100%')
     {
@@ -42,7 +49,7 @@ class Editor extends Item
      * 高度
      * 
      * @param  number|string $value
-     * @return object
+     * @return $this
      */
     public function height($value = 500)
     {

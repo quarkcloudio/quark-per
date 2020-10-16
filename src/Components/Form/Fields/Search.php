@@ -8,9 +8,35 @@ use Exception;
 
 class Search extends Item
 {
-    public  $mode;
+    /**
+     * mode
+     *
+     * @var string
+     */
+    public $mode;
 
-    function __construct($name,$label = '') {
+    /**
+     * 与 select 相同，根据 options 生成子节点，推荐使用。
+     *
+     * @var array
+     */
+    public $options;
+
+    /**
+     * api
+     *
+     * @var string
+     */
+    public $api;
+
+    /**
+     * 初始化组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($name,$label = '') {
         $this->component = 'search';
         $this->name = $name;
 
@@ -22,6 +48,12 @@ class Search extends Item
         }
     }
 
+    /**
+     * 设置组件属性
+     *
+     * @param  array $options
+     * @return $this
+     */
     public function options($options)
     {
         $data = [];
@@ -34,7 +66,13 @@ class Search extends Item
 
         return $this;
     }
-
+    
+    /**
+     * 设置mode
+     *
+     * @param  string $mode
+     * @return $this
+     */
     public function mode($mode)
     {
         $this->mode = $mode;
@@ -42,22 +80,29 @@ class Search extends Item
         return $this;
     }
 
-    public function ajax($url)
+    /**
+     * 设置api接口
+     *
+     * @param  string $api
+     * @return $this
+     */
+    public function api($api)
     {
-        $this->url = $url;
+        $this->api = $api;
         return $this;
     }
 
     /**
-     * 输入框宽度
-     * 
-     * @param  number|string $value
-     * @return object
+     * 组件json序列化
+     *
+     * @return array
      */
-    public function width($value = '100%')
+    public function jsonSerialize()
     {
-        $style['width'] = $value;
-        $this->style = $style;
-        return $this;
+        return array_merge([
+            'mode' => $this->mode,
+            'options' => $this->options,
+            'api' => $this->api
+        ], parent::jsonSerialize());
     }
 }

@@ -8,11 +8,14 @@ use Exception;
 
 class Display extends Item
 {
-    function __construct($label = '') {
+    /**
+     * 初始化组件
+     *
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($label = '') {
         $this->component = 'display';
         $this->label = $label;
-
-        $style['width'] = 200;
-        $this->style = $style;
     }
 }

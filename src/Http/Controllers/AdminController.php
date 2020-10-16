@@ -243,7 +243,9 @@ class AdminController extends Controller
                 $form->data['password'] = bcrypt($form->data['password']);
             }
 
-            $form->data['avatar'] = $form->data['avatar']['id'];
+            if(isset($form->data['avatar'])) {
+                $form->data['avatar'] = $form->data['avatar']['id'];
+            }
         });
 
         // 保存数据后回调

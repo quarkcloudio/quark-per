@@ -1,6 +1,5 @@
 <?php
 
-
 namespace QuarkCMS\QuarkAdmin\Components\Form\Fields;
 
 use QuarkCMS\QuarkAdmin\Components\Form\Item;
@@ -9,9 +8,35 @@ use Exception;
 
 class Map extends Item
 {
-    public  $type,$zoom,$key;
+    /**
+     * type
+     *
+     * @var string
+     */
+    public $type = 'text';
 
-    function __construct($name,$label = '') {
+    /**
+     * zoom
+     *
+     * @var number
+     */
+    public $zoom = 14;
+
+    /**
+     * 高德地图key
+     *
+     * @var string
+     */
+    public $mapKey = '788e08def03f95c670944fe2c78fa76f';
+
+    /**
+     * 初始化组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($name,$label = '') {
         $this->component = 'map';
         $this->name = $name;
 
@@ -22,31 +47,61 @@ class Map extends Item
             $this->label = $label;
         }
 
-        $this->type = 'text';
-        $this->zoom = 14;
-        $this->key = '788e08def03f95c670944fe2c78fa76f';
         $position['longitude'] = '116.397724';
         $position['latitude'] = '39.903755';
         $this->value = $position;
     }
-    
+
+    /**
+     * zoom
+     *
+     * @param  string  $zoom
+     * @return $this
+     */
     public function zoom($zoom)
     {
         $this->zoom = $zoom;
         return $this;
     }
 
-    public function key($key)
+    /**
+     * 高德地图key
+     *
+     * @param  string  $key
+     * @return $this
+     */
+    public function mapKey($key)
     {
-        $this->key = $key;
+        $this->mapKey = $key;
         return $this;
     }
 
+    /**
+     * 坐标位置
+     *
+     * @param  string|number  $longitude
+     * @param  string|number  $latitude
+     * @return $this
+     */
     public function position($longitude,$latitude)
     {
         $position['longitude'] = $longitude;
         $position['latitude'] = $latitude;
         $this->value = $position;
         return $this;
+    }
+
+    /**
+     * 组件json序列化
+     *
+     * @return array
+     */
+    public function jsonSerialize()
+    {
+        return array_merge([
+            'type' => $this->type,
+            'zoom' => $this->zoom,
+            'mapKey' => $this->mapKey
+        ], parent::jsonSerialize());
     }
 }

@@ -4,6 +4,18 @@ return [
     
     /*
     |--------------------------------------------------------------------------
+    | Quark-admin App version
+    |--------------------------------------------------------------------------
+    |
+    | This value is the name of your application. This value is used when the
+    | framework needs to display the name of the application within the UI
+    | or in other locations. Of course, you're free to change the value.
+    |
+    */
+    'version' => 'v1.0.0',
+
+    /*
+    |--------------------------------------------------------------------------
     | Quark-admin App Name
     |--------------------------------------------------------------------------
     |
@@ -135,16 +147,16 @@ return [
     */
     'links' => [
         [
-            'title' => '百度',
-            'href' => 'https://www.baidu.com'
+            'title' => 'Quark',
+            'href' => 'http://www.quarkcms.com/'
         ],
         [
-            'title' => '淘宝',
-            'href' => 'https://www.taobao.com'
+            'title' => '爱小圈',
+            'href' => 'http://www.ixiaoquan.com'
         ],
         [
-            'title' => '知乎',
-            'href' => 'https://www.zhihu.com'
+            'title' => 'Github',
+            'href' => 'https://github.com/quarkcms'
         ]
     ],
 

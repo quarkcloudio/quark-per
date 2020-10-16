@@ -8,10 +8,14 @@ use Exception;
 
 class Datetime extends Item
 {
-    public  $format,
-            $showTime;
-
-    function __construct($name,$label = '') {
+    /**
+     * 初始化组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($name,$label = '') {
         $this->component = 'datetime';
         $this->name = $name;
 
@@ -21,21 +25,5 @@ class Datetime extends Item
             $label = Arr::get($label, 0, ''); //[0];
             $this->label = $label;
         }
-
-        $this->format = 'YYYY-MM-DD HH:mm:ss';
-        $showTime['format'] = 'HH:mm:ss';
-        $this->showTime = $showTime;
-    }
-
-    public function showTime($showTime)
-    {
-        $this->showTime = $showTime;
-        return $this;
-    }
-
-    public function format($format)
-    {
-        $this->format = $format;
-        return $this;
     }
 }

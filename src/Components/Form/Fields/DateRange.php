@@ -6,7 +6,7 @@ use QuarkCMS\QuarkAdmin\Components\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
-class DatetimeRange extends Item
+class DateRange extends Item
 {
     /**
      * 初始化组件
@@ -16,7 +16,7 @@ class DatetimeRange extends Item
      * @return void
      */
     public function __construct($name,$label = '') {
-        $this->component = 'datetimeRange';
+        $this->component = 'dateRange';
         $this->name = $name;
 
         if(empty($label) || !count($label)) {

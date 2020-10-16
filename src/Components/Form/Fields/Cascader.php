@@ -8,9 +8,28 @@ use Exception;
 
 class Cascader extends Item
 {
-    public  $options;
+    /**
+     * 控件大小。注：标准表单内的输入框大小限制为 large。可选 large default small
+     *
+     * @var string
+     */
+    public $size = null;
 
-    function __construct($name,$label = '') {
+    /**
+     * 与 select 相同，根据 options 生成子节点，推荐使用。
+     *
+     * @var array
+     */
+    public $options;
+
+    /**
+     * 初始化组件
+     *
+     * @param  string  $name
+     * @param  string  $label
+     * @return void
+     */
+    public function __construct($name,$label = '') {
         $this->component = 'cascader';
         $this->name = $name;
 
@@ -22,6 +41,28 @@ class Cascader extends Item
         }
     }
 
+    /**
+     * 控件大小。注：标准表单内的输入框大小限制为 large。可选 large default small
+     * 
+     * @param  large|default|small $prefix
+     * @return $this
+     */
+    public function size($size = 'default')
+    {
+        if(!in_array($size,['large', 'default', 'small'])) {
+            throw new Exception("argument must be in 'large', 'default', 'small'!");
+        }
+
+        $this->size = $size;
+        return $this;
+    }
+
+    /**
+     * 设置组件属性
+     *
+     * @param  array $options
+     * @return $this
+     */
     public function options($options)
     {
         $this->options = $options;
@@ -30,15 +71,15 @@ class Cascader extends Item
     }
 
     /**
-     * 输入框宽度
-     * 
-     * @param  number|string $value
-     * @return object
+     * 组件json序列化
+     *
+     * @return array
      */
-    public function width($value = '100%')
+    public function jsonSerialize()
     {
-        $style['width'] = $value;
-        $this->style = $style;
-        return $this;
+        return array_merge([
+            'size' => $this->size,
+            'options' => $this->options
+        ], parent::jsonSerialize());
     }
 }

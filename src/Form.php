@@ -193,6 +193,8 @@ class Form extends Element
         'icon' => Components\Form\Fields\Icon::class,
         'switch' => Components\Form\Fields\SwitchField::class,
         'icon' => Components\Form\Fields\Icon::class,
+        'date' => Components\Form\Fields\Date::class,
+        'dateRange' => Components\Form\Fields\DateRange::class,
         'datetime' => Components\Form\Fields\Datetime::class,
         'datetimeRange' => Components\Form\Fields\DatetimeRange::class,
         'timeRange' => Components\Form\Fields\TimeRange::class,
