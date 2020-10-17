@@ -311,16 +311,25 @@ class Form extends Element
             foreach ($this->items as $key => $item) {
                 if(isset($item->name)) {
                     if(isset($item->name)) {
+                        $value = null;
+
                         if(isset($item->defaultValue)) {
-                            $data[$item->name] = $item->defaultValue;
+                            $value = $item->defaultValue;
                         }
 
                         if(isset($initialValues[$item->name])) {
-                            $data[$item->name] = $initialValues[$item->name];
+                            $value = $initialValues[$item->name];
                         }
 
                         if(isset($item->value)) {
-                            $data[$item->name] = $item->value;
+                            $value = $item->value;
+                        }
+
+                        if(!empty($value)) {
+                            if(count(explode('[',$value))>1) {
+                                $value = json_decode($value, true);
+                            }
+                            $data[$item->name] = $value;
                         }
                     }
                 }
