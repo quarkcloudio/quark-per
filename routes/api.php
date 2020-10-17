@@ -69,11 +69,11 @@ Route::group([
 	$router->post('admin/picture/upload', 'PictureController@upload')->name('api/admin/picture/upload');
 	$router->get('admin/picture/download', 'PictureController@download')->name('api/admin/picture/download');
 	$router->any('admin/picture/action', 'PictureController@action')->name('api/admin/picture/action');
-	$router->get('admin/picture/delete', 'PictureController@delete')->name('api/admin/picture/delete');
+	$router->any('admin/picture/delete', 'PictureController@delete')->name('api/admin/picture/delete');
 
 	$router->any('admin/file/index', 'FileController@index')->name('api/admin/file/index');
 	$router->post('admin/file/upload', 'FileController@upload')->name('api/admin/file/upload');
 	$router->get('admin/file/download', 'FileController@download')->name('api/admin/file/download');
 	$router->post('admin/file/action', 'FileController@action')->name('api/admin/file/action');
-	$router->get('admin/file/delete', 'FileController@delete')->name('api/admin/file/delete');
+	$router->any('admin/file/delete', 'FileController@delete')->name('api/admin/file/delete');
 });
