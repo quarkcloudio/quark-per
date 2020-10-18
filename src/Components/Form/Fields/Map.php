@@ -50,6 +50,12 @@ class Map extends Item
         $position['longitude'] = '116.397724';
         $position['latitude'] = '39.903755';
         $this->value = $position;
+
+        $style['height'] = '400px';
+        $style['width'] = '100%';
+        $style['marginTop'] = '10px';
+
+        $this->style = $style;
     }
 
     /**
@@ -73,6 +79,30 @@ class Map extends Item
     public function mapKey($key)
     {
         $this->mapKey = $key;
+        return $this;
+    }
+
+    /**
+     * 地图宽度
+     *
+     * @param  string|number  $width
+     * @return $this
+     */
+    public function width($width)
+    {
+        $this->style['width'] = $width;
+        return $this;
+    }
+
+    /**
+     * 地图高度
+     *
+     * @param  string|number  $height
+     * @return $this
+     */
+    public function height($height)
+    {
+        $this->style['height'] = $height;
         return $this;
     }
 
