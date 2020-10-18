@@ -231,6 +231,10 @@ if(!function_exists('get_picture')) {
             }
             return $result;
         }
+
+        if($field == 'all') {
+            return null;
+        }
         
         return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';
     }
