@@ -561,7 +561,8 @@ class Column extends Element
             'link' => $this->link,
             'image' => $this->image,
             'qrcode' => $this->qrcode,
-            'actions' => $this->actions
+            'actions' => $this->actions,
+            'editable' => $this->editable
         ], parent::jsonSerialize());
     }
 }

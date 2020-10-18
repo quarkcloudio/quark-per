@@ -27,7 +27,7 @@ class AdminController extends Controller
         $table->column('id','序号');
         $table->column('avatar','头像')->image()->width(60);
         $table->column('username','用户名')->editLink()->width(120);
-        $table->column('nickname','昵称')->width(120);
+        $table->column('nickname','昵称')->editable()->width(120);
         $table->column('email','邮箱')->width(160);
         $table->column('sex','性别')
         ->using(['1'=>'男','2'=>'女'])
@@ -35,7 +35,10 @@ class AdminController extends Controller
         ->width(80);
         $table->column('phone','手机号')->sorter()->width(100);
         $table->column('last_login_time','最后登录时间')->width(160);
-        $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
+        $table->column('status','状态')->editable('switch',[
+            'on'  => ['value' => 1, 'text' => '正常'],
+            'off' => ['value' => 0, 'text' => '禁用']
+        ])->width(100);
         $table->column('actions','操作')->width(120)->actions(function($row) {
 
             // 创建行为对象

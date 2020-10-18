@@ -524,6 +524,15 @@ class Table extends Element
             return false;
         }
 
+        if($key === 'editable') {
+            $data = request()->all();
+            
+            // 删除不必要的字段
+            unset($data['key']);
+            unset($data['id']);
+            return $this->model()->eloquent()->where('id',$id)->update($data);
+        }
+
         $action = $this->getRowExecuteAction($id, $key);
         if(isset($action->model->queries)) {
             $action->model->queries->unique()->each(function ($query) use ($id) {
