@@ -38,6 +38,46 @@ if(!function_exists('success')) {
 }
 
 /**
+* 前端跳转链接
+* @author tangtanglove <dai_hang_love@126.com>
+*/
+if(!function_exists('frontend_url')) {
+    function frontend_url($api ='',$isEngineUrl = true)
+    {
+        $url = '';
+        if($isEngineUrl) {
+            $url = '/quark/engine?api='.$api;
+        } else {
+            $url = $api;
+        }
+
+        return $url;
+    }
+}
+
+/**
+* 后端跳转链接
+* @author tangtanglove <dai_hang_love@126.com>
+*/
+if(!function_exists('backend_url')) {
+    function backend_url($api ='',$withToken = false)
+    {
+        $url = '';
+        if($withToken) {
+            if(strpos($api,'?') !== false) {
+                $url = url($api.'&token='.get_admin_token());
+            } else {
+                $url = url($api.'?token='.get_admin_token());
+            }
+        } else {
+            $url = url($api);
+        }
+        
+        return $url;
+    }
+}
+
+/**
 * 把返回的数据集转换成Tree
 * @param array $list 要转换的数据集
 * @param string $pid parent标记字段
@@ -172,14 +212,28 @@ if(!function_exists('get_picture')) {
                     $url = $baseUrl.$_SERVER['HTTP_HOST'].Storage::url($picture['path']);
                 }
                 $result = $url;
-            } else {
-                if($field == 'realPath') {
-                    $result = storage_path('app/').$picture->path;
+            } elseif($field == 'realPath') {
+                $result = storage_path('app/').$picture->path;
+            } elseif($field == 'all') {
+                if(strpos($picture['path'],'http') !== false) {
+                    $url = $picture['path'];
                 } else {
-                    $result = $picture[$field];
+                    $baseUrl = 'http://';
+                    if(web_config('SSL_OPEN') == 1) {
+                        $baseUrl = 'https://';
+                    }
+                    $url = $baseUrl.$_SERVER['HTTP_HOST'].Storage::url($picture['path']);
                 }
+                $picture['url'] = $url;
+                $result = $picture;
+            } else {
+                $result = $picture[$field];
             }
             return $result;
+        }
+
+        if($field == 'all') {
+            return null;
         }
         
         return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';

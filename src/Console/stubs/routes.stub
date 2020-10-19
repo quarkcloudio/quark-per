@@ -1,13 +1,11 @@
 <?php
 
 use Illuminate\Routing\Router;
-
-Quark::routes();
+use Illuminate\Support\Facades\Route;
 
 Route::group([
-    'prefix'        => config('quark.route.prefix'),
-    'namespace'     => config('quark.route.namespace'),
-    'middleware'    => config('quark.route.middleware'),
+    'middleware' => 'admin',
+    'namespace' => 'App\\Http\\Controllers\\Admin'
 ], function (Router $router) {
 
     $router->get('admin/dashboard/index', 'DashboardController@index')->name('api/admin/dashboard/index');
@@ -19,13 +17,4 @@ Route::group([
     $router->get('admin/upgrade/updateDatabase', 'UpgradeController@updateDatabase')->name('api/admin/upgrade/updateDatabase');
     $router->get('admin/upgrade/clearCache', 'UpgradeController@clearCache')->name('api/admin/upgrade/clearCache');
     $router->get('admin/upgrade/finish', 'UpgradeController@finish')->name('api/admin/upgrade/finish');
-
-    $router->get('admin/example/index', 'ExampleController@index')->name('api/admin/example/index');
-    $router->get('admin/example/show', 'ExampleController@show')->name('api/admin/example/show');
-    $router->get('admin/example/create', 'ExampleController@create')->name('api/admin/example/create');
-    $router->post('admin/example/store', 'ExampleController@store')->name('api/admin/example/store');
-    $router->get('admin/example/edit', 'ExampleController@edit')->name('api/admin/example/edit');
-    $router->post('admin/example/update', 'ExampleController@update')->name('api/admin/example/update');
-    $router->any('admin/example/action', 'ExampleController@action')->name('api/admin/example/action');
-    $router->post('admin/example/destroy', 'ExampleController@destroy')->name('api/admin/example/destroy');
 });

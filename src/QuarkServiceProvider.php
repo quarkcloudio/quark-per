@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Route;
 
 class QuarkServiceProvider extends ServiceProvider
 {
@@ -20,7 +21,7 @@ class QuarkServiceProvider extends ServiceProvider
      * @var array
      */
     protected $routeMiddleware = [
-        'admin' => Middleware\AdminMiddleware::class,
+        'admin' => Http\Middleware\AdminMiddleware::class,
     ];
 
     /**
@@ -35,7 +36,7 @@ class QuarkServiceProvider extends ServiceProvider
         });
 
         // 注册auth
-        config(Arr::dot(config('quark.auth', []), 'auth.'));
+        config(Arr::dot(config('admin.auth', []), 'auth.'));
         
         // 注册中间件
         foreach ($this->routeMiddleware as $key => $middleware) {
@@ -56,11 +57,51 @@ class QuarkServiceProvider extends ServiceProvider
         if ($this->app->runningInConsole()) {
             $this->publishes([__DIR__.'/../config' => config_path()], 'quark-admin-config');
             $this->publishes([__DIR__.'/../database/migrations' => database_path('migrations')], 'quark-admin-migrations');
-            $this->publishes([__DIR__.'/../resources/admin' => public_path('admin')], 'quark-admin-assets');
+            $this->publishes([__DIR__.'/../database/seeds' => database_path('seeds')], 'quark-admin-seeds');
+            $this->publishes([__DIR__.'/../public' => public_path('admin')], 'quark-admin-assets');
+            $this->publishes([__DIR__.'/../resources' => resource_path('admin')], 'quark-admin-resources');
         }
 
-        if (file_exists($routes = base_path().'/routes/admin.php')) {
-            $this->loadRoutesFrom($routes);
-        }
+        $this->registerRoutes();
+    }
+
+    /**
+     * Register the package routes.
+     *
+     * @return void
+     */
+    protected function registerRoutes()
+    {
+        $this->registerApiRoutes();
+
+        $this->registerAdminRoutes();
+    }
+
+    /**
+     * Define the "api" routes for the application.
+     *
+     * These routes are typically stateless.
+     *
+     * @return void
+     */
+    protected function registerApiRoutes()
+    {
+        Route::prefix('api')
+        ->middleware('api')
+        ->group(__DIR__.'/../routes/api.php');
+    }
+
+    /**
+     * Define the "admin" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function registerAdminRoutes()
+    {
+        Route::prefix('api')
+        ->middleware('api')
+        ->group(base_path().'/routes/admin.php');
     }
 }
