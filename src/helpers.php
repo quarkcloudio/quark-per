@@ -60,7 +60,7 @@ if(!function_exists('frontend_url')) {
 * @author tangtanglove <dai_hang_love@126.com>
 */
 if(!function_exists('backend_url')) {
-    function backend_url($api ='',$withToken = true)
+    function backend_url($api ='',$withToken = false)
     {
         $url = '';
         if($withToken) {

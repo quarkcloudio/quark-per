@@ -89,7 +89,7 @@ class BaseAction extends Element
         $action = \request()->route()->getName();
         $action = Str::replaceFirst('api/','',$action);
         $action = Str::replaceLast('/index','/show',$action);
-        $href = '/quark/engine?api='.$action.'&id={id}';
+        $href = '#/quark/engine?api='.$action.'&id={id}';
         $this->link($href, $target);
         
         return $this;
