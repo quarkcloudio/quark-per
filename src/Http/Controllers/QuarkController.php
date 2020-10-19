@@ -172,6 +172,6 @@ class QuarkController extends Controller
      */
     public function test(Request $request)
     {
-        dump($this->quark->form(new Config));
+
     }
 }

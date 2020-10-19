@@ -15,7 +15,7 @@ class Quark
      */
     public function version()
     {
-        return '1.0.0';
+        return config('admin.version');
     }
 
     /**
@@ -30,6 +30,7 @@ class Quark
             'name' => config('admin.name'),
             'logo' => config('admin.logo'),
             'description' => config('admin.description'),
+            'login_type' => config('admin.login_type'),
             'captcha_driver' => config('admin.captcha_driver'),
             'tencent_captcha_appid' => config('admin.tencent_captcha.appid'),
             'iconfont_url' => config('admin.iconfont_url'),
