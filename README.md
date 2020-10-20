@@ -6,6 +6,14 @@
 composer require quarkcms/quark-admin
 
 然后运行下面的命令完成安装：
+
+发布资源
+php artisan quarkadmin:publish
+
+加载类
+composer dump-autoload
+
+安装程序
 php artisan quarkadmin:install
 
 后台地址：http://yoursite/admin

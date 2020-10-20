@@ -13,6 +13,7 @@ class QuarkServiceProvider extends ServiceProvider
      */
     protected $commands = [
         Console\InstallCommand::class,
+        Console\PublishCommand::class,
     ];
 
     /**
