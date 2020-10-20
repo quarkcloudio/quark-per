@@ -39,6 +39,9 @@ class InstallCommand extends Command
             '--provider' => "QuarkCMS\QuarkAdmin\QuarkServiceProvider"
         ]);
 
+        // 加载类
+        $this->call('composer dump-autoload');
+
         // 初始化数据库
         $this->initDatabase();
 
