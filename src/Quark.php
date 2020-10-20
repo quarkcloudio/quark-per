@@ -79,6 +79,6 @@ class Quark
             throw new \Exception("Class {$method} does not exist.");
         }
 
-        return new $getCalledClass($parameters);
+        return new $getCalledClass(...$parameters);
     }
 }
