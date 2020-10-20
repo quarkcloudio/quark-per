@@ -164,6 +164,19 @@ class Table extends Element
     /**
      * 表头标题
      *
+     * @param  string  $title
+     * @return $this
+     */
+    public function title($title)
+    {
+        $this->headerTitle($title);
+
+        return $this;
+    }
+
+    /**
+     * 表头标题
+     *
      * @param  string  $headerTitle
      * @return $this
      */
