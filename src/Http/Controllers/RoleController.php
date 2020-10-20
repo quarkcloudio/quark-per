@@ -7,7 +7,6 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Form;
 use DB;
 
@@ -30,10 +29,7 @@ class RoleController extends Controller
         $table->column('name','名称')->editLink();
         $table->column('guard_name','guard名称')->link();
         $table->column('created_at','创建时间');
-        $table->column('actions','操作')->width(180)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(180)->actions(function($action,$row) {
 
             // 跳转默认编辑页面
             $action->a('编辑')->editLink();

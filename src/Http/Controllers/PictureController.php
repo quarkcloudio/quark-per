@@ -10,7 +10,6 @@ use QuarkCMS\QuarkAdmin\Models\PictureCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 
 class PictureController extends Controller
 {
@@ -35,10 +34,7 @@ class PictureController extends Controller
         $table->column('height','高度');
         $table->column('ext','扩展名');
         $table->column('created_at','上传时间');
-        $table->column('actions','操作')->width(180)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(180)->actions(function($action,$row) {
 
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {

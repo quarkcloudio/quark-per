@@ -5,7 +5,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 use Route;
 
 class PermissionController extends Controller
@@ -27,10 +26,7 @@ class PermissionController extends Controller
         $table->column('name','名称');
         $table->column('guard_name','guard名称');
         $table->column('created_at','创建时间');
-        $table->column('actions','操作')->width(180)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(180)->actions(function($action,$row) {
 
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')

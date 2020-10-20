@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\ActionLog;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Show;
 use App\User;
 
@@ -30,11 +29,8 @@ class ActionLogController extends Controller
         $table->column('url','行为')->ellipsis()->copyable()->width(350);
         $table->column('ip','IP');
         $table->column('created_at','发生时间');
-        $table->column('actions','操作')->width(120)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
-
+        $table->column('actions','操作')->width(120)->actions(function($action,$row) {
+            
             $action->a('详情')->showLink();
 
             $action->a('删除')

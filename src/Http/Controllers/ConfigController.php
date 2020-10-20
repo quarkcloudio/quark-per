@@ -5,7 +5,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Config;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Form;
 use QuarkCMS\QuarkAdmin\TabForm;
 use QuarkCMS\QuarkAdmin\Container;
@@ -206,10 +205,7 @@ class ConfigController extends Controller
         $table->column('name','名称')->copyable();
         $table->column('remark','备注')->ellipsis();
         $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
-        $table->column('actions','操作')->width(120)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(120)->actions(function($action,$row) {
 
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {

@@ -5,7 +5,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Form;
 use Spatie\Permission\Models\Role;
 
@@ -39,10 +38,7 @@ class AdminController extends Controller
             'on'  => ['value' => 1, 'text' => '正常'],
             'off' => ['value' => 0, 'text' => '禁用']
         ])->width(100);
-        $table->column('actions','操作')->width(120)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(120)->actions(function($action,$row) {
 
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {
