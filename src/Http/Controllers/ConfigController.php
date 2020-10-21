@@ -305,7 +305,7 @@ class ConfigController extends Controller
         $title = $form->isCreating() ? '创建'.$this->title : '编辑'.$this->title;
         $form->labelCol(['span' => 4])->title($title);
         
-        $form->id('id','ID');
+        $form->hidden('id');
 
         $form->text('title','标题')
         ->rules(['required','max:20'],['required'=>'标题必须填写','max'=>'标题不能超过20个字符']);
