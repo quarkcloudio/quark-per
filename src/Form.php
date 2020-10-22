@@ -560,12 +560,12 @@ class Form extends Element
     public function itemValidator($data,$name,$rules,$ruleMessages)
     {
         $errorMsg = null;
-        foreach ($value->rules as &$rule) {
+        foreach ($rules as &$rule) {
             if (is_string($rule) && isset($data['id'])) {
                 $rule = str_replace('{id}', $data['id'], $rule);
             }
         }
-        $getRules[$name] = $value->rules;
+        $getRules[$name] = $rules;
         $validator = Validator::make($data,$getRules,$ruleMessages);
         if ($validator->fails()) {
             $errors = $validator->errors()->getMessages();
