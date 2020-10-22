@@ -322,7 +322,7 @@ class Form extends Element
 
             if(!empty($value)) {
                 if(is_string($value)) {
-                    if(count(explode('[',$value))>1) {
+                    if(count(explode('[',$value))>1 || count(explode('{',$value))>1) {
                         $value = json_decode($value, true);
                     }
                 }
