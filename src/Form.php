@@ -298,6 +298,41 @@ class Form extends Element
     }
 
     /**
+     *  解析initialValue
+     *
+     * @param  object  $item
+     * @return $this
+     */
+    public function parseInitialValue($item,$initialValues)
+    {
+        $value = null;
+        if(isset($item->name)) {
+
+            if(isset($item->defaultValue)) {
+                $value = $item->defaultValue;
+            }
+
+            if(isset($initialValues[$item->name])) {
+                $value = $initialValues[$item->name];
+            }
+
+            if(isset($item->value)) {
+                $value = $item->value;
+            }
+
+            if(!empty($value)) {
+                if(is_string($value)) {
+                    if(count(explode('[',$value))>1) {
+                        $value = json_decode($value, true);
+                    }
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      *  表单默认值，只有初始化以及重置时生效
      *
      * @param  array  $initialValues
@@ -308,30 +343,13 @@ class Form extends Element
         $data = [];
 
         if(isset($this->items)) {
-            foreach ($this->items as $key => $item) {
-                if(isset($item->name)) {
-                    if(isset($item->name)) {
-                        $value = null;
-
-                        if(isset($item->defaultValue)) {
-                            $value = $item->defaultValue;
-                        }
-
-                        if(isset($initialValues[$item->name])) {
-                            $value = $initialValues[$item->name];
-                        }
-
-                        if(isset($item->value)) {
-                            $value = $item->value;
-                        }
-
-                        if(!empty($value)) {
-                            if(is_string($value)) {
-                                if(count(explode('[',$value))>1) {
-                                    $value = json_decode($value, true);
-                                }
-                            }
-                            $data[$item->name] = $value;
+            foreach ($this->items as $item) {
+                $data[$item->name] = $this->parseInitialValue($item,$initialValues);
+                // when中的变量
+                if(!empty($item->when)) {
+                    foreach ($item->when as $when) {
+                        foreach ($when['items'] as $whenItem) {
+                            $data[$whenItem->name] = $this->parseInitialValue($whenItem,$initialValues);
                         }
                     }
                 }
