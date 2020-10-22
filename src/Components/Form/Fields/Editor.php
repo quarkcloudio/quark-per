@@ -28,7 +28,7 @@ class Editor extends Item
 
         $this->placeholder = '请输入'.$this->label;
 
-        $style = ['height' => 400, 'boxShadow' => 'inset 0 1px 3px rgba(0,0,0,.1)'];
+        $style = ['height' => 500,'width' => 800];
 
         $this->style = $style;
     }

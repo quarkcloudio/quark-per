@@ -842,6 +842,11 @@ class Form extends Element
             }
         }
 
+        // 为空，初始化表单数据
+        if(empty($this->initialValues)) {
+            $this->initialValues();
+        }
+
         return array_merge([
             'api' => $this->api,
             'colon' => $this->colon,
