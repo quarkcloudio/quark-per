@@ -30,25 +30,16 @@ class RoleController extends Controller
         $table->column('guard_name','guard名称')->link();
         $table->column('created_at','创建时间');
         $table->column('actions','操作')->width(180)->actions(function($action,$row) {
-
-            // 跳转默认编辑页面
             $action->a('编辑')->editLink();
-
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')
             ->model()
             ->where('id','{id}')
             ->delete();
-
-            return $action;
         });
 
         $table->toolBar()->actions(function($action) {
-
-            // 跳转默认创建页面
             $action->button('创建角色')->type('primary')->icon('plus-circle')->createLink();
-
-            return $action;
         });
 
         // 批量操作

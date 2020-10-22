@@ -53,12 +53,9 @@ class PictureController extends Controller
 
             // 下载文件
             $action->a('下载')->link(backend_url('api/admin/picture/download?id='.$row['id'],true),'_blank');
-
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')
             ->api('admin/picture/delete?id='.$row['id']);
-
-            return $action;
         });
 
         // 批量操作

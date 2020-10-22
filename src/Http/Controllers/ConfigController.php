@@ -206,7 +206,6 @@ class ConfigController extends Controller
         $table->column('remark','备注')->ellipsis();
         $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
         $table->column('actions','操作')->width(120)->actions(function($action,$row) {
-
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {
                 $action->a('禁用')
@@ -224,25 +223,18 @@ class ConfigController extends Controller
 
             // 跳转默认编辑页面
             $action->a('编辑')->modalForm(backend_url('api/admin/config/edit?id='.$row['id']));
-
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')
             ->model()
             ->where('id','{id}')
             ->delete();
-
-            return $action;
         });
 
         $table->toolBar()->actions(function($action) {
-
-            // 跳转默认创建页面
             $action->button('创建配置')
             ->type('primary')
             ->icon('plus-circle')
             ->modalForm(backend_url('api/admin/config/create'));
-
-            return $action;
         });
 
         // 批量操作
@@ -267,8 +259,6 @@ class ConfigController extends Controller
                 ->model()
                 ->whereIn('id','{ids}')
                 ->update(['status'=>1]);
-
-                return $action;
             });
         });
 

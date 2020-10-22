@@ -3,6 +3,7 @@
 namespace QuarkCMS\QuarkAdmin\Components\Form;
 
 use QuarkCMS\QuarkAdmin\Element;
+use QuarkCMS\QuarkAdmin\Form;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Exception;
@@ -178,6 +179,13 @@ class Item extends Element
      * @var array
      */
     public $wrapperCol = null;
+
+    /**
+     * 表单联动
+     *
+     * @var array
+     */
+    public $when = null;
 
     /**
      * 会在 label 旁增加一个 icon，悬浮后展示配置的信息
@@ -582,6 +590,30 @@ class Item extends Element
     }
 
     /**
+     * 表单联动
+     * 
+     * @param  mix $value
+     * @return object
+     */
+    public function when(...$value)
+    {
+        $form = new Form();
+        if(count($value) == 2) {
+            $when['operator'] = '=';
+            $when['value'] = $value[0];
+            $value[1]($form);
+        } elseif(count($value) == 3) {
+            $when['operator'] = $value[0];
+            $when['value'] = $value[1];
+            $value[2]($form);
+        }
+
+        $when['items'] = $form->items;
+        $this->when[] = $when;
+        return $this;
+    }
+
+    /**
      * 组件json序列化
      *
      * @return array
@@ -598,7 +630,8 @@ class Item extends Element
             'disabled' => $this->disabled,
             'frontendRules' => $this->frontendRules,
             'value' => $this->value,
-            'defaultValue' => $this->defaultValue
+            'defaultValue' => $this->defaultValue,
+            'when' => $this->when
         ], parent::jsonSerialize());
     }
 }

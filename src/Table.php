@@ -520,8 +520,9 @@ class Table extends Element
         foreach ($columns as $columnKey => $value) {
             // 解析action回调函数
             if($value->actionCallback) {
-                $actionCallback = call_user_func_array($value->actionCallback,[new Action(),$row]);
-                $rowActions = $actionCallback->actions();
+                $rowAction = new Action();
+                call_user_func_array($value->actionCallback,[$rowAction,$row]);
+                $rowActions = $rowAction->actions();
                 $action = $this->parseExecuteActionRules($rowActions,$key);
             }
         }
@@ -616,8 +617,9 @@ class Table extends Element
         foreach ($columns as $key => $value) {
             // 解析action回调函数
             if($value->actionCallback) {
-                $actionCallback = call_user_func_array($value->actionCallback,[new Action(),$row]);
-                $actions = $actionCallback->actions();
+                $rowAction = new Action();
+                call_user_func_array($value->actionCallback,[$rowAction,$row]);
+                $actions = $rowAction->actions();
                 $row[$value->attribute] = $this->parseRowActionRules($row,$actions);
             }
         }

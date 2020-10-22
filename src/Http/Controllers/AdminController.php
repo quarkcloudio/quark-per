@@ -22,7 +22,6 @@ class AdminController extends Controller
     {
         $table = new Table(new Admin);
         $table->headerTitle($this->title.'列表');
-        
         $table->column('id','序号');
         $table->column('avatar','头像')->image()->width(60);
         $table->column('username','用户名')->editLink()->width(120);
@@ -39,7 +38,6 @@ class AdminController extends Controller
             'off' => ['value' => 0, 'text' => '禁用']
         ])->width(100);
         $table->column('actions','操作')->width(120)->actions(function($action,$row) {
-
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {
                 $action->a('禁用')
@@ -57,44 +55,15 @@ class AdminController extends Controller
 
             // 跳转默认编辑页面
             $action->a('编辑')->editLink();
-
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')
             ->model()
             ->where('id','{id}')
             ->delete();
-
-            // 下拉菜单形式的行为
-            // $action->dropdown('更多')->overlay(function($action) {
-            //     $action->item('详情')->editLink();
-            //     $action->item('删除')
-            //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-            //     ->model()
-            //     ->where('id','{id}')
-            //     ->delete();
-            //     return $action;
-            // });
-
-            return $action;
         });
 
         $table->toolBar()->actions(function($action) {
-
-            // 跳转默认创建页面
             $action->button('创建管理员')->type('primary')->icon('plus-circle')->createLink();
-
-            // 下拉菜单形式的行为
-            // $action->dropdown('更多操作')->mode('button')->overlay(function($action) {
-            //     $action->item('详情')->createLink();
-            //     $action->item('清空数据')
-            //     ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-            //     ->model()
-            //     ->where('status',1)
-            //     ->delete();
-            //     return $action;
-            // });
-
-            return $action;
         });
 
         // 批量操作
@@ -119,8 +88,6 @@ class AdminController extends Controller
                 ->model()
                 ->whereIn('id','{ids}')
                 ->update(['status'=>1]);
-
-                return $action;
             });
         });
 

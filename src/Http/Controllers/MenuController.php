@@ -68,8 +68,6 @@ class MenuController extends Controller
             ->model()
             ->where('id','{id}')
             ->delete();
-
-            return $action;
         });
 
         $table->toolBar()->actions(function($action) {
@@ -78,7 +76,6 @@ class MenuController extends Controller
             ->type('primary')
             ->icon('plus-circle')
             ->drawerForm(backend_url('api/admin/menu/create'));
-            return $action;
         });
 
         // 批量操作
@@ -103,8 +100,6 @@ class MenuController extends Controller
                 ->model()
                 ->whereIn('id','{ids}')
                 ->update(['status'=>1]);
-
-                return $action;
             });
         });
 
