@@ -2,14 +2,15 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-use Closure;
-use Exception;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use QuarkCMS\QuarkAdmin\Components\Table\Column;
 use QuarkCMS\QuarkAdmin\Components\Table\ToolBar;
 use QuarkCMS\QuarkAdmin\Search;
 use QuarkCMS\QuarkAdmin\Action;
+use Closure;
+use Exception;
 
 class Table extends Element
 {
@@ -634,6 +635,15 @@ class Table extends Element
     {
         $columns = $this->columns;
         foreach ($columns as $key => $value) {
+
+            // 解析关联属性
+            if (Str::contains($value->attribute, '.')) {
+                list($relation, $relationColumn) = explode('.', $value->attribute);
+                if(isset($row[$relation])) {
+                    $row[$value->attribute] = $row[$relation]->$relationColumn;
+                }
+            }
+
             if(isset($row[$value->attribute])) {
 
                 // 解析using规则
@@ -692,15 +702,11 @@ class Table extends Element
         if(!empty($this->datasource)) {
             $data = $this->datasource;
         } else {
-            $data = $this->model->data();
-        }
-
-        if(isset($data['current_page'])) {
-            // 存在分页，则设置分页
-            $this->pagination($data['current_page'], $data['per_page'], $data['total']);
-
-            // 重设数据
-            $data = $data['data'];
+            $data = $this->model->get();
+            if(method_exists($data,'currentPage')) {
+                // 存在分页，则设置分页
+                $this->pagination($data->currentPage(), $data->perPage(), $data->total());
+            }
         }
 
         $datasource = null;
