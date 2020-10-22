@@ -212,7 +212,7 @@ class Form extends Element
      * @param  \Closure|array  $content
      * @return void
      */
-    public function __construct(Eloquent $model)
+    public function __construct(Eloquent $model = null)
     {
         $this->component = 'form';
         $this->model = $model;

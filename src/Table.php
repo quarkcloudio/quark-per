@@ -132,10 +132,12 @@ class Table extends Element
      * @param  \Closure|array  $content
      * @return void
      */
-    public function __construct(Eloquent $model)
+    public function __construct(Eloquent $model = null)
     {
         $this->component = 'table';
-        $this->model = new Model($model,$this);
+        if(!empty($model)) {
+            $this->model = new Model($model,$this);
+        }
         $this->search = new Search;
         $this->batchAction = new Action;
         $this->toolbar = new ToolBar;
