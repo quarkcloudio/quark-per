@@ -552,6 +552,33 @@ class Form extends Element
     }
 
     /**
+     * 解析验证提交数据库前的值
+     *
+     * @param array $data
+     * @return array
+     */
+    public function itemValidator($data,$name,$rules,$ruleMessages)
+    {
+        $errorMsg = null;
+        foreach ($value->rules as &$rule) {
+            if (is_string($rule) && isset($data['id'])) {
+                $rule = str_replace('{id}', $data['id'], $rule);
+            }
+        }
+        $getRules[$name] = $value->rules;
+        $validator = Validator::make($data,$getRules,$ruleMessages);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->getMessages();
+            foreach($errors as $key => $value) {
+                $errorMsg = $value[0];
+            }
+            return $errorMsg;
+        }
+
+        return $errorMsg;
+    }
+
+    /**
      * 验证提交数据库前的值
      *
      * @param array $data
@@ -569,18 +596,8 @@ class Form extends Element
 
             // 通用验证规则
             if($value->rules) {
-                foreach ($value->rules as &$rule) {
-                    if (is_string($rule) && isset($data['id'])) {
-                        $rule = str_replace('{id}', $data['id'], $rule);
-                    }
-                }
-                $rules[$value->name] = $value->rules;
-                $validator = Validator::make($data,$rules,$value->ruleMessages);
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
+                $errorMsg = $this->itemValidator($data,$value->name,$value->rules,$value->ruleMessages);
+                if($errorMsg) {
                     return $errorMsg;
                 }
             }
@@ -588,13 +605,8 @@ class Form extends Element
             // 新增数据，验证规则
             if($this->isCreating()) {
                 if($value->creationRules) {
-                    $creationRules[$value->name] = $value->creationRules;
-                    $validator = Validator::make($data,$creationRules,$value->creationRuleMessages);
-                    if ($validator->fails()) {
-                        $errors = $validator->errors()->getMessages();
-                        foreach($errors as $key => $value) {
-                            $errorMsg = $value[0];
-                        }
+                    $errorMsg = $this->itemValidator($data,$value->name,$value->creationRules,$value->creationRuleMessages);
+                    if($errorMsg) {
                         return $errorMsg;
                     }
                 }
@@ -603,19 +615,44 @@ class Form extends Element
             // 编辑数据，验证规则
             if($this->isEditing()) {
                 if($value->updateRules) {
-                    foreach ($value->updateRules as &$rule) {
-                        if (is_string($rule)) {
-                            $rule = str_replace('{id}', $data['id'], $rule);
-                        }
-                    }
-                    $updateRules[$value->name] = $value->updateRules;
-                    $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
-                    if ($validator->fails()) {
-                        $errors = $validator->errors()->getMessages();
-                        foreach($errors as $key => $value) {
-                            $errorMsg = $value[0];
-                        }
+                    $errorMsg = $this->itemValidator($data,$value->name,$value->updateRules,$value->updateRuleMessages);
+                    if($errorMsg) {
                         return $errorMsg;
+                    }
+                }
+            }
+
+            // when中的变量
+            if(!empty($value->when)) {
+                foreach ($value->when as $when) {
+                    foreach ($when['items'] as $whenItem) {
+                        // 通用验证规则
+                        if($whenItem->rules) {
+                            $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->rules,$whenItem->ruleMessages);
+                            if($errorMsg) {
+                                return $errorMsg;
+                            }
+                        }
+
+                        // 新增数据，验证规则
+                        if($this->isCreating()) {
+                            if($whenItem->creationRules) {
+                                $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->creationRules,$whenItem->creationRuleMessages);
+                                if($errorMsg) {
+                                    return $errorMsg;
+                                }
+                            }
+                        }
+
+                        // 编辑数据，验证规则
+                        if($this->isEditing()) {
+                            if($whenItem->updateRules) {
+                                $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->updateRules,$whenItem->updateRuleMessages);
+                                if($errorMsg) {
+                                    return $errorMsg;
+                                }
+                            }
+                        }
                     }
                 }
             }
