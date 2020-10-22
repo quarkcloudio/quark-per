@@ -190,7 +190,7 @@ class Model
      *
      * @return Collection
      */
-    protected function get()
+    public function get()
     {
         if(request()->has('search')) {
             $searchInputs = request('search');
