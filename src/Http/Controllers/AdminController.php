@@ -21,12 +21,12 @@ class AdminController extends Controller
     protected function table()
     {
         $table = new Table(new Admin);
-        $table->headerTitle($this->title.'列表');
+        $table->headerTitle($this->title.'列表')->tableLayout('fixed');
         $table->column('id','序号');
         $table->column('avatar','头像')->image()->width(60);
         $table->column('username','用户名')->editLink()->width(120);
         $table->column('nickname','昵称')->editable()->width(120);
-        $table->column('email','邮箱')->width(160);
+        $table->column('email','邮箱')->ellipsis()->copyable()->width(160);
         $table->column('sex','性别')
         ->using(['1'=>'男','2'=>'女'])
         ->filters(['1'=>'男','2'=>'女'])
