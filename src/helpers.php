@@ -79,13 +79,15 @@ if(!function_exists('backend_url')) {
 
 /**
 * 把返回的数据集转换成Tree
-* @param array $list 要转换的数据集
+* @param array|object $list 要转换的数据集
 * @param string $pid parent标记字段
 * @param string $level level标记字段
 * @return array
 */
 if(!function_exists('list_to_tree')) {
     function list_to_tree($list, $pk='id',$pid = 'pid',$child = '_child',$root=0) {
+        // 如果是对象则转换为数组
+        $list = json_decode(json_encode($list),true);
         // 创建Tree
         $tree = array();
         if(is_array($list)) {
