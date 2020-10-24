@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Quark;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Models\Menu;
-use QuarkCMS\QuarkAdmin\Models\Config;
 
 class QuarkController extends Controller
 {
