@@ -16,6 +16,6 @@ composer dump-autoload
 安装程序
 php artisan quarkadmin:install
 
-后台地址：http://yoursite/admin
+后台地址：http://yoursite/admin/index
 
 默认用户名：administrator 密码：123456

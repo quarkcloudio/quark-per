@@ -2,7 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'], function ($router) {
+// 默认登录入口
+Route::group([
+	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
+], function ($router) {
+	$router->get('admin/', 'QuarkController@index')->name('admin/');
+	$router->get('admin/index', 'QuarkController@index')->name('admin/index');
+});
+
+// 不需要登录认证的路由
+Route::group([
+	'prefix' => 'api',
+	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
+], function ($router) {
 	$router->get('admin/quark/info', 'QuarkController@info')->name('api/admin/quark/info');
 	$router->get('admin/quark/test', 'QuarkController@test')->name('api/admin/quark/test');
 
@@ -11,7 +23,9 @@ Route::group(['namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'], functio
 	$router->any('admin/logout', 'LoginController@logout')->name('api/admin/logout');
 });
 
+// 需要登录认证的路由
 Route::group([
+	'prefix' => 'api',
 	'middleware' => 'admin',
 	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
 ], function ($router) {

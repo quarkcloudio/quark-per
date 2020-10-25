@@ -4,7 +4,7 @@ return [
     
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin App version
+    | QuarkAdmin App version
     |--------------------------------------------------------------------------
     |
     | This value is the name of your application. This value is used when the
@@ -16,7 +16,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin App Name
+    | QuarkAdmin App Name
     |--------------------------------------------------------------------------
     |
     | This value is the name of your application. This value is used when the
@@ -24,11 +24,11 @@ return [
     | or in other locations. Of course, you're free to change the value.
     |
     */
-    'name' => 'QaurkAdmin',
+    'name' => 'QuarkAdmin',
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin logo
+    | QuarkAdmin logo
     |--------------------------------------------------------------------------
     |
     | The logo of all admin pages. You can also set it as an image by using a
@@ -39,7 +39,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin description
+    | QuarkAdmin description
     |--------------------------------------------------------------------------
     |
     | The description of login page.
@@ -49,7 +49,7 @@ return [
     
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin captcha:todo
+    | QuarkAdmin captcha:todo
     |--------------------------------------------------------------------------
     |
     | 登录验证码类型，tencent_captcha：腾讯云验证码，local：本地图形验证码
@@ -82,7 +82,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin iconfontUrl
+    | QuarkAdmin iconfontUrl
     |--------------------------------------------------------------------------
     |
     | 使用 IconFont 的图标配置
@@ -92,10 +92,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin layout
+    | QuarkAdmin layout
     |--------------------------------------------------------------------------
     |
-    | The layout of QaurkAdmin
+    | The layout of QuarkAdmin
     |
     */
     'layout' => [
@@ -139,7 +139,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin copyright
+    | QuarkAdmin copyright
     |--------------------------------------------------------------------------
     |
     | 网站版权
@@ -149,7 +149,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin friend links
+    | QuarkAdmin friend links
     |--------------------------------------------------------------------------
     |
     | 友情链接
@@ -172,7 +172,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | QaurkAdmin auth setting
+    | QuarkAdmin auth setting
     |--------------------------------------------------------------------------
     |
     | Authentication settings for all admin pages. Include an authentication

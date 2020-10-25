@@ -60,7 +60,8 @@ class QuarkServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../database/migrations' => database_path('migrations')], 'quark-admin-migrations');
             $this->publishes([__DIR__.'/../database/seeds' => database_path('seeds')], 'quark-admin-seeds');
             $this->publishes([__DIR__.'/../public' => public_path('admin')], 'quark-admin-assets');
-            $this->publishes([__DIR__.'/../resources' => resource_path('views/admin')], 'quark-admin-resources');
+            $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang')], 'quark-admin-resources-lang');
+            $this->publishes([__DIR__.'/../resources/views' => resource_path('views/admin')], 'quark-admin-resources-views');
         }
 
         $this->registerRoutes();
@@ -87,8 +88,7 @@ class QuarkServiceProvider extends ServiceProvider
      */
     protected function registerApiRoutes()
     {
-        Route::prefix('api')
-        ->middleware('api')
+        Route::middleware('api')
         ->group(__DIR__.'/../routes/api.php');
     }
 
