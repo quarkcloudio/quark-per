@@ -3,37 +3,46 @@
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
-use GuzzleHttp\Client;
-use Artisan;
-use Arr;
+use Illuminate\Support\Facades\Artisan;
+use QuarkCMS\QuarkAdmin\Components\Upgrade;
 
 class UpgradeController extends Controller
 {
+    /**
+     * 更新组件对象
+     *
+     * @var object
+     */
+    public $upgrade = null;
+    
+    /**
+     * 初始化
+     *
+     * @param  void
+     * @return void
+     */
+    public function __construct() {
+        $this->upgrade = Upgrade::make()->packageName('quarkcms/quark-cms');
+    }
+
     /**
      * 版本升级
      * @author  tangtanglove <dai_hang_love@126.com>
      */
     public function index(Request $request)
     {
-        $client = new Client();
-        $getContent = $client->request('GET', 'https://repo.packagist.org/p/'.$this->packageName.'.json')->getBody()->getContents();
+        $packages = $this->upgrade->getPackages();
 
-        $content = json_decode($getContent, true);
-        $packages = Arr::sort($content['packages'][$this->packageName]);
-
-        cache(['packages' => $packages], 3600);
-
-        $result['app_version'] = config('quark.app.version');
+        $result['app_version'] = config('admin.version');
         foreach ($packages as $key => $value) {
-            if($value['version'] > config('quark.app.version')) {
+            if($value['version'] > config('admin.version')) {
                 $result['can_upgrade'] = true;
                 $result['next_package'] = $value;
                 break;
             }
         }
 
-        return success('获取成功！','',$result);
+        return success('有新版可以更新','',$result);
     }
 
     /**
@@ -42,28 +51,12 @@ class UpgradeController extends Controller
      */
     public function download(Request $request)
     {
-        $version   = $request->get('version');
+        $version = $request->get('version');
 
-        $packages = cache('packages');
-
-        foreach ($packages as $key => $value) {
-            if($value['version'] == $version) {
-                $reference = $value['dist']['reference'];
-                break;
-            }
-        }
-
-        $url ='https://mirrors.aliyun.com/composer/dists/'.$this->packageName.'/'.$reference.'.zip';
-        $client = new Client();
-        $file = $client->request('GET', $url)->getBody()->getContents();
-
-        // 默认本地上传
-        $path = 'uploads/files/'.$version.".zip";
-
-        $result = Storage::disk('public')->put($path,$file);
+        $result = $this->upgrade->downloadPackage($version);
 
         if($result) {
-            return success('文件下载成功！','',$path);
+            return success('文件下载成功！');
         } else {
             return error('文件下载失败！');
         }
@@ -77,17 +70,7 @@ class UpgradeController extends Controller
     {
         $version   = $request->get('version');
 
-        $path = storage_path('app/').'public/uploads/files/'.$version.".zip";
-        $outPath = storage_path('app/').'public/uploads/files/'.$version.'/';
-
-        $zip = new \ZipArchive();
-
-        $result = $zip->open($path);
-
-        if ($result === true) {
-          $zip->extractTo($outPath);
-          $zip->close();
-        }
+        $result = $this->upgrade->extractPackage($version);
 
         if($result) {
             return success('文件解压成功！');
@@ -104,24 +87,13 @@ class UpgradeController extends Controller
     {
         $version   = $request->get('version');
 
-        $path = storage_path('app/').'public/uploads/files/'.$version;
+        $result = $this->upgrade->updatePackageFiles($version);
 
-        $dirs = get_folder_dirs($path);
-
-        $filePath = $path.'/'.$dirs[0];
-
-        $appDirs = get_folder_dirs($filePath);
-        $appFiles = get_folder_files($filePath);
-
-        foreach ($appDirs as $key => $value) {
-            copy_dir_to_folder($path.'/'.$dirs[0].'/'.$value,base_path());
+        if($result) {
+            return success('程序更新成功！');
+        } else {
+            return error('程序更新失败！');
         }
-
-        foreach ($appFiles as $key => $value) {
-            copy_file_to_folder($path.'/'.$dirs[0].'/'.$value,base_path());
-        }
-
-        return success('程序更新成功！');
     }
 
     /**
