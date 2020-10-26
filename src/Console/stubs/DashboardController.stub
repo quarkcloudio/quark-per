@@ -7,6 +7,7 @@ use QuarkCMS\QuarkAdmin\Container;
 use QuarkCMS\QuarkAdmin\Card;
 use QuarkCMS\QuarkAdmin\Show;
 use QuarkCMS\QuarkAdmin\Components\Statistic;
+use QuarkCMS\QuarkAdmin\Components\Upgrade;
 use DB;
 
 class DashboardController extends Controller
@@ -29,6 +30,8 @@ class DashboardController extends Controller
         ->ghost()
         ->gutter(8)
         ->content($shows);
+
+        // $content[] = $this->upgrade();
 
         $container = Container::make('仪表盘',$content);
 
@@ -135,13 +138,33 @@ class DashboardController extends Controller
         $show->field('联系方式')->value('dai_hang_love@126.com');
         $show->field('官方网址')->link('http://www.quarkcms.com','_blank')->value('www.quarkcms.com');
         $show->field('文档地址')->link('http://www.quarkcms.com','_blank')->value('查看文档');
-        $show->field('BUG反馈')->link('https://github.com/quarkcms/quark-admin/issues','_blank')->value('提交漏洞');
-        $show->field('Github')->link('https://github.com/quarkcms/quark-admin','_blank')->value('Github');
+        $show->field('BUG反馈')->link('https://github.com/quarkcms/quark-admin/issues','_blank')->value('提交BUG');
+        $show->field('代码仓储')->link('https://github.com/quarkcms/quark-admin','_blank')->value('Github');
 
         $content = Card::make()
         ->colSpan(12)
         ->content($show);
 
         return $content;
+    }
+
+    /**
+     * 升级信息
+     *
+     * @param  void
+     * @return array
+     */
+    protected function upgrade()
+    {
+        $upgrade = Upgrade::make('检查更新',backend_url('api/admin/upgrade/index'));
+        
+        $upgrade->step('下载文件',backend_url('api/admin/upgrade/download'))->percent(20)->tip('正在下载软件包...');
+        $upgrade->step('解压文件',backend_url('api/admin/upgrade/extract'))->percent(20)->tip('正在解压软件包...');
+        $upgrade->step('更新程序',backend_url('api/admin/upgrade/updateFile'))->percent(20)->tip('正在更新程序...');
+        $upgrade->step('更新数据库',backend_url('api/admin/upgrade/updateDatabase'))->percent(20)->tip('正在更新数据库...');
+        $upgrade->step('清除缓存',backend_url('api/admin/upgrade/clearCache'))->percent(10)->tip('正在清理缓存...');
+        $upgrade->step('升级完成',backend_url('api/admin/upgrade/finish'))->percent(10)->tip('请稍后，马上完成更新...');
+
+        return $upgrade;
     }
 }
