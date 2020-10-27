@@ -60,6 +60,8 @@ class Select extends Item
             $label = Arr::get($label, 0, ''); //[0];
             $this->label = $label;
         }
+
+        $this->style['width'] = 200;
     }
 
     /**
