@@ -1,7 +1,8 @@
 <?php
 
-use App\Http\Controllers\Controller;
+namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use QuarkCMS\QuarkAdmin\Components\Upgrade;
@@ -22,7 +23,7 @@ class UpgradeController extends Controller
      * @return void
      */
     public function __construct() {
-        $this->upgrade = Upgrade::make()->packageName('quarkcms/quark-cms');
+        // $this->upgrade = Upgrade::make()->packageName('quarkcms/quark-cms');
     }
 
     /**
@@ -31,18 +32,18 @@ class UpgradeController extends Controller
      */
     public function index(Request $request)
     {
-        $packages = $this->upgrade->getPackages();
+        // $packages = $this->upgrade->getPackages();
 
-        $result['app_version'] = config('admin.version');
-        foreach ($packages as $key => $value) {
-            if($value['version'] > config('admin.version')) {
-                $result['can_upgrade'] = true;
-                $result['next_package'] = $value;
-                break;
-            }
-        }
+        // $result['app_version'] = config('quark.version');
+        // foreach ($packages as $key => $value) {
+        //     if($value['version'] > config('quark.version')) {
+        //         $result['can_upgrade'] = true;
+        //         $result['next_package'] = $value;
+        //         break;
+        //     }
+        // }
 
-        return success('有新版可以更新','',$result);
+        // return success('有新版可以更新','',$result);
     }
 
     /**
