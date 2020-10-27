@@ -215,6 +215,8 @@ class MenuController extends Controller
                 unset($data['permission_ids']);
                 $form->data = $data;
             }
+
+            $form->data['guard_name'] = 'admin';
         });
 
         // 保存数据后回调
