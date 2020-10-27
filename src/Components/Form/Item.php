@@ -20,7 +20,7 @@ class Item extends Element
     /**
      * Field 的长度，我们归纳了常用的 Field 长度以及适合的场景，支持了一些枚举 "xs" , "s" , "m" , "l" , "x"
      *
-     * @var string
+     * @var string|number
      */
     public $width = null;
 
@@ -202,16 +202,17 @@ class Item extends Element
     /**
      * Field 的长度，我们归纳了常用的 Field 长度以及适合的场景，支持了一些枚举 "xs" , "s" , "m" , "l" , "x"
      *
-     * @param  string $width
+     * @param  string|number $width
      * @return $this
      */
     public function width($width)
     {
-        if(!in_array($width,['xs','s','m','l','x'])) {
-            throw new Exception("argument must be 'xs','s','m','l','x'!");
-        }
+        // if(!in_array($width,['xs','s','m','l','x'])) {
+        //     throw new Exception("argument must be 'xs','s','m','l','x'!");
+        // }
 
         $this->width = $width;
+        $this->style['width'] = $width;
         return $this;
     }
 
