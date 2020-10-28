@@ -100,8 +100,10 @@ class QuarkServiceProvider extends ServiceProvider
      */
     protected function registerAdminRoutes()
     {
-        Route::prefix('api')
-        ->middleware('api')
-        ->group(base_path().'/routes/admin.php');
+        if(file_exists(base_path().'/routes/admin.php')) {
+            Route::prefix('api')
+            ->middleware('api')
+            ->group(base_path().'/routes/admin.php');
+        }
     }
 }
