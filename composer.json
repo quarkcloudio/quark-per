@@ -19,7 +19,7 @@
         "spatie/laravel-permission": "^3.0",
         "gregwar/captcha": "^1.0",
         "aliyuncs/oss-sdk-php": "^2.0",
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "^6.2|^7.0"
     },
     "autoload": {
         "psr-4": {
