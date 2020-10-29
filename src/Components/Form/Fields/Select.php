@@ -62,6 +62,8 @@ class Select extends Item
         }
 
         $this->style['width'] = 200;
+        $this->placeholder = '请选择'.$this->label;
+        $this->allowClear();
     }
 
     /**

@@ -344,12 +344,19 @@ class Form extends Element
 
         if(isset($this->items)) {
             foreach ($this->items as $item) {
-                $data[$item->name] = $this->parseInitialValue($item,$initialValues);
+                $value = $this->parseInitialValue($item,$initialValues);
+                if($value !== null) {
+                    $data[$item->name] = $value;
+                }
+
                 // when中的变量
                 if(!empty($item->when)) {
                     foreach ($item->when as $when) {
                         foreach ($when['items'] as $whenItem) {
-                            $data[$whenItem->name] = $this->parseInitialValue($whenItem,$initialValues);
+                            $whenValue = $this->parseInitialValue($whenItem,$initialValues);
+                            if($whenValue !== null) {
+                                $data[$whenItem->name] = $whenValue;
+                            }
                         }
                     }
                 }
