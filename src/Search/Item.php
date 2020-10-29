@@ -214,6 +214,20 @@ class Item extends Element
     }
 
     /**
+     * 日期控件
+     *
+     * @param  string $options
+     * @return object
+     */
+    public function date($options = [])
+    {
+        $this->component = 'date';
+        $this->options = $options;
+
+        return $this;
+    }
+
+    /**
      * 组件json序列化
      *
      * @return array
