@@ -61,9 +61,9 @@ class QuarkServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../public' => public_path('admin')], 'quark-admin-assets');
             $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang')], 'quark-admin-resources-lang');
             $this->publishes([__DIR__.'/../resources/views' => resource_path('views/admin')], 'quark-admin-resources-views');
-        } else {
-            $this->registerRoutes();
         }
+        
+        $this->registerRoutes();
     }
 
     /**
