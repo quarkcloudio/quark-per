@@ -23,7 +23,7 @@
     },
     "autoload": {
         "psr-4": {
-            "QuarkCMS\\QuarkAdmin\\": "src"
+            "QuarkCMS\\QuarkAdmin\\": "src/"
         },
         "files": [
             "src/helpers.php"
