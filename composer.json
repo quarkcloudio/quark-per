@@ -38,5 +38,8 @@
                 "Quark": "QuarkCMS\\QuarkAdmin\\Facades\\Quark"
             }
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }
