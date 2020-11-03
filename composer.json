@@ -31,12 +31,12 @@
     },
     "extra": {
         "laravel": {
-            "aliases": {
-                "Quark": "QuarkCMS\\QuarkAdmin\\Facades\\Quark"
-            },
             "providers": [
                 "QuarkCMS\\QuarkAdmin\\QuarkServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Quark": "QuarkCMS\\QuarkAdmin\\Facades\\Quark"
+            }
         }
     }
 }
