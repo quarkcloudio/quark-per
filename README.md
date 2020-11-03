@@ -51,9 +51,9 @@ SQLSTATE[42000]: Syntax error or access violation: 1071 Specified key was too lo
 
 完成安装后，执行如下命令，快速启动服务：
 ``` bash
-php -S 127.0.0.1:8080 -t ./public
+php artisan serve
 ```
-后台地址： http://127.0.0.1:8080/admin/index
+后台地址： http://127.0.0.1:8000/admin/index
 
 默认用户名：administrator 密码：123456
 
