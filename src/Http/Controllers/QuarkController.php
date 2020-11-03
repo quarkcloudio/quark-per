@@ -36,7 +36,7 @@ class QuarkController extends Controller
      */
     public function index(Request $request)
     {
-        $assetManifest = file_get_contents(public_path('\\admin\\asset-manifest.json'));
+        $assetManifest = file_get_contents(public_path('/admin/asset-manifest.json'));
         $data = json_decode($assetManifest,true);
         $result['umiCss'] = $data['/umi.css'];
         $result['umiJs'] = $data['/umi.js'];
