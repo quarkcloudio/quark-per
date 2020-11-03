@@ -58,7 +58,9 @@ php -S 127.0.0.1:8080 -t ./public
 默认用户名：administrator 密码：123456
 
 ## 技术支持
-为了避免打扰作者日常工作，请先到[Github](https://github.com/quarkcms/quark-admin)上关注此项目，在Github上提交[Issues](https://github.com/quarkcms/quark-admin/issues) [在线文档](http://www.quarkcms.com/quark-admin/)
+为了避免打扰作者日常工作，你可以在Github上提交[Issues](https://github.com/quarkcms/quark-admin/issues)
+
+相关教程，你可以查看[在线文档](http://www.quarkcms.com/quark-admin/)
 
 ## License
 QuarkAdmin is licensed under The MIT License (MIT).
