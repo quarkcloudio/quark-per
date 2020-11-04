@@ -59,14 +59,14 @@ php artisan serve
 
 ## 演示站点
 
-网址：http://admin.quarkcms.com/admin/index
+网址：[http://admin.quarkcms.com/admin/index](http://admin.quarkcms.com/admin/index){:target="_blank"}
 
 用户名：administrator 密码：123456
 
 ## 技术支持
-为了避免打扰作者日常工作，你可以在Github上提交 [Issues](https://github.com/quarkcms/quark-admin/issues)
+为了避免打扰作者日常工作，你可以在Github上提交 [Issues](https://github.com/quarkcms/quark-admin/issues){:target="_blank"}
 
-相关教程，你可以查看 [在线文档](http://www.quarkcms.com/quark-admin/)
+相关教程，你可以查看 [在线文档](http://www.quarkcms.com/quark-admin/){:target="_blank"}
 
 ## License
 QuarkAdmin is licensed under The MIT License (MIT).
