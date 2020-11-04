@@ -141,8 +141,8 @@ class MenuController extends Controller
             $title = '编辑'.$this->title;
         }
 
-        $form->labelCol(['span' => 4])
-        ->width('600px')
+        $form->labelCol(['span' => 5])
+        ->width('500px')
         ->size('small')
         ->title($title);
 
