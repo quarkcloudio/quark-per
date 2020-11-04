@@ -57,6 +57,12 @@ php artisan serve
 
 默认用户名：administrator 密码：123456
 
+## 演示站点
+
+网址：http://admin.quarkcms.com/admin/index
+
+用户名：administrator 密码：123456
+
 ## 技术支持
 为了避免打扰作者日常工作，你可以在Github上提交[Issues](https://github.com/quarkcms/quark-admin/issues)
 
