@@ -688,6 +688,12 @@ class Table extends Element
                 if($value->displayCallback) {
                     $row[$value->attribute] = call_user_func_array($value->displayCallback,[$row[$value->attribute]]);
                 }
+            } else {
+                
+                // 解析display回调函数
+                if($value->displayCallback) {
+                    $row[$value->attribute] = call_user_func_array($value->displayCallback,[$row]);
+                }
             }
         }
 
