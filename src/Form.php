@@ -702,7 +702,10 @@ class Form extends Element
 
         // 调用保存前回调函数
         if(!empty($this->savingCallback)) {
-            call_user_func($this->savingCallback,$this);
+            $result = call_user_func($this->savingCallback,$this);
+            if($result) {
+                return $result;
+            }
         }
 
         $data = $this->parseSubmitData($this->data);
@@ -757,7 +760,10 @@ class Form extends Element
 
         // 调用保存前回调函数
         if(!empty($this->savingCallback)) {
-            call_user_func($this->savingCallback,$this);
+            $result = call_user_func($this->savingCallback,$this);
+            if($result) {
+                return $result;
+            }
         }
 
         $data = $this->parseSubmitData($this->data);
