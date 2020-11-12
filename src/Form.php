@@ -197,6 +197,7 @@ class Form extends Element
         'dateRange' => Components\Form\Fields\DateRange::class,
         'datetime' => Components\Form\Fields\Datetime::class,
         'datetimeRange' => Components\Form\Fields\DatetimeRange::class,
+        'time' => Components\Form\Fields\Time::class,
         'timeRange' => Components\Form\Fields\TimeRange::class,
         'editor' => Components\Form\Fields\Editor::class,
         'map' => Components\Form\Fields\Map::class,

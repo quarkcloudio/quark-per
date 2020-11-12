@@ -777,26 +777,11 @@ class Table extends Element
         // 空值时的显示，不设置 则默认显示 -
         $columnEmptyText = $this->columnEmptyText;
 
-        $table = cache($this->key);
+        // 获取工具栏
+        $toolbar = $this->toolbar->jsonSerialize();
 
-        if(empty($table)) {
-
-            // 表格搜索表单
-            $table['search'] = $this->search;
-
-            // 批量操作
-            $table['batchActions'] = $this->parseActions($this->batchAction->actions());
-
-            // 获取工具栏
-            $toolbar = $this->toolbar->jsonSerialize();
-
-            // 解析工具栏操作
-            $toolbar['actions'] = $this->parseActions($this->toolbar->action->actions());
-            $table['toolbar'] = $toolbar;
-
-            // 存储到缓存中
-            cache([$this->key => $table], 3600);
-        }
+        // 解析工具栏操作
+        $toolbar['actions'] = $this->parseActions($this->toolbar->action->actions());
 
         // 自定义表格的主体函数
         $tableExtraRender = $this->tableExtraRender;
@@ -820,11 +805,11 @@ class Table extends Element
             'headerTitle' => $headerTitle,
             'columns' => $columns,
             'options' => $options,
-            'search' => $table['search'],
-            'batchActions' => $table['batchActions'],
+            'search' => $this->search,
+            'batchActions' => $this->parseActions($this->batchAction->actions()),
             'dateFormatter' => $dateFormatter,
             'columnEmptyText' => $columnEmptyText,
-            'toolbar' => $table['toolbar'],
+            'toolbar' => $toolbar,
             'tableExtraRender' => $tableExtraRender,
             'datasource' => $datasource,
             'pagination' => $pagination
