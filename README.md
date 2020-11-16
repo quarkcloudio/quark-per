@@ -57,6 +57,16 @@ php artisan serve
 
 默认用户名：administrator 密码：123456
 
+## 更新
+
+``` bash
+# 第一步，更新依赖
+composer update quarkcms/quark-admin
+
+# 第二步，执行更新命令
+php artisan quarkadmin:update
+```
+
 ## 演示站点
 
 网址：[http://admin.quarkcms.com/admin/index](http://admin.quarkcms.com/admin/index)
