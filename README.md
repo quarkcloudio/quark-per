@@ -57,6 +57,7 @@ php artisan serve
 
 默认用户名：administrator 密码：123456
 
+
 ## 更新
 
 ``` bash
