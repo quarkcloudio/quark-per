@@ -15,7 +15,7 @@ class Quark
      */
     public function version()
     {
-        return config('admin.version');
+        return 'v1.0.28';
     }
 
     /**

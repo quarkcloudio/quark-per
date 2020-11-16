@@ -400,20 +400,20 @@ if(!function_exists('get_folder_files')) {
 */
 if(!function_exists('get_folder_anything')) {
     function get_folder_anything(& $dir)
-    {  
-        if(is_dir($dir)){  
-            $dirFileArray['dirList'] = get_folder_dirs($dir);  
-            if($dirFileArray) {  
-                foreach($dirFileArray['dirList'] as $handle){  
+    {
+        if(is_dir($dir)) {
+            $dirFileArray['dirList'] = get_folder_dirs($dir);
+            if($dirFileArray) {
+                foreach($dirFileArray['dirList'] as $handle) {
                     $file = $dir.DIRECTORY_SEPARATOR.$handle;  
-                    $dirFileArray['fileList'][$handle] = get_folder_files($file);  
-                }  
-            }  
+                    $dirFileArray['fileList'][$handle] = get_folder_files($file);
+                }
+            }
         } else {  
             return 'error';
-        }  
-        return $dirFileArray;  
-    }    
+        }
+        return $dirFileArray;
+    }
 }
 
 /**
