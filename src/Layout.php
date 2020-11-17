@@ -33,7 +33,7 @@ class Layout extends Element
     public $contentStyle = null;
 
     /**
-     * layout 的布局模式, side：右侧导航，top：顶部导航，mix：混合布局
+     * layout 的布局模式, side：左侧导航，top：顶部导航，mix：混合布局
      *
      * @var string
      */
@@ -47,9 +47,9 @@ class Layout extends Element
     public $headerTheme = 'dark';
 
     /**
-     * layout 为mix布局，自动分割菜单
-     * true：顶部为一级菜单，右侧为子菜单
-     * false：菜单全部显示在右侧
+     * layout 为mix布局时，是否自动分割菜单
+     * false：菜单显示在左侧
+     * true：自动分割，顶部为一级菜单，左侧为子菜单
      *
      * @var bool
      */
@@ -63,7 +63,7 @@ class Layout extends Element
     public $contentWidth = 'Fluid';
 
     /**
-     * 导航的主题，'light' | 'dark'
+     * 导航菜单的主题，'light' | 'dark'
      *
      * @var string
      */
