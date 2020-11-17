@@ -52,6 +52,7 @@ class Quark
         $layout->logo(config('admin.logo'));
         $layout->layout(config('admin.layout.layout'));
         $layout->splitMenus(config('admin.layout.split_menus'));
+        $layout->headerTheme(config('admin.layout.header_theme'));
         $layout->contentWidth(config('admin.layout.content_width'));
         $layout->navTheme(config('admin.layout.nav_theme'));
         $layout->primaryColor(config('admin.layout.primary_color'));

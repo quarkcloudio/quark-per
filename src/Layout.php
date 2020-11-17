@@ -33,11 +33,27 @@ class Layout extends Element
     public $contentStyle = null;
 
     /**
-     * layout 的菜单模式,side：右侧导航，top：顶部导航
+     * layout 的布局模式, side：右侧导航，top：顶部导航，mix：混合布局
      *
      * @var string
      */
     public $layout = 'side';
+
+    /**
+     * layout 为mix布局时，顶部主题 dark | light
+     *
+     * @var string
+     */
+    public $headerTheme = 'dark';
+
+    /**
+     * layout 为mix布局，自动分割菜单
+     * true：顶部为一级菜单，右侧为子菜单
+     * false：菜单全部显示在右侧
+     *
+     * @var bool
+     */
+    public $splitMenus = false;
 
     /**
      * layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
@@ -103,15 +119,8 @@ class Layout extends Element
     public $collapsed = false;
 
     /**
-     * 自动分割菜单
-     *
-     * @var bool
-     */
-    public $splitMenus = false;
-
-    /**
      * layout 的左上角 的 title
-     * 
+     *
      * @param  string  $title
      * @return $this
      */
@@ -149,15 +158,15 @@ class Layout extends Element
     }
 
     /**
-     * layout 的菜单模式,side：右侧导航，top：顶部导航
+     * layout 的布局模式，side：右侧导航，top：顶部导航，mix：混合模式
      *
      * @param  string  $layout
      * @return $this
      */
     public function layout($layout)
     {
-        if(!in_array($layout,['side', 'top'])) {
-            throw new \Exception("Argument must be in 'side', 'top'!");
+        if(!in_array($layout,['side', 'top', 'mix'])) {
+            throw new \Exception("Argument must be in 'side', 'top', 'mix'!");
         }
 
         if($layout == 'side') {
@@ -167,6 +176,23 @@ class Layout extends Element
         }
 
         $this->layout = $layout;
+
+        return $this;
+    }
+
+    /**
+     * layout为mix时，顶部主题 dark | light
+     *
+     * @param boolean $headerTheme
+     * @return $this
+     */
+    public function headerTheme($headerTheme)
+    {
+        if(!in_array($headerTheme, ['light', 'dark'])) {
+            throw new \Exception("Argument must be in 'light', 'dark'!");
+        }
+
+        $this->headerTheme = $headerTheme;
 
         return $this;
     }
