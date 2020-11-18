@@ -117,6 +117,13 @@ class Item extends Element
     public $disabled = false;
 
     /**
+     * 是否忽略保存到数据库
+     *
+     * @var bool
+     */
+    public $ignore = false;
+
+    /**
      * 校验规则，设置字段的校验逻辑
      *
      * @var array
@@ -587,6 +594,18 @@ class Item extends Element
     public function disabled($status = true)
     {
         $status ? $this->disabled = true : $this->disabled = false;
+        return $this;
+    }
+    
+    /**
+     * 是否忽略保存到数据库，默认为 false
+     * 
+     * @param  bool $status
+     * @return object
+     */
+    public function ignore($status = true)
+    {
+        $status ? $this->ignore = true : $this->ignore = false;
         return $this;
     }
 

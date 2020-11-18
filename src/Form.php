@@ -682,6 +682,32 @@ class Form extends Element
      */
     protected function parseSubmitData($data)
     {
+        $items = $this->items;
+
+        foreach ($items as $key => $item) {
+
+            // 删除忽略的值
+            if($item->ignore) {
+                if(isset($data[$item->name])) {
+                    unset($data[$item->name]);
+                }
+            }
+
+            // when中的变量
+            if(!empty($item->when)) {
+                foreach ($item->when as $when) {
+                    foreach ($when['items'] as $whenItem) {
+                        // 删除忽略的值
+                        if($whenItem->ignore) {
+                            if(isset($data[$whenItem->name])) {
+                                unset($data[$whenItem->name]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         foreach ($data as $key => $value) {
             if(is_array($value)) {
                 $data[$key] = json_encode($value);
