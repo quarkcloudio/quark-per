@@ -33,7 +33,14 @@ class Form extends Element
     public $colon = true;
 
     /**
-     * 表单展示时默认值，只有初始化以及重置时生效
+     * 表单原始数据
+     *
+     * @var array
+     */
+    public $values = null;
+
+    /**
+     * 解析完之后表单数据
      *
      * @var array
      */
@@ -734,10 +741,7 @@ class Form extends Element
             $id = request('id');
         }
 
-        $data = $this->model->findOrFail($id)->toArray();
- 
-        // 给表单复制
-        $this->initialValues($data);
+        $this->values = $this->model->findOrFail($id)->toArray();
 
         return $this;
     }
@@ -912,9 +916,7 @@ class Form extends Element
         }
 
         // 为空，初始化表单数据
-        if(empty($this->initialValues)) {
-            $this->initialValues();
-        }
+        $this->initialValues($this->values);
 
         return array_merge([
             'api' => $this->api,
