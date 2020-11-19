@@ -124,6 +124,13 @@ class Form extends Element
     public $wrapperCol = ['span' => 14];
 
     /**
+     * 表单按钮布局样式
+     *
+     * @var string
+     */
+    public $buttonWrapperCol = ['offset' => 2, 'span' => 22 ];
+
+    /**
      * 表格提交的地址
      *
      * @var string
@@ -474,6 +481,7 @@ class Form extends Element
         if($layout === 'vertical') {
             $this->labelCol = null;
             $this->wrapperCol = null;
+            $this->buttonWrapperCol = null;
         }
 
         $this->layout = $layout;
@@ -509,6 +517,22 @@ class Form extends Element
         }
 
         $this->wrapperCol = $wrapperCol;
+        return $this;
+    }
+
+    /**
+     *  表单按钮布局样式,默认：['offset' => 2, 'span' => 22 ]
+     *
+     * @param  array  $buttonWrapperCol
+     * @return $this
+     */
+    public function buttonWrapperCol($buttonWrapperCol)
+    {
+        if($this->layout === 'vertical') {
+            throw new Exception("If layout set vertical mode,can't set buttonWrapperCol!");
+        }
+
+        $this->buttonWrapperCol = $buttonWrapperCol;
         return $this;
     }
 
@@ -960,6 +984,7 @@ class Form extends Element
             'layout' => $this->layout,
             'labelCol' => $this->labelCol,
             'wrapperCol' => $this->wrapperCol,
+            'buttonWrapperCol' => $this->buttonWrapperCol,
             'items' => $this->items,
         ], parent::jsonSerialize());
     }

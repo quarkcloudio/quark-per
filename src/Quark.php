@@ -15,7 +15,7 @@ class Quark
      */
     public function version()
     {
-        return 'v1.0.30';
+        return 'v1.0.31';
     }
 
     /**
