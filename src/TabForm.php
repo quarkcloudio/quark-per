@@ -155,6 +155,44 @@ class TabForm extends Form
         }
     }
 
+    protected function parseSubmitData($data)
+    {
+        if(isset($this->tab)) {
+            foreach ($this->tab as $tabKey => $tabValue) {
+                foreach ($tabValue['items'] as $key => $item) {
+                    // 删除忽略的值
+                    if($item->ignore) {
+                        if(isset($data[$item->name])) {
+                            unset($data[$item->name]);
+                        }
+                    }
+
+                    // when中的变量
+                    if(!empty($item->when)) {
+                        foreach ($item->when as $when) {
+                            foreach ($when['items'] as $whenItem) {
+                                // 删除忽略的值
+                                if($whenItem->ignore) {
+                                    if(isset($data[$whenItem->name])) {
+                                        unset($data[$whenItem->name]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach ($data as $key => $value) {
+            if(is_array($value)) {
+                $data[$key] = json_encode($value);
+            }
+        }
+
+        return $data;
+    }
+
     /**
      * tab布局的表单
      *

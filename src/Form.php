@@ -33,7 +33,14 @@ class Form extends Element
     public $colon = true;
 
     /**
-     * 表单展示时默认值，只有初始化以及重置时生效
+     * 表单原始数据
+     *
+     * @var array
+     */
+    public $values = null;
+
+    /**
+     * 解析完之后表单数据
      *
      * @var array
      */
@@ -115,6 +122,13 @@ class Form extends Element
      * @var string
      */
     public $wrapperCol = ['span' => 14];
+
+    /**
+     * 表单按钮布局样式
+     *
+     * @var string
+     */
+    public $buttonWrapperCol = ['offset' => 2, 'span' => 22 ];
 
     /**
      * 表格提交的地址
@@ -467,6 +481,7 @@ class Form extends Element
         if($layout === 'vertical') {
             $this->labelCol = null;
             $this->wrapperCol = null;
+            $this->buttonWrapperCol = null;
         }
 
         $this->layout = $layout;
@@ -502,6 +517,22 @@ class Form extends Element
         }
 
         $this->wrapperCol = $wrapperCol;
+        return $this;
+    }
+
+    /**
+     *  表单按钮布局样式,默认：['offset' => 2, 'span' => 22 ]
+     *
+     * @param  array  $buttonWrapperCol
+     * @return $this
+     */
+    public function buttonWrapperCol($buttonWrapperCol)
+    {
+        if($this->layout === 'vertical') {
+            throw new Exception("If layout set vertical mode,can't set buttonWrapperCol!");
+        }
+
+        $this->buttonWrapperCol = $buttonWrapperCol;
         return $this;
     }
 
@@ -675,6 +706,32 @@ class Form extends Element
      */
     protected function parseSubmitData($data)
     {
+        $items = $this->items;
+
+        foreach ($items as $key => $item) {
+
+            // 删除忽略的值
+            if($item->ignore) {
+                if(isset($data[$item->name])) {
+                    unset($data[$item->name]);
+                }
+            }
+
+            // when中的变量
+            if(!empty($item->when)) {
+                foreach ($item->when as $when) {
+                    foreach ($when['items'] as $whenItem) {
+                        // 删除忽略的值
+                        if($whenItem->ignore) {
+                            if(isset($data[$whenItem->name])) {
+                                unset($data[$whenItem->name]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         foreach ($data as $key => $value) {
             if(is_array($value)) {
                 $data[$key] = json_encode($value);
@@ -734,10 +791,7 @@ class Form extends Element
             $id = request('id');
         }
 
-        $data = $this->model->findOrFail($id)->toArray();
- 
-        // 给表单复制
-        $this->initialValues($data);
+        $this->values = $this->model->findOrFail($id)->toArray();
 
         return $this;
     }
@@ -912,9 +966,7 @@ class Form extends Element
         }
 
         // 为空，初始化表单数据
-        if(empty($this->initialValues)) {
-            $this->initialValues();
-        }
+        $this->initialValues($this->values);
 
         return array_merge([
             'api' => $this->api,
@@ -932,6 +984,7 @@ class Form extends Element
             'layout' => $this->layout,
             'labelCol' => $this->labelCol,
             'wrapperCol' => $this->wrapperCol,
+            'buttonWrapperCol' => $this->buttonWrapperCol,
             'items' => $this->items,
         ], parent::jsonSerialize());
     }
