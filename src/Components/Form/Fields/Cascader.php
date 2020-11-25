@@ -23,6 +23,27 @@ class Cascader extends Item
     public $options;
 
     /**
+     * 可以点击清除图标删除内容
+     *
+     * @var bool
+     */
+    public $allowClear = false;
+
+    /**
+     * 控件占位符
+     *
+     * @var string
+     */
+    public $placeholder = null;
+
+    /**
+     * api
+     *
+     * @var string
+     */
+    public $api;
+
+    /**
      * 初始化组件
      *
      * @param  string  $name
@@ -39,6 +60,9 @@ class Cascader extends Item
             $label = Arr::get($label, 0, ''); //[0];
             $this->label = $label;
         }
+
+        $this->placeholder = '请选择';
+        $this->allowClear();
     }
 
     /**
@@ -71,6 +95,42 @@ class Cascader extends Item
     }
 
     /**
+     * 设置api接口
+     *
+     * @param  string $api
+     * @return $this
+     */
+    public function api($api)
+    {
+        $this->api = $api;
+        return $this;
+    }
+
+    /**
+     * 可以点击清除图标删除内容
+     * 
+     * @param  string $allowClear
+     * @return $this
+     */
+    public function allowClear($allowClear = true)
+    {
+        $allowClear ? $this->allowClear = true : $this->allowClear = false;
+        return $this;
+    }
+
+    /**
+     * 控件占位符
+     *
+     * @param  string $placeholder
+     * @return $this
+     */
+    public function placeholder($placeholder = '')
+    {
+        $this->placeholder = $placeholder;
+        return $this;
+    }
+
+    /**
      * 组件json序列化
      *
      * @return array
@@ -78,8 +138,11 @@ class Cascader extends Item
     public function jsonSerialize()
     {
         return array_merge([
+            'api' => $this->api,
             'size' => $this->size,
-            'options' => $this->options
+            'options' => $this->options,
+            'placeholder' => $this->placeholder,
+            'allowClear' => $this->allowClear
         ], parent::jsonSerialize());
     }
 }
