@@ -16,6 +16,27 @@ class Search extends Item
     public $mode;
 
     /**
+     * 控件大小。注：标准表单内的输入框大小限制为 large。可选 large default small
+     *
+     * @var string
+     */
+    public $size = null;
+
+    /**
+     * 可以点击清除图标删除内容
+     *
+     * @var bool
+     */
+    public $allowClear = false;
+
+    /**
+     * 控件占位符
+     *
+     * @var string
+     */
+    public $placeholder = null;
+
+    /**
      * 与 select 相同，根据 options 生成子节点，推荐使用。
      *
      * @var array
