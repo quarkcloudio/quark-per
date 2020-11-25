@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use QuarkCMS\QuarkAdmin\Container;
 use QuarkCMS\QuarkAdmin\Card;
+use QuarkCMS\QuarkAdmin\Quark;
 use QuarkCMS\QuarkAdmin\Show;
 use QuarkCMS\QuarkAdmin\Components\Statistic;
 use QuarkCMS\QuarkAdmin\Components\Upgrade;
@@ -157,7 +158,7 @@ class DashboardController extends Controller
     protected function upgrade()
     {
         $upgrade = Upgrade::make('检查更新',backend_url('api/admin/upgrade/index'));
-        
+
         $upgrade->step('下载文件',backend_url('api/admin/upgrade/download'))->percent(20)->tip('正在下载软件包...');
         $upgrade->step('解压文件',backend_url('api/admin/upgrade/extract'))->percent(20)->tip('正在解压软件包...');
         $upgrade->step('更新程序',backend_url('api/admin/upgrade/updateFile'))->percent(20)->tip('正在更新程序...');

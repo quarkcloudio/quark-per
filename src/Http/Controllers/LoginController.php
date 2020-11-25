@@ -2,7 +2,6 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use QuarkCMS\QuarkAdmin\Http\Controllers\QuarkController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use QuarkCMS\QuarkAdmin\Models\Admin;
@@ -64,7 +63,7 @@ class LoginController extends QuarkController
 
             // 清除验证码
             cache(['adminCaptcha'=>null],60*10);
-            
+
             return error('用户名或密码错误！');
         }
     }

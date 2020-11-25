@@ -13,7 +13,7 @@ class Quark
      *
      * @return string
      */
-    public function version()
+    public static function version()
     {
         return 'v1.0.34';
     }
