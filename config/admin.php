@@ -34,7 +34,7 @@ return [
     |
     */
     'description' => '信息丰富的世界里，唯一稀缺的就是人类的注意力',
-    
+
     /*
     |--------------------------------------------------------------------------
     | QuarkAdmin captcha:todo
@@ -99,6 +99,9 @@ return [
 
         // layout 的菜单模式为mix时，是否自动分割菜单
         'split_menus' => false,
+
+        // layout 的菜单模式为mix时，顶部主题 'dark' | 'light'
+        'header_theme' => 'dark',
 
         // layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
         'content_width' => 'Fluid',
