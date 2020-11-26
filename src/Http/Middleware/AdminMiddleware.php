@@ -24,7 +24,7 @@ class AdminMiddleware
             
             $authorizations = explode(' ',$authorization);
 
-            if(!isset($authorization[1])) {
+            if(!isset($authorizations[1])) {
                 throw new AuthenticationException('Unauthenticated.');
             }
 
