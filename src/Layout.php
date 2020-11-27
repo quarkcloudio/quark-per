@@ -33,6 +33,13 @@ class Layout extends Element
     public $contentStyle = null;
 
     /**
+     * layout 的头部行为
+     *
+     * @var string
+     */
+    public $headerActions = null;
+
+    /**
      * layout 的布局模式, side：左侧导航，top：顶部导航，mix：混合布局
      *
      * @var string
@@ -153,6 +160,19 @@ class Layout extends Element
     public function loading($loading = true)
     {
         $loading ? $this->loading = true : $this->loading = false;
+
+        return $this;
+    }
+
+    /**
+     * layout 的头部行为
+     *
+     * @param  string  $headerActions
+     * @return $this
+     */
+    public function headerActions($headerActions)
+    {
+        $this->headerActions = $headerActions;
 
         return $this;
     }
@@ -370,6 +390,7 @@ class Layout extends Element
             'title' => $this->title,
             'logo' => $this->logo,
             'loading' => $this->loading,
+            'headerActions' => $this->headerActions,
             'layout' => $this->layout,
             'contentWidth' => $this->contentWidth,
             'navTheme' => $this->navTheme,

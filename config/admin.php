@@ -94,6 +94,20 @@ return [
         // layout 的左上角 的 logo
         'logo' => config('admin.logo'),
 
+        // layout 的头部行为
+        'header_actions' => [
+            [
+                'component' => 'icon',
+                'tooltip' => '使用文档',
+                'href' => 'http://www.quarkcms.com/'
+            ],
+            // [
+            //     'component' => 'a',
+            //     'title' => '使用文档',
+            //     'href' => 'http://www.ixiaoquan.com'
+            // ]
+        ],
+
         // layout 的菜单模式,side：右侧导航，top：顶部导航，mix：混合模式
         'layout' => 'side',
 
