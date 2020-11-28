@@ -98,13 +98,16 @@ return [
         'header_actions' => [
             [
                 'component' => 'icon',
+                'icon' => 'icon-question-circle',
                 'tooltip' => '使用文档',
-                'href' => 'http://www.quarkcms.com/'
+                'href' => 'http://www.quarkcms.com/',
+                'target' => '_blank'
             ],
             // [
             //     'component' => 'a',
             //     'title' => '使用文档',
-            //     'href' => 'http://www.ixiaoquan.com'
+            //     'href' => 'http://www.ixiaoquan.com',
+            //     'target' => '_blank'
             // ]
         ],
 
