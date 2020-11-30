@@ -64,6 +64,13 @@ class Item extends Element
     public $placeholder = null;
 
     /**
+     * 单向联动
+     *
+     * @var array
+     */
+    public $load = null;
+
+    /**
      * label 标签的文本
      *
      * @param string $label
@@ -178,6 +185,22 @@ class Item extends Element
     }
 
     /**
+     * 单向联动
+     *
+     * @param  string $field
+     * @param  string $api
+     * @return $this
+     */
+    public function load($field, $api)
+    {
+        $data['field'] = $field;
+        $data['api'] = $api;
+        $this->load = $data;
+
+        return $this;
+    }
+
+    /**
      * 多选下拉菜单控件
      *
      * @param array $options
@@ -244,7 +267,8 @@ class Item extends Element
             'rules' => $this->rules,
             'placeholder' => $this->placeholder,
             'operator' => $this->operator,
-            'options' => $this->options
+            'options' => $this->options,
+            'load' => $this->load
         ], parent::jsonSerialize());
     }
 }
