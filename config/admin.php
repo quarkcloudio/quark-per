@@ -101,7 +101,8 @@ return [
                 'icon' => 'icon-question-circle',
                 'tooltip' => '使用文档',
                 'href' => 'http://www.quarkcms.com/',
-                'target' => '_blank'
+                'target' => '_blank',
+                'style' => ['color' => '#000']
             ],
             // [
             //     'component' => 'a',
