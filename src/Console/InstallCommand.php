@@ -79,6 +79,7 @@ class InstallCommand extends Command
 
         $this->createDashboardController();
         $this->createUpgradeController();
+        $this->createDemoController();
         $this->createRoutesFile();
     }
 
@@ -96,7 +97,6 @@ class InstallCommand extends Command
         $this->line('<info>DashboardController file was created:</info> '.str_replace(base_path(), '', $controller));
     }
 
-
     /**
      * Create UpgradeController.
      *
@@ -109,6 +109,20 @@ class InstallCommand extends Command
 
         $this->laravel['files']->put($controller,$contents);
         $this->line('<info>UpgradeController file was created:</info> '.str_replace(base_path(), '', $controller));
+    }
+
+    /**
+     * Create DemoController.
+     *
+     * @return void
+     */
+    public function createDemoController()
+    {
+        $controller = $this->directory.'/DemoController.php';
+        $contents = $this->getStub('DemoController');
+
+        $this->laravel['files']->put($controller,$contents);
+        $this->line('<info>DemoController file was created:</info> '.str_replace(base_path(), '', $controller));
     }
 
     /**
