@@ -17,4 +17,7 @@ Route::group([
     $router->get('admin/upgrade/updateDatabase', 'UpgradeController@updateDatabase')->name('api/admin/upgrade/updateDatabase');
     $router->get('admin/upgrade/clearCache', 'UpgradeController@clearCache')->name('api/admin/upgrade/clearCache');
     $router->get('admin/upgrade/finish', 'UpgradeController@finish')->name('api/admin/upgrade/finish');
+
+    $router->get('admin/demo/index', 'DemoController@index')->name('api/admin/demo/index');
+    $router->get('admin/demo/suggest', 'DemoController@suggest')->name('api/admin/demo/suggest');
 });

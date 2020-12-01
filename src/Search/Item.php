@@ -168,9 +168,31 @@ class Item extends Element
      * @param array $options
      * @return object
      */
-    public function select($options)
+    public function select($options = [])
     {
         $this->component = 'select';
+
+        $data = [];
+        foreach ($options as $key => $value) {
+            $option['label'] = $value;
+            $option['value'] = $key;
+            $data[] = $option;
+        }
+        $this->options = $data;
+
+        $this->placeholder = '请选择' . $this->label;
+        return $this;
+    }
+
+    /**
+     * 多选下拉菜单控件
+     *
+     * @param array $options
+     * @return object
+     */
+    public function multipleSelect($options = [])
+    {
+        $this->component = 'multipleSelect';
 
         $data = [];
         foreach ($options as $key => $value) {
@@ -197,28 +219,6 @@ class Item extends Element
         $data['api'] = $api;
         $this->load = $data;
 
-        return $this;
-    }
-
-    /**
-     * 多选下拉菜单控件
-     *
-     * @param array $options
-     * @return object
-     */
-    public function multipleSelect($options)
-    {
-        $this->component = 'multipleSelect';
-
-        $data = [];
-        foreach ($options as $key => $value) {
-            $option['label'] = $value;
-            $option['value'] = $key;
-            $data[] = $option;
-        }
-        $this->options = $data;
-
-        $this->placeholder = '请选择' . $this->label;
         return $this;
     }
 

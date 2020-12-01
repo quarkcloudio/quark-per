@@ -138,11 +138,11 @@ class Table extends Element
         $this->component = 'table';
         if(!empty($model)) {
             $this->model = new Model($model,$this);
+            $this->eloquentModel = $this->model()->eloquent();
         }
         $this->search = new Search;
         $this->batchAction = new Action;
         $this->toolbar = new ToolBar;
-        $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
 
         return $this;
@@ -709,21 +709,26 @@ class Table extends Element
     {
         if(!empty($this->datasource)) {
             $data = $this->datasource;
-        } else {
+        } elseif($this->model) {
             $data = $this->model->get();
             if(method_exists($data,'currentPage')) {
                 // 存在分页，则设置分页
                 $this->pagination($data->currentPage(), $data->perPage(), $data->total());
             }
+        } else {
+            $data = null;
         }
 
         $datasource = null;
-        foreach ($data as $key => $value) {
-            // 解析每一行的行为
-            $value = $this->parseRowActions($value);
 
-            // 解析每一行的数据
-            $datasource[$key] = $this->parseRowData($value);
+        if($data) {
+            foreach ($data as $key => $value) {
+                // 解析每一行的行为
+                $value = $this->parseRowActions($value);
+    
+                // 解析每一行的数据
+                $datasource[$key] = $this->parseRowData($value);
+            }
         }
 
         $this->datasource($datasource);
