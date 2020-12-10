@@ -187,6 +187,34 @@ class Form extends Element
     public $savedCallback;
 
     /**
+     * 是否禁用重置按钮
+     *
+     * @var bool
+     */
+    public $disabledResetButton = false;
+
+    /**
+     * 重置按钮文字展示
+     *
+     * @var bool
+     */
+    public $resetButtonText = '重置';
+
+    /**
+     * 是否禁用提交按钮
+     *
+     * @var bool
+     */
+    public $disabledSubmitButton = false;
+
+    /**
+     * 提交按钮文字展示
+     *
+     * @var bool
+     */
+    public $submitButtonText = '提交';
+
+    /**
      * 表单字段控件
      *
      * @var array
@@ -907,6 +935,58 @@ class Form extends Element
     }
 
     /**
+     * 是否禁用重置按钮
+     *
+     * @param bool $disabledResetButton
+     * @return $this
+     */
+    public function disabledResetButton($disabledResetButton = true)
+    {
+        $this->disabledResetButton = $disabledResetButton;
+
+        return $this;
+    }
+
+    /**
+     * 重置按钮文字展示
+     *
+     * @param string $resetButtonText
+     * @return $this
+     */
+    public function resetButtonText($resetButtonText)
+    {
+        $this->resetButtonText = $resetButtonText;
+
+        return $this;
+    }
+
+    /**
+     * 是否禁用提交按钮
+     *
+     * @param bool $disabledSubmitButton
+     * @return $this
+     */
+    public function disabledSubmitButton($disabledSubmitButton = true)
+    {
+        $this->disabledSubmitButton = $disabledSubmitButton;
+
+        return $this;
+    }
+
+    /**
+     * 提交按钮文字展示
+     *
+     * @param string $submitButtonText
+     * @return $this
+     */
+    public function submitButtonText($submitButtonText)
+    {
+        $this->submitButtonText = $submitButtonText;
+
+        return $this;
+    }
+
+    /**
      * 获取行为类
      *
      * @param string $method
@@ -985,6 +1065,10 @@ class Form extends Element
             'labelCol' => $this->labelCol,
             'wrapperCol' => $this->wrapperCol,
             'buttonWrapperCol' => $this->buttonWrapperCol,
+            'disabledResetButton' => $this->disabledResetButton,
+            'resetButtonText' => $this->resetButtonText,
+            'disabledSubmitButton' => $this->disabledSubmitButton,
+            'submitButtonText' => $this->submitButtonText,
             'items' => $this->items,
         ], parent::jsonSerialize());
     }
