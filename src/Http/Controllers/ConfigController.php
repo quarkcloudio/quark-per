@@ -68,12 +68,18 @@ class ConfigController extends Controller
                                 ->value($config['value']);
                                 break;
                             case 'switch':
+                                if($config['value'] === '0') {
+                                    $value = false;
+                                } else {
+                                    $value = true;
+                                }
+
                                 $form->switch($config['name'],$config['title'])
                                 ->extra($config['remark'])
                                 ->options([
                                     'on'  => '开启',
                                     'off' => '关闭'
-                                ])->value($config['value']);
+                                ])->value($value);
 
                                 break;
                             case 'picture':

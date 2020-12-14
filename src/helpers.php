@@ -339,7 +339,7 @@ if(!function_exists('modify_env')) {
             return $item;
         });
         
-        $content = implode($contentArray->toArray(), "\n");
+        $content = implode("\n", $contentArray->toArray());
         
         \File::put($envPath, $content);
     }
