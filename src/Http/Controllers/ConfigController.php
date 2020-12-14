@@ -333,6 +333,15 @@ class ConfigController extends Controller
             'off' => '禁用'
         ])->default(true);
 
+        // 保存数据后回调
+        $form->saved(function ($form) {
+            if($form->model()) {
+                return success('操作成功！',frontend_url('admin/config/index'));
+            } else {
+                return error('操作失败，请重试！');
+            }
+        });
+
         return $form;
     }
 }
