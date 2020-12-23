@@ -99,6 +99,13 @@ class Table extends Element
     public $tableExtraRender = null;
 
     /**
+     * 设置表格滚动
+     *
+     * @var array
+     */
+    public $scroll = null;
+
+    /**
      * 表格数据
      *
      * @var array|string
@@ -285,6 +292,19 @@ class Table extends Element
     public function tableExtraRender($tableExtraRender)
     {
         $this->tableExtraRender = $tableExtraRender;
+
+        return $this;
+    }
+
+    /**
+     * 设置表格滚动
+     *
+     * @param  array  $scroll
+     * @return $this
+     */
+    public function scroll($scroll)
+    {
+        $this->scroll = $scroll;
 
         return $this;
     }
@@ -791,6 +811,9 @@ class Table extends Element
         // 自定义表格的主体函数
         $tableExtraRender = $this->tableExtraRender;
 
+        // 设置表格滚动
+        $scroll = $this->scroll;
+
         // 填充数据
         $this->fillData();
 
@@ -816,6 +839,7 @@ class Table extends Element
             'columnEmptyText' => $columnEmptyText,
             'toolbar' => $toolbar,
             'tableExtraRender' => $tableExtraRender,
+            'scroll' => $scroll,
             'datasource' => $datasource,
             'pagination' => $pagination
         ], parent::jsonSerialize());
