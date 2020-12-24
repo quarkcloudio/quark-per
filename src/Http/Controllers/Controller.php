@@ -31,6 +31,13 @@ class Controller extends BaseController
     protected $breadcrumb = false;
 
     /**
+     * 是否显示返回按钮
+     *
+     * @var bool|string
+     */
+    protected $backButton = false;
+
+    /**
      * 获取标题
      *
      * @param  void
@@ -64,6 +71,17 @@ class Controller extends BaseController
     }
 
     /**
+     * 返回按钮
+     *
+     * @param  bool|string  $backButton
+     * @return $this
+     */
+    protected function backButton($backButton = true)
+    {
+        return $this->backButton;
+    }
+
+    /**
      * 列表页面
      *
      * @param Request $request
@@ -85,6 +103,9 @@ class Controller extends BaseController
 
         // 设置面包屑导航
         $container->breadcrumb($this->breadcrumb());
+
+        // 返回按钮
+        $container->backButton($this->backButton());
 
         // 放到card组件
         $card = new Card(null,$table);
@@ -124,6 +145,9 @@ class Controller extends BaseController
         // 设置面包屑导航
         $container->breadcrumb($this->breadcrumb());
 
+        // 返回按钮
+        $container->backButton($this->backButton());
+
         // 设置内容
         $container->content($show);
 
@@ -152,6 +176,9 @@ class Controller extends BaseController
 
         // 设置面包屑导航
         $container->breadcrumb($this->breadcrumb());
+
+        // 返回按钮
+        $container->backButton($this->backButton());
 
         // 设置内容
         $container->content($form);
@@ -199,6 +226,9 @@ class Controller extends BaseController
 
         // 设置面包屑导航
         $container->breadcrumb($this->breadcrumb());
+
+        // 返回按钮
+        $container->backButton($this->backButton());
 
         // 设置内容
         $container->content($form);

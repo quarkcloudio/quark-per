@@ -72,7 +72,7 @@ class Container extends Element
     /**
      * 返回按钮
      *
-     * @var bool
+     * @var bool|string
      */
     public $backButton = false;
 
@@ -162,12 +162,12 @@ class Container extends Element
     /**
      * 返回按钮
      *
-     * @param  bool  $backButton
+     * @param  bool|string  $backButton
      * @return $this
      */
     public function backButton($backButton = true)
     {
-        $backButton ? $this->backButton = true : $this->backButton = false;
+        $$this->backButton = $backButton;
 
         return $this;
     }

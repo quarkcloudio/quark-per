@@ -141,7 +141,7 @@ class Show extends Element
      * @param bool $bordered
      * @return $this
      */
-    public function bordered($bordered)
+    public function bordered($bordered = true)
     {
         $this->bordered = $bordered;
         return $this;
