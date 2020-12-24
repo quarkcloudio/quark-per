@@ -73,10 +73,10 @@ class Controller extends BaseController
     /**
      * 返回按钮
      *
-     * @param  bool|string  $backButton
+     * @param  void
      * @return $this
      */
-    protected function backButton($backButton = true)
+    protected function backButton()
     {
         return $this->backButton;
     }

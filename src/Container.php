@@ -167,7 +167,7 @@ class Container extends Element
      */
     public function backButton($backButton = true)
     {
-        $$this->backButton = $backButton;
+        $this->backButton = $backButton;
 
         return $this;
     }
