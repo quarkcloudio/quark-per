@@ -84,12 +84,18 @@ class BaseAction extends Element
      * @param  string  $target
      * @return $this
      */
-    public function showLink($target='_blank')
+    public function showLink($target = '_blank')
     {
         $action = \request()->route()->getName();
         $action = Str::replaceFirst('api/','',$action);
         $action = Str::replaceLast('/index','/show',$action);
-        $href = '#/quark/engine?api='.$action.'&id={id}';
+
+        if($target === '_blank') {
+            $href = '#/quark/engine?api='.$action.'&id={id}';
+        } else {
+            $href = '/quark/engine?api='.$action.'&id={id}';
+        }
+
         $this->link($href, $target);
         
         return $this;
@@ -106,7 +112,13 @@ class BaseAction extends Element
         $action = \request()->route()->getName();
         $action = Str::replaceFirst('api/','',$action);
         $action = Str::replaceLast('/index','/create',$action);
-        $href = '/quark/engine?api='.$action;
+ 
+        if($target === '_blank') {
+            $href = '#/quark/engine?api='.$action;
+        } else {
+            $href = '/quark/engine?api='.$action;
+        }
+
         $this->link($href, $target);
         
         return $this;
@@ -123,7 +135,13 @@ class BaseAction extends Element
         $action = \request()->route()->getName();
         $action = Str::replaceFirst('api/','',$action);
         $action = Str::replaceLast('/index','/edit',$action);
-        $href = '/quark/engine?api='.$action.'&id={id}';
+
+        if($target === '_blank') {
+            $href = '#/quark/engine?api='.$action.'&id={id}';
+        } else {
+            $href = '/quark/engine?api='.$action.'&id={id}';
+        }
+
         $this->link($href, $target);
         
         return $this;
