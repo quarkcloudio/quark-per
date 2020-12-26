@@ -142,8 +142,7 @@ class MenuController extends Controller
         }
 
         $form->labelCol(['span' => 5])
-        ->width('500px')
-        ->size('small')
+        ->width('600px')
         ->title($title);
 
         $form->hidden('id');
@@ -196,7 +195,8 @@ class MenuController extends Controller
         $form->select('permission_ids','绑定权限')
         ->mode('tags')
         ->options($getPermissions)
-        ->default($permissionIds);
+        ->default($permissionIds)
+        ->width(400);
 
         $form->switch('show','显示')->options([
             'on'  => '是',
