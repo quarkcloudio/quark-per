@@ -79,6 +79,13 @@ class Show extends Element
     public $items = null;
 
     /**
+     * 是否显示返回按钮
+     *
+     * @var bool|string
+     */
+    public $backButton = false;
+
+    /**
      * 字段控件
      *
      * @var array
@@ -198,6 +205,18 @@ class Show extends Element
     }
 
     /**
+     * 是否显示返回按钮
+     *
+     * @param bool|string $backButton
+     * @return $this
+     */
+    public function backButton($backButton)
+    {
+        $this->backButton = $backButton;
+        return $this;
+    }
+
+    /**
      * 获取注册类
      *
      * @param string $method
@@ -277,6 +296,7 @@ class Show extends Element
             'layout' => $this->layout,
             'colon' =>$this->colon,
             'items' => $this->items,
+            'backButton' => $this->backButton
         ], parent::jsonSerialize());
     }
 }
