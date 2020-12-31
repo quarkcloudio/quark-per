@@ -106,6 +106,13 @@ class Table extends Element
     public $scroll = null;
 
     /**
+     * 设置显示斑马线样式
+     *
+     * @var bool
+     */
+    public $striped = false;
+
+    /**
      * 表格数据
      *
      * @var array|string
@@ -305,6 +312,19 @@ class Table extends Element
     public function scroll($scroll)
     {
         $this->scroll = $scroll;
+
+        return $this;
+    }
+
+    /**
+     * 设置表格滚动
+     *
+     * @param  bool  $striped
+     * @return $this
+     */
+    public function striped($striped = true)
+    {
+        $this->striped = $striped;
 
         return $this;
     }
@@ -814,6 +834,9 @@ class Table extends Element
         // 设置表格滚动
         $scroll = $this->scroll;
 
+        // 设置显示斑马线
+        $striped = $this->striped;
+
         // 填充数据
         $this->fillData();
 
@@ -840,6 +863,7 @@ class Table extends Element
             'toolbar' => $toolbar,
             'tableExtraRender' => $tableExtraRender,
             'scroll' => $scroll,
+            'striped' => $striped,
             'datasource' => $datasource,
             'pagination' => $pagination
         ], parent::jsonSerialize());
