@@ -435,6 +435,19 @@ class PictureController extends Controller
     protected function localUpload($request)
     {
         $file = $request->file('file');
+        $limitW = request('limitW');
+        $limitH = request('limitH');
+
+        $fileSize = getimagesize($file->getRealPath());
+        $weight = $fileSize["0"]; // 获取图片的宽
+        $height = $fileSize["1"]; // 获取图片的高
+
+        if(!empty($limitW) && !empty($limitH)) {
+            if(($weight != $limitW) || ($height != $limitH)) {
+                return error("请上传 ".$limitW."*".$limitH." 尺寸的图片");
+            }
+        }
+
         $md5 = md5_file($file->getRealPath());
         $name = $file->getClientOriginalName();
 
