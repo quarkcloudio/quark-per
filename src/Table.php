@@ -688,42 +688,6 @@ class Table extends Element
 
             if(isset($row[$value->attribute])) {
 
-                // 解析using规则
-                if($value->using) {
-                    if(isset($value->using[$row[$value->attribute]])) {
-                        $row[$value->attribute] = $value->using[$row[$value->attribute]];
-                    }
-                }
-
-                // 解析link规则
-                if($value->link) {
-                    $item['title'] = $row[$value->attribute];
-                    $item['href'] = str_replace('{id}',$row['id'],$value->link['href']);
-                    $item['target'] = $value->link['target'];
-                    $row[$value->attribute] = $item;
-                }
-
-                // 解析image规则
-                if($value->image) {
-                    if($value->image['path']) {
-                        $row[$value->attribute] = $value->image['path'];
-                    } else {
-                        $row[$value->attribute] = get_picture($row[$value->attribute]);
-                    }
-                }
-
-                // 解析qrcode规则
-                if($value->qrcode) {
-                    $url = 'https://api.qrserver.com/v1/create-qr-code/?size=';
-                    $size = $value->qrcode['width'].'x'.$value->qrcode['height'];
-                    if($value->qrcode['content']) {
-                        $content = '&data='.$value->qrcode['content'];
-                    } else {
-                        $content = '&data='.$row[$value->attribute];
-                    }
-                    $row[$value->attribute] = $url.$size.$content;
-                }
-
                 // 解析display回调函数
                 if($value->displayCallback) {
                     $row[$value->attribute] = call_user_func_array($value->displayCallback,[$row[$value->attribute]]);
@@ -734,6 +698,42 @@ class Table extends Element
                 if($value->displayCallback) {
                     $row[$value->attribute] = call_user_func_array($value->displayCallback,[$row]);
                 }
+            }
+
+            // 解析using规则
+            if($value->using) {
+                if(isset($value->using[$row[$value->attribute]])) {
+                    $row[$value->attribute] = $value->using[$row[$value->attribute]];
+                }
+            }
+
+            // 解析link规则
+            if($value->link) {
+                $item['title'] = $row[$value->attribute];
+                $item['href'] = str_replace('{id}',$row['id'],$value->link['href']);
+                $item['target'] = $value->link['target'];
+                $row[$value->attribute] = $item;
+            }
+
+            // 解析image规则
+            if($value->image) {
+                if($value->image['path']) {
+                    $row[$value->attribute] = $value->image['path'];
+                } else {
+                    $row[$value->attribute] = get_picture($row[$value->attribute]);
+                }
+            }
+
+            // 解析qrcode规则
+            if($value->qrcode) {
+                $url = 'https://api.qrserver.com/v1/create-qr-code/?size=';
+                $size = $value->qrcode['width'].'x'.$value->qrcode['height'];
+                if($value->qrcode['content']) {
+                    $content = '&data='.$value->qrcode['content'];
+                } else {
+                    $content = '&data='.$row[$value->attribute];
+                }
+                $row[$value->attribute] = $url.$size.$content;
             }
         }
 
