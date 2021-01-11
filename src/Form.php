@@ -196,7 +196,7 @@ class Form extends Element
     /**
      * 重置按钮文字展示
      *
-     * @var bool
+     * @var string
      */
     public $resetButtonText = '重置';
 
@@ -210,9 +210,23 @@ class Form extends Element
     /**
      * 提交按钮文字展示
      *
-     * @var bool
+     * @var string
      */
     public $submitButtonText = '提交';
+
+    /**
+     * 是否禁用返回按钮
+     *
+     * @var bool
+     */
+    public $disabledBackButton = false;
+
+    /**
+     * 返回按钮文字展示
+     *
+     * @var string
+     */
+    public $backButtonText = '返回上一页';
 
     /**
      * 表单字段控件
@@ -987,6 +1001,32 @@ class Form extends Element
     }
 
     /**
+     * 是否禁用返回按钮
+     *
+     * @param bool $disabledBackButton
+     * @return $this
+     */
+    public function disabledBackButton($disabledBackButton = true)
+    {
+        $this->disabledBackButton = $disabledBackButton;
+
+        return $this;
+    }
+
+    /**
+     * 返回按钮文字展示
+     *
+     * @param string $backButtonText
+     * @return $this
+     */
+    public function backButtonText($backButtonText)
+    {
+        $this->backButtonText = $backButtonText;
+
+        return $this;
+    }
+
+    /**
      * 获取行为类
      *
      * @param string $method
@@ -1069,6 +1109,8 @@ class Form extends Element
             'resetButtonText' => $this->resetButtonText,
             'disabledSubmitButton' => $this->disabledSubmitButton,
             'submitButtonText' => $this->submitButtonText,
+            'disabledBackButton' => $this->disabledBackButton,
+            'backButtonText' => $this->backButtonText,
             'items' => $this->items,
         ], parent::jsonSerialize());
     }
