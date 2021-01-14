@@ -182,6 +182,12 @@ class ConfigController extends Controller
                 modify_env($data);
             }
 
+            if($config['type'] == 'file' || $config['type'] == 'picture') {
+                if(isset($value['id'])) {
+                    $value = $value['id'];
+                }
+            }
+
             $getResult = Config::where('name',$key)->update(['value'=>$value]);
             if($getResult === false) {
                 $result = false;
