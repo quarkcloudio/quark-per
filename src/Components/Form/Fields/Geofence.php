@@ -116,17 +116,39 @@ class Geofence extends Item
     }
 
     /**
-     * 坐标位置
+     * 中心坐标位置
      *
      * @param  string|number  $longitude
      * @param  string|number  $latitude
      * @return $this
      */
-    public function position($longitude,$latitude)
+    public function center($longitude,$latitude)
     {
         $position['longitude'] = $longitude;
         $position['latitude'] = $latitude;
-        $this->value = $position;
+        $getValue = $this->value;
+
+        $value['center'] = $position;
+        $value['points'] = $getValue['points'];
+
+        $this->value = $value;
+        return $this;
+    }
+
+    /**
+     * 多边形围栏坐标点
+     *
+     * @param  array  $points
+     * @return $this
+     */
+    public function points($points)
+    {
+        $getValue = $this->value;
+
+        $value['center'] = $getValue['center'];
+        $value['points'] = $points;
+
+        $this->value = $value;
         return $this;
     }
 
