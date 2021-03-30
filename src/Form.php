@@ -260,6 +260,7 @@ class Form extends Element
         'cascader' => Components\Form\Fields\Cascader::class,
         'search' => Components\Form\Fields\Search::class,
         'list' => Components\Form\Fields\ListField::class,
+        'geofence' => Components\Form\Fields\Geofence::class,
     ];
 
     /**
