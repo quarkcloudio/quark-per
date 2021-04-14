@@ -8,7 +8,6 @@ use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Quark;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Models\Menu;
-use QuarkCMS\QuarkAdmin\Models\Config;
 
 class QuarkController extends Controller
 {
@@ -29,7 +28,24 @@ class QuarkController extends Controller
     }
 
     /**
-     * Get quark info.
+     * 后台入口方法
+     *
+     * @param Request $request
+     *
+     * @return array
+     */
+    public function index(Request $request)
+    {
+        $assetManifest = file_get_contents(public_path('/admin/asset-manifest.json'));
+        $data = json_decode($assetManifest,true);
+        $result['umiCss'] = $data['/umi.css'];
+        $result['umiJs'] = $data['/umi.js'];
+
+        return view('admin.index',$result);
+    }
+
+    /**
+     * 获取系统信息
      *
      * @param Request $request
      *

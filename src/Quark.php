@@ -13,9 +13,9 @@ class Quark
      *
      * @return string
      */
-    public function version()
+    public static function version()
     {
-        return config('admin.version');
+        return 'v1.1.28';
     }
 
     /**
@@ -50,8 +50,10 @@ class Quark
 
         $layout->title(config('admin.name'));
         $layout->logo(config('admin.logo'));
+        $layout->headerActions(config('admin.layout.header_actions'));
         $layout->layout(config('admin.layout.layout'));
         $layout->splitMenus(config('admin.layout.split_menus'));
+        $layout->headerTheme(config('admin.layout.header_theme'));
         $layout->contentWidth(config('admin.layout.content_width'));
         $layout->navTheme(config('admin.layout.nav_theme'));
         $layout->primaryColor(config('admin.layout.primary_color'));
@@ -79,6 +81,6 @@ class Quark
             throw new \Exception("Class {$method} does not exist.");
         }
 
-        return new $getCalledClass($parameters);
+        return new $getCalledClass(...$parameters);
     }
 }

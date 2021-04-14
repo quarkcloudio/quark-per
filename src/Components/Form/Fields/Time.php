@@ -6,8 +6,15 @@ use QuarkCMS\QuarkAdmin\Components\Form\Item;
 use Illuminate\Support\Arr;
 use Exception;
 
-class Editor extends Item
+class Time extends Item
 {
+    /**
+     * 时间显示格式
+     *
+     * @var string
+     */
+    public $format = 'HH:mm';
+
     /**
      * 初始化组件
      *
@@ -16,7 +23,7 @@ class Editor extends Item
      * @return void
      */
     public function __construct($name,$label = '') {
-        $this->component = 'editor';
+        $this->component = 'time';
         $this->name = $name;
 
         if(empty($label) || !count($label)) {
@@ -26,34 +33,30 @@ class Editor extends Item
             $this->label = $label;
         }
 
-        $this->placeholder = '请输入'.$this->label;
-
-        $style = ['height' => 500,'width' => 800];
-
-        $this->style = $style;
+        $this->value = null;
     }
 
     /**
-     * 宽度
-     * 
-     * @param  number|string $value
+     * 设置时间显示格式
+     *
+     * @param  string $format
      * @return $this
      */
-    public function width($value = '100%')
+    public function format($format)
     {
-        $this->style['width'] = $value;
+        $this->format = $format;
         return $this;
     }
 
     /**
-     * 高度
-     * 
-     * @param  number|string $value
-     * @return $this
+     * 组件json序列化
+     *
+     * @return array
      */
-    public function height($value = 500)
+    public function jsonSerialize()
     {
-        $this->style['height'] = $value;
-        return $this;
+        return array_merge([
+            'format' => $this->format
+        ], parent::jsonSerialize());
     }
 }

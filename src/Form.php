@@ -33,7 +33,14 @@ class Form extends Element
     public $colon = true;
 
     /**
-     * 表单展示时默认值，只有初始化以及重置时生效
+     * 表单原始数据
+     *
+     * @var array
+     */
+    public $values = null;
+
+    /**
+     * 解析完之后表单数据
      *
      * @var array
      */
@@ -117,6 +124,13 @@ class Form extends Element
     public $wrapperCol = ['span' => 14];
 
     /**
+     * 表单按钮布局样式
+     *
+     * @var string
+     */
+    public $buttonWrapperCol = ['offset' => 2, 'span' => 22 ];
+
+    /**
      * 表格提交的地址
      *
      * @var string
@@ -173,6 +187,48 @@ class Form extends Element
     public $savedCallback;
 
     /**
+     * 是否禁用重置按钮
+     *
+     * @var bool
+     */
+    public $disabledResetButton = false;
+
+    /**
+     * 重置按钮文字展示
+     *
+     * @var string
+     */
+    public $resetButtonText = '重置';
+
+    /**
+     * 是否禁用提交按钮
+     *
+     * @var bool
+     */
+    public $disabledSubmitButton = false;
+
+    /**
+     * 提交按钮文字展示
+     *
+     * @var string
+     */
+    public $submitButtonText = '提交';
+
+    /**
+     * 是否禁用返回按钮
+     *
+     * @var bool
+     */
+    public $disabledBackButton = false;
+
+    /**
+     * 返回按钮文字展示
+     *
+     * @var string
+     */
+    public $backButtonText = '返回上一页';
+
+    /**
      * 表单字段控件
      *
      * @var array
@@ -197,12 +253,14 @@ class Form extends Element
         'dateRange' => Components\Form\Fields\DateRange::class,
         'datetime' => Components\Form\Fields\Datetime::class,
         'datetimeRange' => Components\Form\Fields\DatetimeRange::class,
+        'time' => Components\Form\Fields\Time::class,
         'timeRange' => Components\Form\Fields\TimeRange::class,
         'editor' => Components\Form\Fields\Editor::class,
         'map' => Components\Form\Fields\Map::class,
         'cascader' => Components\Form\Fields\Cascader::class,
         'search' => Components\Form\Fields\Search::class,
         'list' => Components\Form\Fields\ListField::class,
+        'geofence' => Components\Form\Fields\Geofence::class,
     ];
 
     /**
@@ -212,7 +270,7 @@ class Form extends Element
      * @param  \Closure|array  $content
      * @return void
      */
-    public function __construct(Eloquent $model)
+    public function __construct(Eloquent $model = null)
     {
         $this->component = 'form';
         $this->model = $model;
@@ -298,6 +356,41 @@ class Form extends Element
     }
 
     /**
+     *  解析initialValue
+     *
+     * @param  object  $item
+     * @return $this
+     */
+    public function parseInitialValue($item,$initialValues)
+    {
+        $value = null;
+        if(isset($item->name)) {
+
+            if(isset($item->defaultValue)) {
+                $value = $item->defaultValue;
+            }
+
+            if(isset($initialValues[$item->name])) {
+                $value = $initialValues[$item->name];
+            }
+
+            if(isset($item->value)) {
+                $value = $item->value;
+            }
+
+            if(!empty($value)) {
+                if(is_string($value)) {
+                    if(count(explode('[',$value))>1 || count(explode('{',$value))>1) {
+                        $value = json_decode($value, true);
+                    }
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
      *  表单默认值，只有初始化以及重置时生效
      *
      * @param  array  $initialValues
@@ -308,30 +401,20 @@ class Form extends Element
         $data = [];
 
         if(isset($this->items)) {
-            foreach ($this->items as $key => $item) {
-                if(isset($item->name)) {
-                    if(isset($item->name)) {
-                        $value = null;
+            foreach ($this->items as $item) {
+                $value = $this->parseInitialValue($item,$initialValues);
+                if($value !== null) {
+                    $data[$item->name] = $value;
+                }
 
-                        if(isset($item->defaultValue)) {
-                            $value = $item->defaultValue;
-                        }
-
-                        if(isset($initialValues[$item->name])) {
-                            $value = $initialValues[$item->name];
-                        }
-
-                        if(isset($item->value)) {
-                            $value = $item->value;
-                        }
-
-                        if(!empty($value)) {
-                            if(is_string($value)) {
-                                if(count(explode('[',$value))>1) {
-                                    $value = json_decode($value, true);
-                                }
+                // when中的变量
+                if(!empty($item->when)) {
+                    foreach ($item->when as $when) {
+                        foreach ($when['items'] as $whenItem) {
+                            $whenValue = $this->parseInitialValue($whenItem,$initialValues);
+                            if($whenValue !== null) {
+                                $data[$whenItem->name] = $whenValue;
                             }
-                            $data[$item->name] = $value;
                         }
                     }
                 }
@@ -441,6 +524,7 @@ class Form extends Element
         if($layout === 'vertical') {
             $this->labelCol = null;
             $this->wrapperCol = null;
+            $this->buttonWrapperCol = null;
         }
 
         $this->layout = $layout;
@@ -476,6 +560,22 @@ class Form extends Element
         }
 
         $this->wrapperCol = $wrapperCol;
+        return $this;
+    }
+
+    /**
+     *  表单按钮布局样式,默认：['offset' => 2, 'span' => 22 ]
+     *
+     * @param  array  $buttonWrapperCol
+     * @return $this
+     */
+    public function buttonWrapperCol($buttonWrapperCol)
+    {
+        if($this->layout === 'vertical') {
+            throw new Exception("If layout set vertical mode,can't set buttonWrapperCol!");
+        }
+
+        $this->buttonWrapperCol = $buttonWrapperCol;
         return $this;
     }
 
@@ -534,6 +634,33 @@ class Form extends Element
     }
 
     /**
+     * 解析验证提交数据库前的值
+     *
+     * @param array $data
+     * @return array
+     */
+    public function itemValidator($data,$name,$rules,$ruleMessages)
+    {
+        $errorMsg = null;
+        foreach ($rules as &$rule) {
+            if (is_string($rule) && isset($data['id'])) {
+                $rule = str_replace('{id}', $data['id'], $rule);
+            }
+        }
+        $getRules[$name] = $rules;
+        $validator = Validator::make($data,$getRules,$ruleMessages);
+        if ($validator->fails()) {
+            $errors = $validator->errors()->getMessages();
+            foreach($errors as $key => $value) {
+                $errorMsg = $value[0];
+            }
+            return $errorMsg;
+        }
+
+        return $errorMsg;
+    }
+
+    /**
      * 验证提交数据库前的值
      *
      * @param array $data
@@ -551,18 +678,8 @@ class Form extends Element
 
             // 通用验证规则
             if($value->rules) {
-                foreach ($value->rules as &$rule) {
-                    if (is_string($rule) && isset($data['id'])) {
-                        $rule = str_replace('{id}', $data['id'], $rule);
-                    }
-                }
-                $rules[$value->name] = $value->rules;
-                $validator = Validator::make($data,$rules,$value->ruleMessages);
-                if ($validator->fails()) {
-                    $errors = $validator->errors()->getMessages();
-                    foreach($errors as $key => $value) {
-                        $errorMsg = $value[0];
-                    }
+                $errorMsg = $this->itemValidator($data,$value->name,$value->rules,$value->ruleMessages);
+                if($errorMsg) {
                     return $errorMsg;
                 }
             }
@@ -570,13 +687,8 @@ class Form extends Element
             // 新增数据，验证规则
             if($this->isCreating()) {
                 if($value->creationRules) {
-                    $creationRules[$value->name] = $value->creationRules;
-                    $validator = Validator::make($data,$creationRules,$value->creationRuleMessages);
-                    if ($validator->fails()) {
-                        $errors = $validator->errors()->getMessages();
-                        foreach($errors as $key => $value) {
-                            $errorMsg = $value[0];
-                        }
+                    $errorMsg = $this->itemValidator($data,$value->name,$value->creationRules,$value->creationRuleMessages);
+                    if($errorMsg) {
                         return $errorMsg;
                     }
                 }
@@ -585,19 +697,44 @@ class Form extends Element
             // 编辑数据，验证规则
             if($this->isEditing()) {
                 if($value->updateRules) {
-                    foreach ($value->updateRules as &$rule) {
-                        if (is_string($rule)) {
-                            $rule = str_replace('{id}', $data['id'], $rule);
-                        }
-                    }
-                    $updateRules[$value->name] = $value->updateRules;
-                    $validator = Validator::make($data,$updateRules,$value->updateRuleMessages);
-                    if ($validator->fails()) {
-                        $errors = $validator->errors()->getMessages();
-                        foreach($errors as $key => $value) {
-                            $errorMsg = $value[0];
-                        }
+                    $errorMsg = $this->itemValidator($data,$value->name,$value->updateRules,$value->updateRuleMessages);
+                    if($errorMsg) {
                         return $errorMsg;
+                    }
+                }
+            }
+
+            // when中的变量
+            if(!empty($value->when)) {
+                foreach ($value->when as $when) {
+                    foreach ($when['items'] as $whenItem) {
+                        // 通用验证规则
+                        if($whenItem->rules) {
+                            $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->rules,$whenItem->ruleMessages);
+                            if($errorMsg) {
+                                return $errorMsg;
+                            }
+                        }
+
+                        // 新增数据，验证规则
+                        if($this->isCreating()) {
+                            if($whenItem->creationRules) {
+                                $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->creationRules,$whenItem->creationRuleMessages);
+                                if($errorMsg) {
+                                    return $errorMsg;
+                                }
+                            }
+                        }
+
+                        // 编辑数据，验证规则
+                        if($this->isEditing()) {
+                            if($whenItem->updateRules) {
+                                $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->updateRules,$whenItem->updateRuleMessages);
+                                if($errorMsg) {
+                                    return $errorMsg;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -612,6 +749,32 @@ class Form extends Element
      */
     protected function parseSubmitData($data)
     {
+        $items = $this->items;
+
+        foreach ($items as $key => $item) {
+
+            // 删除忽略的值
+            if($item->ignore) {
+                if(isset($data[$item->name])) {
+                    unset($data[$item->name]);
+                }
+            }
+
+            // when中的变量
+            if(!empty($item->when)) {
+                foreach ($item->when as $when) {
+                    foreach ($when['items'] as $whenItem) {
+                        // 删除忽略的值
+                        if($whenItem->ignore) {
+                            if(isset($data[$whenItem->name])) {
+                                unset($data[$whenItem->name]);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
         foreach ($data as $key => $value) {
             if(is_array($value)) {
                 $data[$key] = json_encode($value);
@@ -640,7 +803,10 @@ class Form extends Element
 
         // 调用保存前回调函数
         if(!empty($this->savingCallback)) {
-            call_user_func($this->savingCallback,$this);
+            $result = call_user_func($this->savingCallback,$this);
+            if($result) {
+                return $result;
+            }
         }
 
         $data = $this->parseSubmitData($this->data);
@@ -668,10 +834,7 @@ class Form extends Element
             $id = request('id');
         }
 
-        $data = $this->model->findOrFail($id)->toArray();
- 
-        // 给表单复制
-        $this->initialValues($data);
+        $this->values = $this->model->findOrFail($id)->toArray();
 
         return $this;
     }
@@ -695,7 +858,10 @@ class Form extends Element
 
         // 调用保存前回调函数
         if(!empty($this->savingCallback)) {
-            call_user_func($this->savingCallback,$this);
+            $result = call_user_func($this->savingCallback,$this);
+            if($result) {
+                return $result;
+            }
         }
 
         $data = $this->parseSubmitData($this->data);
@@ -784,6 +950,84 @@ class Form extends Element
     }
 
     /**
+     * 是否禁用重置按钮
+     *
+     * @param bool $disabledResetButton
+     * @return $this
+     */
+    public function disabledResetButton($disabledResetButton = true)
+    {
+        $this->disabledResetButton = $disabledResetButton;
+
+        return $this;
+    }
+
+    /**
+     * 重置按钮文字展示
+     *
+     * @param string $resetButtonText
+     * @return $this
+     */
+    public function resetButtonText($resetButtonText)
+    {
+        $this->resetButtonText = $resetButtonText;
+
+        return $this;
+    }
+
+    /**
+     * 是否禁用提交按钮
+     *
+     * @param bool $disabledSubmitButton
+     * @return $this
+     */
+    public function disabledSubmitButton($disabledSubmitButton = true)
+    {
+        $this->disabledSubmitButton = $disabledSubmitButton;
+
+        return $this;
+    }
+
+    /**
+     * 提交按钮文字展示
+     *
+     * @param string $submitButtonText
+     * @return $this
+     */
+    public function submitButtonText($submitButtonText)
+    {
+        $this->submitButtonText = $submitButtonText;
+
+        return $this;
+    }
+
+    /**
+     * 是否禁用返回按钮
+     *
+     * @param bool $disabledBackButton
+     * @return $this
+     */
+    public function disabledBackButton($disabledBackButton = true)
+    {
+        $this->disabledBackButton = $disabledBackButton;
+
+        return $this;
+    }
+
+    /**
+     * 返回按钮文字展示
+     *
+     * @param string $backButtonText
+     * @return $this
+     */
+    public function backButtonText($backButtonText)
+    {
+        $this->backButtonText = $backButtonText;
+
+        return $this;
+    }
+
+    /**
      * 获取行为类
      *
      * @param string $method
@@ -842,6 +1086,9 @@ class Form extends Element
             }
         }
 
+        // 为空，初始化表单数据
+        $this->initialValues($this->values);
+
         return array_merge([
             'api' => $this->api,
             'colon' => $this->colon,
@@ -858,6 +1105,13 @@ class Form extends Element
             'layout' => $this->layout,
             'labelCol' => $this->labelCol,
             'wrapperCol' => $this->wrapperCol,
+            'buttonWrapperCol' => $this->buttonWrapperCol,
+            'disabledResetButton' => $this->disabledResetButton,
+            'resetButtonText' => $this->resetButtonText,
+            'disabledSubmitButton' => $this->disabledSubmitButton,
+            'submitButtonText' => $this->submitButtonText,
+            'disabledBackButton' => $this->disabledBackButton,
+            'backButtonText' => $this->backButtonText,
             'items' => $this->items,
         ], parent::jsonSerialize());
     }

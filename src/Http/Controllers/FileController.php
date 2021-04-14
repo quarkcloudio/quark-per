@@ -10,7 +10,6 @@ use QuarkCMS\QuarkAdmin\Models\FileCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 
 class FileController extends Controller
 {
@@ -33,10 +32,7 @@ class FileController extends Controller
         $table->column('ext','扩展名');
         $table->column('created_at','上传时间');
         $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
-        $table->column('actions','操作')->width(180)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(180)->actions(function($action,$row) {
 
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {
@@ -55,12 +51,9 @@ class FileController extends Controller
 
             // 下载文件
             $action->a('下载')->link(backend_url('api/admin/file/download?id='.$row['id'],true),'_blank');
-
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')
             ->api('admin/file/delete?id='.$row['id']);
-
-            return $action;
         });
 
         // 批量操作

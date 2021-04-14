@@ -2,7 +2,19 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::group(['namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'], function ($router) {
+// 默认登录入口
+Route::group([
+	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
+], function ($router) {
+	$router->get('admin/', 'QuarkController@index')->name('admin/');
+	$router->get('admin/index', 'QuarkController@index')->name('admin/index');
+});
+
+// 不需要登录认证的路由
+Route::group([
+	'prefix' => 'api',
+	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
+], function ($router) {
 	$router->get('admin/quark/info', 'QuarkController@info')->name('api/admin/quark/info');
 	$router->get('admin/quark/test', 'QuarkController@test')->name('api/admin/quark/test');
 
@@ -11,7 +23,9 @@ Route::group(['namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'], functio
 	$router->any('admin/logout', 'LoginController@logout')->name('api/admin/logout');
 });
 
+// 需要登录认证的路由
 Route::group([
+	'prefix' => 'api',
 	'middleware' => 'admin',
 	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
 ], function ($router) {
@@ -23,7 +37,6 @@ Route::group([
 	$router->post('admin/account/password', 'AccountController@password')->name('api/admin/account/password');
 
 	$router->get('admin/admin/index', 'AdminController@index')->name('api/admin/admin/index');
-	$router->get('admin/admin/show', 'AdminController@show')->name('api/admin/admin/show');
 	$router->get('admin/admin/create', 'AdminController@create')->name('api/admin/admin/create');
 	$router->post('admin/admin/store', 'AdminController@store')->name('api/admin/admin/store');
 	$router->get('admin/admin/edit', 'AdminController@edit')->name('api/admin/admin/edit');
@@ -33,14 +46,13 @@ Route::group([
 	$router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');
 	$router->get('admin/permission/sync', 'PermissionController@sync')->name('api/admin/permission/sync');
 	$router->any('admin/permission/action', 'PermissionController@action')->name('api/admin/permission/action');
-	$router->post('admin/permission/destroy', 'PermissionController@destroy')->name('api/admin/permission/destroy');
 
 	$router->get('admin/role/index', 'RoleController@index')->name('api/admin/role/index');
 	$router->get('admin/role/create', 'RoleController@create')->name('api/admin/role/create');
 	$router->post('admin/role/store', 'RoleController@store')->name('api/admin/role/store');
 	$router->get('admin/role/edit', 'RoleController@edit')->name('api/admin/role/edit');
 	$router->post('admin/role/update', 'RoleController@update')->name('api/admin/role/update');
-	$router->post('admin/role/destroy', 'RoleController@destroy')->name('api/admin/role/destroy');
+	$router->any('admin/role/action', 'RoleController@action')->name('api/admin/role/action');
 
 	$router->any('admin/config/website', 'ConfigController@website')->name('api/admin/config/website');
 	$router->any('admin/config/saveWebsite', 'ConfigController@saveWebsite')->name('api/admin/config/saveWebsite');
@@ -50,7 +62,6 @@ Route::group([
 	$router->get('admin/config/edit', 'ConfigController@edit')->name('api/admin/config/edit');
 	$router->post('admin/config/update', 'ConfigController@update')->name('api/admin/config/update');
 	$router->any('admin/config/action', 'ConfigController@action')->name('api/admin/config/action');
-	$router->post('admin/config/destroy', 'ConfigController@destroy')->name('api/admin/config/destroy');
 
 	$router->get('admin/menu/index', 'MenuController@index')->name('api/admin/menu/index');
 	$router->get('admin/menu/create', 'MenuController@create')->name('api/admin/menu/create');
@@ -58,7 +69,6 @@ Route::group([
 	$router->get('admin/menu/edit', 'MenuController@edit')->name('api/admin/menu/edit');
 	$router->post('admin/menu/update', 'MenuController@update')->name('api/admin/menu/update');
 	$router->any('admin/menu/action', 'MenuController@action')->name('api/admin/menu/action');
-	$router->post('admin/menu/destroy', 'MenuController@destroy')->name('api/admin/menu/destroy');
 
 	$router->get('admin/actionLog/index', 'ActionLogController@index')->name('api/admin/actionLog/index');
 	$router->any('admin/actionLog/action', 'ActionLogController@action')->name('api/admin/actionLog/action');

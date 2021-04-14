@@ -10,7 +10,6 @@ use QuarkCMS\QuarkAdmin\Models\PictureCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 
 class PictureController extends Controller
 {
@@ -35,10 +34,7 @@ class PictureController extends Controller
         $table->column('height','高度');
         $table->column('ext','扩展名');
         $table->column('created_at','上传时间');
-        $table->column('actions','操作')->width(180)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(180)->actions(function($action,$row) {
 
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {
@@ -57,12 +53,9 @@ class PictureController extends Controller
 
             // 下载文件
             $action->a('下载')->link(backend_url('api/admin/picture/download?id='.$row['id'],true),'_blank');
-
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')
             ->api('admin/picture/delete?id='.$row['id']);
-
-            return $action;
         });
 
         // 批量操作
@@ -442,6 +435,19 @@ class PictureController extends Controller
     protected function localUpload($request)
     {
         $file = $request->file('file');
+        $limitW = request('limitW');
+        $limitH = request('limitH');
+
+        $fileSize = getimagesize($file->getRealPath());
+        $weight = $fileSize["0"]; // 获取图片的宽
+        $height = $fileSize["1"]; // 获取图片的高
+
+        if(!empty($limitW) && !empty($limitH)) {
+            if(($weight != $limitW) || ($height != $limitH)) {
+                return error("请上传 ".$limitW."*".$limitH." 尺寸的图片");
+            }
+        }
+
         $md5 = md5_file($file->getRealPath());
         $name = $file->getClientOriginalName();
 

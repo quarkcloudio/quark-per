@@ -112,6 +112,10 @@ class Icon extends Item
             'icon-barchart','icon-pointmap','icon-container','icon-atom','icon-zanwutupian','icon-safetycertificate',
             'icon-password','icon-article','icon-page','icon-plugin','icon-admin','icon-banner'
         ];
+
+        $this->style['width'] = 200;
+        $this->placeholder = '请选择'.$this->label;
+        $this->allowClear();
     }
 
     /**

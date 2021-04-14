@@ -69,6 +69,13 @@ class Column extends Element
     public $copyable = false;
 
     /**
+     * 是否渲染Html
+     *
+     * @var bool
+     */
+    public $isHtml = false;
+
+    /**
      * 值的枚举，会自动转化把值当成 key 来取出要显示的内容
      *
      * @var array
@@ -285,6 +292,18 @@ class Column extends Element
     public function copyable($copyable = true)
     {
         $this->copyable = $copyable;
+        return $this;
+    }
+    
+    /**
+     * 是否渲染Html
+     *
+     * @param  bool  $isHtml
+     * @return $this
+     */
+    public function isHtml($isHtml = true)
+    {
+        $this->isHtml = $isHtml;
         return $this;
     }
 
@@ -550,6 +569,7 @@ class Column extends Element
             'tooltip' => $this->tooltip,
             'ellipsis' => $this->ellipsis,
             'copyable' => $this->copyable,
+            'isHtml' => $this->isHtml,
             'valueEnum' => $this->valueEnum,
             'valueType' => $this->valueType,
             'hideInSearch' => $this->hideInSearch,

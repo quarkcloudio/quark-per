@@ -29,7 +29,9 @@ class DropdownStyle extends Element
      */
     public function overlay($callback = null)
     {
-        $this->overlay[] = $callback(new Action);
+        $action = new Action;
+        $callback($action);
+        $this->overlay[] = $action;
         return $this;
     }
 

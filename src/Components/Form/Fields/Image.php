@@ -44,6 +44,13 @@ class Image extends Item
     public $limitNum = 3;
 
     /**
+     * 上传图片现在宽高
+     *
+     * @var number
+     */
+    public $limitWH = ['width' => null, 'height' => null];
+
+    /**
      * 图片上传api接口
      *
      * @var string
@@ -130,6 +137,23 @@ class Image extends Item
     }
 
     /**
+     * 上传图片限制尺寸
+     *
+     * @param  number  $width 宽度
+     * @param  number  $height 高度
+     * @return $this
+     */
+    public function limitWH($width,$height)
+    {
+        $limitWH['width'] = $width;
+        $limitWH['height'] = $height;
+
+        $this->limitWH = $limitWH;
+
+        return $this;
+    }
+
+    /**
      * 上传的api接口
      *
      * @param  string  $api
@@ -166,7 +190,8 @@ class Image extends Item
             'button' => $this->button,
             'limitSize' => $this->limitSize,
             'limitType' => $this->limitType,
-            'limitNum' => $this->limitNum
+            'limitNum' => $this->limitNum,
+            'limitWH' => $this->limitWH
         ], parent::jsonSerialize());
     }
 }

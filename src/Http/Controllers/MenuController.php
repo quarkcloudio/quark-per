@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 use Spatie\Permission\Models\Permission;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Form;
 
 class MenuController extends Controller
@@ -30,10 +29,7 @@ class MenuController extends Controller
         $table->column('path','路由')->width('18%');
         $table->column('show','显示')->using(['1'=>'显示','0'=>'隐藏'])->width(100);
         $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
-        $table->column('actions','操作')->width(200)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
+        $table->column('actions','操作')->width(200)->actions(function($action,$row) {
 
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {
@@ -72,8 +68,6 @@ class MenuController extends Controller
             ->model()
             ->where('id','{id}')
             ->delete();
-
-            return $action;
         });
 
         $table->toolBar()->actions(function($action) {
@@ -82,7 +76,6 @@ class MenuController extends Controller
             ->type('primary')
             ->icon('plus-circle')
             ->drawerForm(backend_url('api/admin/menu/create'));
-            return $action;
         });
 
         // 批量操作
@@ -107,8 +100,6 @@ class MenuController extends Controller
                 ->model()
                 ->whereIn('id','{ids}')
                 ->update(['status'=>1]);
-
-                return $action;
             });
         });
 
@@ -150,9 +141,8 @@ class MenuController extends Controller
             $title = '编辑'.$this->title;
         }
 
-        $form->labelCol(['span' => 4])
+        $form->labelCol(['span' => 5])
         ->width('600px')
-        ->size('small')
         ->title($title);
 
         $form->hidden('id');
@@ -205,7 +195,8 @@ class MenuController extends Controller
         $form->select('permission_ids','绑定权限')
         ->mode('tags')
         ->options($getPermissions)
-        ->default($permissionIds);
+        ->default($permissionIds)
+        ->width(400);
 
         $form->switch('show','显示')->options([
             'on'  => '是',
@@ -224,6 +215,8 @@ class MenuController extends Controller
                 unset($data['permission_ids']);
                 $form->data = $data;
             }
+
+            $form->data['guard_name'] = 'admin';
         });
 
         // 保存数据后回调

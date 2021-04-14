@@ -1,10 +1,10 @@
 <?php
 
 return [
-    
+
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin App version
+    | QuarkAdmin App Name
     |--------------------------------------------------------------------------
     |
     | This value is the name of your application. This value is used when the
@@ -12,23 +12,11 @@ return [
     | or in other locations. Of course, you're free to change the value.
     |
     */
-    'version' => 'v1.0.0',
+    'name' => 'QuarkAdmin',
 
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin App Name
-    |--------------------------------------------------------------------------
-    |
-    | This value is the name of your application. This value is used when the
-    | framework needs to display the name of the application within the UI
-    | or in other locations. Of course, you're free to change the value.
-    |
-    */
-    'name' => 'QaurkCMS',
-
-    /*
-    |--------------------------------------------------------------------------
-    | Quark-admin logo
+    | QuarkAdmin logo
     |--------------------------------------------------------------------------
     |
     | The logo of all admin pages. You can also set it as an image by using a
@@ -39,17 +27,17 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin description
+    | QuarkAdmin description
     |--------------------------------------------------------------------------
     |
     | The description of login page.
     |
     */
     'description' => '信息丰富的世界里，唯一稀缺的就是人类的注意力',
-    
+
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin captcha:todo
+    | QuarkAdmin captcha:todo
     |--------------------------------------------------------------------------
     |
     | 登录验证码类型，tencent_captcha：腾讯云验证码，local：本地图形验证码
@@ -82,7 +70,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin iconfontUrl
+    | QuarkAdmin iconfontUrl
     |--------------------------------------------------------------------------
     |
     | 使用 IconFont 的图标配置
@@ -92,10 +80,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin layout
+    | QuarkAdmin layout
     |--------------------------------------------------------------------------
     |
-    | The layout of quark-admin
+    | The layout of QuarkAdmin
     |
     */
     'layout' => [
@@ -106,11 +94,32 @@ return [
         // layout 的左上角 的 logo
         'logo' => config('admin.logo'),
 
+        // layout 的头部行为
+        'header_actions' => [
+            [
+                'component' => 'icon',
+                'icon' => 'icon-question-circle',
+                'tooltip' => '使用文档',
+                'href' => 'http://www.quarkcms.com/',
+                'target' => '_blank',
+                'style' => ['color' => '#000']
+            ],
+            // [
+            //     'component' => 'a',
+            //     'title' => '使用文档',
+            //     'href' => 'http://www.ixiaoquan.com',
+            //     'target' => '_blank'
+            // ]
+        ],
+
         // layout 的菜单模式,side：右侧导航，top：顶部导航，mix：混合模式
         'layout' => 'side',
 
         // layout 的菜单模式为mix时，是否自动分割菜单
         'split_menus' => false,
+
+        // layout 的菜单模式为mix时，顶部主题 'dark' | 'light'
+        'header_theme' => 'dark',
 
         // layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
         'content_width' => 'Fluid',
@@ -139,7 +148,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin copyright
+    | QuarkAdmin copyright
     |--------------------------------------------------------------------------
     |
     | 网站版权
@@ -149,7 +158,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin friend links
+    | QuarkAdmin friend links
     |--------------------------------------------------------------------------
     |
     | 友情链接
@@ -172,7 +181,7 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Quark-admin auth setting
+    | QuarkAdmin auth setting
     |--------------------------------------------------------------------------
     |
     | Authentication settings for all admin pages. Include an authentication

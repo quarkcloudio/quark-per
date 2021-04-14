@@ -2,14 +2,15 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-use Closure;
-use Exception;
 use Illuminate\Database\Eloquent\Model as Eloquent;
+use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Components\Table\Model;
 use QuarkCMS\QuarkAdmin\Components\Table\Column;
 use QuarkCMS\QuarkAdmin\Components\Table\ToolBar;
 use QuarkCMS\QuarkAdmin\Search;
 use QuarkCMS\QuarkAdmin\Action;
+use Closure;
+use Exception;
 
 class Table extends Element
 {
@@ -98,6 +99,20 @@ class Table extends Element
     public $tableExtraRender = null;
 
     /**
+     * 设置表格滚动
+     *
+     * @var array
+     */
+    public $scroll = null;
+
+    /**
+     * 设置显示斑马线样式
+     *
+     * @var bool
+     */
+    public $striped = false;
+
+    /**
      * 表格数据
      *
      * @var array|string
@@ -132,14 +147,16 @@ class Table extends Element
      * @param  \Closure|array  $content
      * @return void
      */
-    public function __construct(Eloquent $model)
+    public function __construct(Eloquent $model = null)
     {
         $this->component = 'table';
-        $this->model = new Model($model,$this);
+        if(!empty($model)) {
+            $this->model = new Model($model,$this);
+            $this->eloquentModel = $this->model()->eloquent();
+        }
         $this->search = new Search;
         $this->batchAction = new Action;
         $this->toolbar = new ToolBar;
-        $this->eloquentModel = $this->model()->eloquent();
         $this->columns = collect();
 
         return $this;
@@ -157,6 +174,19 @@ class Table extends Element
             throw new Exception("argument must be in 'auto', 'fixed'!");
         }
         $this->tableLayout = $tableLayout;
+
+        return $this;
+    }
+
+    /**
+     * 表头标题
+     *
+     * @param  string  $title
+     * @return $this
+     */
+    public function title($title)
+    {
+        $this->headerTitle($title);
 
         return $this;
     }
@@ -269,6 +299,32 @@ class Table extends Element
     public function tableExtraRender($tableExtraRender)
     {
         $this->tableExtraRender = $tableExtraRender;
+
+        return $this;
+    }
+
+    /**
+     * 设置表格滚动
+     *
+     * @param  array  $scroll
+     * @return $this
+     */
+    public function scroll($scroll)
+    {
+        $this->scroll = $scroll;
+
+        return $this;
+    }
+
+    /**
+     * 设置表格滚动
+     *
+     * @param  bool  $striped
+     * @return $this
+     */
+    public function striped($striped = true)
+    {
+        $this->striped = $striped;
 
         return $this;
     }
@@ -504,8 +560,9 @@ class Table extends Element
         foreach ($columns as $columnKey => $value) {
             // 解析action回调函数
             if($value->actionCallback) {
-                $actionCallback = call_user_func_array($value->actionCallback,[$row]);
-                $rowActions = $actionCallback->actions();
+                $rowAction = new Action();
+                call_user_func_array($value->actionCallback,[$rowAction,$row]);
+                $rowActions = $rowAction->actions();
                 $action = $this->parseExecuteActionRules($rowActions,$key);
             }
         }
@@ -600,8 +657,9 @@ class Table extends Element
         foreach ($columns as $key => $value) {
             // 解析action回调函数
             if($value->actionCallback) {
-                $actionCallback = call_user_func_array($value->actionCallback,[$row]);
-                $actions = $actionCallback->actions();
+                $rowAction = new Action();
+                call_user_func_array($value->actionCallback,[$rowAction,$row]);
+                $actions = $rowAction->actions();
                 $row[$value->attribute] = $this->parseRowActionRules($row,$actions);
             }
         }
@@ -619,48 +677,63 @@ class Table extends Element
     {
         $columns = $this->columns;
         foreach ($columns as $key => $value) {
+
+            // 解析关联属性
+            if (Str::contains($value->attribute, '.')) {
+                list($relation, $relationColumn) = explode('.', $value->attribute);
+                if(isset($row[$relation])) {
+                    $row[$value->attribute] = $row[$relation]->$relationColumn;
+                }
+            }
+
             if(isset($row[$value->attribute])) {
-
-                // 解析using规则
-                if($value->using) {
-                    if(isset($value->using[$row[$value->attribute]])) {
-                        $row[$value->attribute] = $value->using[$row[$value->attribute]];
-                    }
-                }
-
-                // 解析link规则
-                if($value->link) {
-                    $item['title'] = $row[$value->attribute];
-                    $item['href'] = str_replace('{id}',$row['id'],$value->link['href']);
-                    $item['target'] = $value->link['target'];
-                    $row[$value->attribute] = $item;
-                }
-
-                // 解析image规则
-                if($value->image) {
-                    if($value->image['path']) {
-                        $row[$value->attribute] = $value->image['path'];
-                    } else {
-                        $row[$value->attribute] = get_picture($row[$value->attribute]);
-                    }
-                }
-
-                // 解析qrcode规则
-                if($value->qrcode) {
-                    $url = 'https://api.qrserver.com/v1/create-qr-code/?size=';
-                    $size = $value->qrcode['width'].'x'.$value->qrcode['height'];
-                    if($value->qrcode['content']) {
-                        $content = '&data='.$value->qrcode['content'];
-                    } else {
-                        $content = '&data='.$row[$value->attribute];
-                    }
-                    $row[$value->attribute] = $url.$size.$content;
-                }
 
                 // 解析display回调函数
                 if($value->displayCallback) {
                     $row[$value->attribute] = call_user_func_array($value->displayCallback,[$row[$value->attribute]]);
                 }
+            } else {
+                
+                // 解析display回调函数
+                if($value->displayCallback) {
+                    $row[$value->attribute] = call_user_func_array($value->displayCallback,[$row]);
+                }
+            }
+
+            // 解析using规则
+            if($value->using) {
+                if(isset($value->using[$row[$value->attribute]])) {
+                    $row[$value->attribute] = $value->using[$row[$value->attribute]];
+                }
+            }
+
+            // 解析link规则
+            if($value->link) {
+                $item['title'] = $row[$value->attribute];
+                $item['href'] = str_replace('{id}',$row['id'],$value->link['href']);
+                $item['target'] = $value->link['target'];
+                $row[$value->attribute] = $item;
+            }
+
+            // 解析image规则
+            if($value->image) {
+                if($value->image['path']) {
+                    $row[$value->attribute] = $value->image['path'];
+                } else {
+                    $row[$value->attribute] = get_picture($row[$value->attribute]);
+                }
+            }
+
+            // 解析qrcode规则
+            if($value->qrcode) {
+                $url = 'https://api.qrserver.com/v1/create-qr-code/?size=';
+                $size = $value->qrcode['width'].'x'.$value->qrcode['height'];
+                if($value->qrcode['content']) {
+                    $content = '&data='.$value->qrcode['content'];
+                } else {
+                    $content = '&data='.$row[$value->attribute];
+                }
+                $row[$value->attribute] = $url.$size.$content;
             }
         }
 
@@ -676,25 +749,26 @@ class Table extends Element
     {
         if(!empty($this->datasource)) {
             $data = $this->datasource;
+        } elseif($this->model) {
+            $data = $this->model->get();
+            if(method_exists($data,'currentPage')) {
+                // 存在分页，则设置分页
+                $this->pagination($data->currentPage(), $data->perPage(), $data->total());
+            }
         } else {
-            $data = $this->model->data();
-        }
-
-        if(isset($data['current_page'])) {
-            // 存在分页，则设置分页
-            $this->pagination($data['current_page'], $data['per_page'], $data['total']);
-
-            // 重设数据
-            $data = $data['data'];
+            $data = null;
         }
 
         $datasource = null;
-        foreach ($data as $key => $value) {
-            // 解析每一行的行为
-            $value = $this->parseRowActions($value);
 
-            // 解析每一行的数据
-            $datasource[$key] = $this->parseRowData($value);
+        if($data) {
+            foreach ($data as $key => $value) {
+                // 解析每一行的行为
+                $value = $this->parseRowActions($value);
+    
+                // 解析每一行的数据
+                $datasource[$key] = $this->parseRowData($value);
+            }
         }
 
         $this->datasource($datasource);
@@ -748,29 +822,20 @@ class Table extends Element
         // 空值时的显示，不设置 则默认显示 -
         $columnEmptyText = $this->columnEmptyText;
 
-        $table = cache($this->key);
+        // 获取工具栏
+        $toolbar = $this->toolbar->jsonSerialize();
 
-        if(empty($table)) {
-
-            // 表格搜索表单
-            $table['search'] = $this->search;
-
-            // 批量操作
-            $table['batchActions'] = $this->parseActions($this->batchAction->actions());
-
-            // 获取工具栏
-            $toolbar = $this->toolbar->jsonSerialize();
-
-            // 解析工具栏操作
-            $toolbar['actions'] = $this->parseActions($this->toolbar->action->actions());
-            $table['toolbar'] = $toolbar;
-
-            // 存储到缓存中
-            cache([$this->key => $table], 3600);
-        }
+        // 解析工具栏操作
+        $toolbar['actions'] = $this->parseActions($this->toolbar->action->actions());
 
         // 自定义表格的主体函数
         $tableExtraRender = $this->tableExtraRender;
+
+        // 设置表格滚动
+        $scroll = $this->scroll;
+
+        // 设置显示斑马线
+        $striped = $this->striped;
 
         // 填充数据
         $this->fillData();
@@ -791,12 +856,14 @@ class Table extends Element
             'headerTitle' => $headerTitle,
             'columns' => $columns,
             'options' => $options,
-            'search' => $table['search'],
-            'batchActions' => $table['batchActions'],
+            'search' => $this->search,
+            'batchActions' => $this->parseActions($this->batchAction->actions()),
             'dateFormatter' => $dateFormatter,
             'columnEmptyText' => $columnEmptyText,
-            'toolbar' => $table['toolbar'],
+            'toolbar' => $toolbar,
             'tableExtraRender' => $tableExtraRender,
+            'scroll' => $scroll,
+            'striped' => $striped,
             'datasource' => $datasource,
             'pagination' => $pagination
         ], parent::jsonSerialize());

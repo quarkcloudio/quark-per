@@ -15,15 +15,15 @@
         }
     ],
     "require": {
-        "php": ">=7.1",
+        "php": ">=7.2",
         "spatie/laravel-permission": "^3.0",
         "gregwar/captcha": "^1.0",
         "aliyuncs/oss-sdk-php": "^2.0",
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "^6.2|^7.0"
     },
     "autoload": {
         "psr-4": {
-            "QuarkCMS\\QuarkAdmin\\": "src"
+            "QuarkCMS\\QuarkAdmin\\": "src/"
         },
         "files": [
             "src/helpers.php"
@@ -31,12 +31,15 @@
     },
     "extra": {
         "laravel": {
-            "aliases": {
-                "Quark": "QuarkCMS\\QuarkAdmin\\Facades\\Quark"
-            },
             "providers": [
                 "QuarkCMS\\QuarkAdmin\\QuarkServiceProvider"
-            ]
+            ],
+            "aliases": {
+                "Quark": "QuarkCMS\\QuarkAdmin\\Facades\\Quark"
+            }
         }
+    },
+    "config": {
+        "sort-packages": true
     }
 }

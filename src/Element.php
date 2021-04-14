@@ -41,8 +41,9 @@ abstract class Element implements JsonSerializable
 
     /**
      * Create a new element.
-     *
-     * @return static
+     * 
+     * @param  string|null|array  $arguments
+     * @return object
      */
     public static function make(...$arguments)
     {
@@ -52,7 +53,8 @@ abstract class Element implements JsonSerializable
     /**
      * Get the component key for the element.
      *
-     * @return string
+     * @param  string $key
+     * @return $this
      */
     public function key($key = null)
     {
@@ -77,6 +79,7 @@ abstract class Element implements JsonSerializable
     /**
      * Set the element style.
      *
+     * @param  array  $style
      * @return string
      */
     public function style($style)

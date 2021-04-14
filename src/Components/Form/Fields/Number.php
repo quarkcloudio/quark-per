@@ -68,6 +68,7 @@ class Number extends Item
             $this->label = $label;
         }
 
+        $this->style['width'] = 200;
         $this->placeholder = '请输入'.$this->label;
     }
     

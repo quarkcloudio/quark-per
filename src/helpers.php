@@ -79,13 +79,15 @@ if(!function_exists('backend_url')) {
 
 /**
 * 把返回的数据集转换成Tree
-* @param array $list 要转换的数据集
+* @param array|object $list 要转换的数据集
 * @param string $pid parent标记字段
 * @param string $level level标记字段
 * @return array
 */
 if(!function_exists('list_to_tree')) {
     function list_to_tree($list, $pk='id',$pid = 'pid',$child = '_child',$root=0) {
+        // 如果是对象则转换为数组
+        $list = json_decode(json_encode($list),true);
         // 创建Tree
         $tree = array();
         if(is_array($list)) {
@@ -337,7 +339,7 @@ if(!function_exists('modify_env')) {
             return $item;
         });
         
-        $content = implode($contentArray->toArray(), "\n");
+        $content = implode("\n", $contentArray->toArray());
         
         \File::put($envPath, $content);
     }
@@ -398,20 +400,20 @@ if(!function_exists('get_folder_files')) {
 */
 if(!function_exists('get_folder_anything')) {
     function get_folder_anything(& $dir)
-    {  
-        if(is_dir($dir)){  
-            $dirFileArray['dirList'] = get_folder_dirs($dir);  
-            if($dirFileArray) {  
-                foreach($dirFileArray['dirList'] as $handle){  
+    {
+        if(is_dir($dir)) {
+            $dirFileArray['dirList'] = get_folder_dirs($dir);
+            if($dirFileArray) {
+                foreach($dirFileArray['dirList'] as $handle) {
                     $file = $dir.DIRECTORY_SEPARATOR.$handle;  
-                    $dirFileArray['fileList'][$handle] = get_folder_files($file);  
-                }  
-            }  
+                    $dirFileArray['fileList'][$handle] = get_folder_files($file);
+                }
+            }
         } else {  
             return 'error';
-        }  
-        return $dirFileArray;  
-    }    
+        }
+        return $dirFileArray;
+    }
 }
 
 /**

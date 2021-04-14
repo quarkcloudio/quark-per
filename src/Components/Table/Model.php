@@ -139,40 +139,42 @@ class Model
 
                     case 'group':
                         foreach ($item->options as $optionKey => $option) {
-                            $operator = $inputs[$item->name.'_start'];
-                            $value = $inputs[$item->name.'_end'];
-                            switch ($operator) {
-                                case 'equal':
-                                    $this->model = $this->model->where($item->name,$value);
-                                    break;
-
-                                case 'notEqual':
-                                    $this->model = $this->model->where($item->name,'<>',$value);
-                                    break;
-
-                                case 'gt':
-                                    $this->model = $this->model->where($item->name,'>',$value);
-                                    break;
-
-                                case 'lt':
-                                    $this->model = $this->model->where($item->name,'<',$value);
-                                    break;
-
-                                case 'nlt':
-                                    $this->model = $this->model->where($item->name,'>=',$value);
-                                    break;
-
-                                case 'ngt':
-                                    $this->model = $this->model->where($item->name,'<=',$value);
-                                    break;
-
-                                case 'like':
-                                    $this->model = $this->model->where($item->name,'like','%'.$value.'%');
-                                    break;
-
-                                default:
-
-                                    break;
+                            if(isset($inputs[$item->name.'_start']) && $inputs[$item->name.'_end']) {
+                                $operator = $inputs[$item->name.'_start'];
+                                $value = $inputs[$item->name.'_end'];
+                                switch ($operator) {
+                                    case 'equal':
+                                        $this->model = $this->model->where($item->name,$value);
+                                        break;
+    
+                                    case 'notEqual':
+                                        $this->model = $this->model->where($item->name,'<>',$value);
+                                        break;
+    
+                                    case 'gt':
+                                        $this->model = $this->model->where($item->name,'>',$value);
+                                        break;
+    
+                                    case 'lt':
+                                        $this->model = $this->model->where($item->name,'<',$value);
+                                        break;
+    
+                                    case 'nlt':
+                                        $this->model = $this->model->where($item->name,'>=',$value);
+                                        break;
+    
+                                    case 'ngt':
+                                        $this->model = $this->model->where($item->name,'<=',$value);
+                                        break;
+    
+                                    case 'like':
+                                        $this->model = $this->model->where($item->name,'like','%'.$value.'%');
+                                        break;
+    
+                                    default:
+    
+                                        break;
+                                }
                             }
                         }
                         break;
@@ -190,7 +192,7 @@ class Model
      *
      * @return Collection
      */
-    protected function get()
+    public function get()
     {
         if(request()->has('search')) {
             $searchInputs = request('search');

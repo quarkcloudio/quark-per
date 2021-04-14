@@ -5,7 +5,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Config;
 use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Action;
 use QuarkCMS\QuarkAdmin\Form;
 use QuarkCMS\QuarkAdmin\TabForm;
 use QuarkCMS\QuarkAdmin\Container;
@@ -69,12 +68,18 @@ class ConfigController extends Controller
                                 ->value($config['value']);
                                 break;
                             case 'switch':
+                                if($config['value'] === '0') {
+                                    $value = false;
+                                } else {
+                                    $value = true;
+                                }
+
                                 $form->switch($config['name'],$config['title'])
                                 ->extra($config['remark'])
                                 ->options([
                                     'on'  => '开启',
                                     'off' => '关闭'
-                                ])->value($config['value']);
+                                ])->value($value);
 
                                 break;
                             case 'picture':
@@ -177,6 +182,12 @@ class ConfigController extends Controller
                 modify_env($data);
             }
 
+            if($config['type'] == 'file' || $config['type'] == 'picture') {
+                if(isset($value['id'])) {
+                    $value = $value['id'];
+                }
+            }
+
             $getResult = Config::where('name',$key)->update(['value'=>$value]);
             if($getResult === false) {
                 $result = false;
@@ -206,11 +217,7 @@ class ConfigController extends Controller
         $table->column('name','名称')->copyable();
         $table->column('remark','备注')->ellipsis();
         $table->column('status','状态')->using(['1'=>'正常','0'=>'禁用'])->width(60);
-        $table->column('actions','操作')->width(120)->actions(function($row) {
-
-            // 创建行为对象
-            $action = new Action();
-
+        $table->column('actions','操作')->width(120)->actions(function($action,$row) {
             // 根据不同的条件定义不同的A标签形式行为
             if($row['status'] === 1) {
                 $action->a('禁用')
@@ -228,25 +235,18 @@ class ConfigController extends Controller
 
             // 跳转默认编辑页面
             $action->a('编辑')->modalForm(backend_url('api/admin/config/edit?id='.$row['id']));
-
             $action->a('删除')
             ->withPopconfirm('确认要删除吗？')
             ->model()
             ->where('id','{id}')
             ->delete();
-
-            return $action;
         });
 
         $table->toolBar()->actions(function($action) {
-
-            // 跳转默认创建页面
             $action->button('创建配置')
             ->type('primary')
             ->icon('plus-circle')
             ->modalForm(backend_url('api/admin/config/create'));
-
-            return $action;
         });
 
         // 批量操作
@@ -271,8 +271,6 @@ class ConfigController extends Controller
                 ->model()
                 ->whereIn('id','{ids}')
                 ->update(['status'=>1]);
-
-                return $action;
             });
         });
 
@@ -309,7 +307,7 @@ class ConfigController extends Controller
         $title = $form->isCreating() ? '创建'.$this->title : '编辑'.$this->title;
         $form->labelCol(['span' => 4])->title($title);
         
-        $form->id('id','ID');
+        $form->hidden('id');
 
         $form->text('title','标题')
         ->rules(['required','max:20'],['required'=>'标题必须填写','max'=>'标题不能超过20个字符']);
@@ -340,6 +338,15 @@ class ConfigController extends Controller
             'on'  => '正常',
             'off' => '禁用'
         ])->default(true);
+
+        // 保存数据后回调
+        $form->saved(function ($form) {
+            if($form->model()) {
+                return success('操作成功！',frontend_url('admin/config/index'));
+            } else {
+                return error('操作失败，请重试！');
+            }
+        });
 
         return $form;
     }

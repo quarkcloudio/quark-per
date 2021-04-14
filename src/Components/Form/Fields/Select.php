@@ -44,6 +44,13 @@ class Select extends Item
     public $placeholder = null;
 
     /**
+     * 单向联动
+     *
+     * @var array
+     */
+    public $load = null;
+
+    /**
      * 初始化下拉框组件
      *
      * @param  string  $name
@@ -60,6 +67,26 @@ class Select extends Item
             $label = Arr::get($label, 0, ''); //[0];
             $this->label = $label;
         }
+
+        $this->style['width'] = 200;
+        $this->placeholder = '请选择'.$this->label;
+        $this->allowClear();
+    }
+
+    /**
+     * 单向联动
+     *
+     * @param  string $field
+     * @param  string $api
+     * @return $this
+     */
+    public function load($field, $api)
+    {
+        $data['field'] = $field;
+        $data['api'] = $api;
+        $this->load = $data;
+
+        return $this;
     }
 
     /**
@@ -149,7 +176,8 @@ class Select extends Item
             'placeholder' => $this->placeholder,
             'allowClear' => $this->allowClear,
             'size' => $this->size,
-            'mode' => $this->mode
+            'mode' => $this->mode,
+            'load' => $this->load
         ], parent::jsonSerialize());
     }
 }

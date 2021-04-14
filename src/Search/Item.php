@@ -64,9 +64,16 @@ class Item extends Element
     public $placeholder = null;
 
     /**
+     * 单向联动
+     *
+     * @var array
+     */
+    public $load = null;
+
+    /**
      * label 标签的文本
      *
-     * @param  string $label
+     * @param string $label
      * @return $this
      */
     public function label($label = '')
@@ -78,7 +85,7 @@ class Item extends Element
     /**
      * 字段名，支持数组
      *
-     * @param  string $name
+     * @param string $name
      * @return $this
      */
     public function name($name = '')
@@ -89,11 +96,11 @@ class Item extends Element
 
     /**
      * 校验规则，设置字段的校验逻辑
-     * 
-     * @param  array|$this $rules
+     *
+     * @param array|$this $rules
      * @return $this
      */
-    public function rules($rules,$messages = null)
+    public function rules($rules, $messages = null)
     {
         $this->rules = $rules;
         $this->ruleMessages = $messages;
@@ -103,7 +110,7 @@ class Item extends Element
     /**
      * 设置保存值。
      *
-     * @param  array|string
+     * @param array|string
      * @return $this
      */
     public function value($value)
@@ -115,7 +122,7 @@ class Item extends Element
     /**
      * 设置默认值。
      *
-     * @param  array|string
+     * @param array|string
      * @return $this
      */
     public function default($value)
@@ -127,13 +134,13 @@ class Item extends Element
     /**
      * placeholder
      *
-     * @param  string $placeholder
+     * @param string $placeholder
      * @return object
      */
     public function placeholder($placeholder)
     {
-        if($this->operator == 'between') {
-            if(!is_array($placeholder)) {
+        if ($this->operator == 'between') {
+            if (!is_array($placeholder)) {
                 throw new Exception("argument must be an array!");
             }
         }
@@ -144,8 +151,8 @@ class Item extends Element
 
     /**
      * 控件宽度
-     * 
-     * @param  number|string $value
+     *
+     * @param number|string $value
      * @return object
      */
     public function width($value = '100%')
@@ -158,10 +165,10 @@ class Item extends Element
     /**
      * 下拉菜单控件
      *
-     * @param  array $options
+     * @param array $options
      * @return object
      */
-    public function select($options)
+    public function select($options = [])
     {
         $this->component = 'select';
 
@@ -173,17 +180,17 @@ class Item extends Element
         }
         $this->options = $data;
 
-        $this->placeholder = '请选择'.$this->label;
+        $this->placeholder = '请选择' . $this->label;
         return $this;
     }
 
     /**
      * 多选下拉菜单控件
      *
-     * @param  array $options
+     * @param array $options
      * @return object
      */
-    public function multipleSelect($options)
+    public function multipleSelect($options = [])
     {
         $this->component = 'multipleSelect';
 
@@ -195,19 +202,49 @@ class Item extends Element
         }
         $this->options = $data;
 
-        $this->placeholder = '请选择'.$this->label;
+        $this->placeholder = '请选择' . $this->label;
+        return $this;
+    }
+
+    /**
+     * 单向联动
+     *
+     * @param  string $field
+     * @param  string $api
+     * @return $this
+     */
+    public function load($field, $api)
+    {
+        $data['field'] = $field;
+        $data['api'] = $api;
+        $this->load = $data;
+
         return $this;
     }
 
     /**
      * 时间控件
      *
-     * @param  string $options
+     * @param string $options
      * @return object
      */
     public function datetime($options = [])
     {
         $this->component = 'datetime';
+        $this->options = $options;
+
+        return $this;
+    }
+
+    /**
+     * 日期控件
+     *
+     * @param string $options
+     * @return object
+     */
+    public function date($options = [])
+    {
+        $this->component = 'date';
         $this->options = $options;
 
         return $this;
@@ -220,7 +257,7 @@ class Item extends Element
      */
     public function jsonSerialize()
     {
-        $this->key(__CLASS__.$this->name.$this->label);
+        $this->key(__CLASS__ . $this->name . $this->label);
 
         return array_merge([
             'name' => $this->name,
@@ -230,7 +267,8 @@ class Item extends Element
             'rules' => $this->rules,
             'placeholder' => $this->placeholder,
             'operator' => $this->operator,
-            'options' => $this->options
+            'options' => $this->options,
+            'load' => $this->load
         ], parent::jsonSerialize());
     }
 }

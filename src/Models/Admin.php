@@ -14,27 +14,11 @@ class Admin extends Authenticatable
     use HasRoles;
 
     /**
-     * The attributes that are mass assignable.
+     * 属性黑名单
      *
      * @var array
      */
-    protected $fillable = [
-        'id',
-        'username',
-        'nickname',
-        'email',
-        'phone',
-        'sex',
-        'password',
-        'avatar',
-        'wechat_openid',
-        'wechat_unionid',
-        'qq_openid',
-        'weibo_uid',
-        'last_login_ip',
-        'last_login_time',
-        'status'
-    ];
+    protected $guarded = [];
 
     /**
      * The attributes that should be hidden for arrays.

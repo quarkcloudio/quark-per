@@ -3,6 +3,7 @@
 namespace QuarkCMS\QuarkAdmin\Components\Form;
 
 use QuarkCMS\QuarkAdmin\Element;
+use QuarkCMS\QuarkAdmin\Form;
 use Illuminate\Support\Str;
 use Illuminate\Support\Arr;
 use Exception;
@@ -19,7 +20,7 @@ class Item extends Element
     /**
      * Field 的长度，我们归纳了常用的 Field 长度以及适合的场景，支持了一些枚举 "xs" , "s" , "m" , "l" , "x"
      *
-     * @var string
+     * @var string|number
      */
     public $width = null;
 
@@ -116,6 +117,13 @@ class Item extends Element
     public $disabled = false;
 
     /**
+     * 是否忽略保存到数据库
+     *
+     * @var bool
+     */
+    public $ignore = false;
+
+    /**
      * 校验规则，设置字段的校验逻辑
      *
      * @var array
@@ -180,6 +188,13 @@ class Item extends Element
     public $wrapperCol = null;
 
     /**
+     * 表单联动
+     *
+     * @var array
+     */
+    public $when = null;
+
+    /**
      * 会在 label 旁增加一个 icon，悬浮后展示配置的信息
      *
      * @param  string $tooltip
@@ -194,16 +209,17 @@ class Item extends Element
     /**
      * Field 的长度，我们归纳了常用的 Field 长度以及适合的场景，支持了一些枚举 "xs" , "s" , "m" , "l" , "x"
      *
-     * @param  string $width
+     * @param  string|number $width
      * @return $this
      */
     public function width($width)
     {
-        if(!in_array($width,['xs','s','m','l','x'])) {
-            throw new Exception("argument must be 'xs','s','m','l','x'!");
-        }
+        // if(!in_array($width,['xs','s','m','l','x'])) {
+        //     throw new Exception("argument must be 'xs','s','m','l','x'!");
+        // }
 
         $this->width = $width;
+        $this->style['width'] = $width;
         return $this;
     }
 
@@ -580,6 +596,42 @@ class Item extends Element
         $status ? $this->disabled = true : $this->disabled = false;
         return $this;
     }
+    
+    /**
+     * 是否忽略保存到数据库，默认为 false
+     * 
+     * @param  bool $status
+     * @return object
+     */
+    public function ignore($status = true)
+    {
+        $status ? $this->ignore = true : $this->ignore = false;
+        return $this;
+    }
+
+    /**
+     * 表单联动
+     * 
+     * @param  mix $value
+     * @return object
+     */
+    public function when(...$value)
+    {
+        $form = new Form();
+        if(count($value) == 2) {
+            $when['operator'] = '=';
+            $when['value'] = $value[0];
+            $value[1]($form);
+        } elseif(count($value) == 3) {
+            $when['operator'] = $value[0];
+            $when['value'] = $value[1];
+            $value[2]($form);
+        }
+
+        $when['items'] = $form->items;
+        $this->when[] = $when;
+        return $this;
+    }
 
     /**
      * 组件json序列化
@@ -598,7 +650,8 @@ class Item extends Element
             'disabled' => $this->disabled,
             'frontendRules' => $this->frontendRules,
             'value' => $this->value,
-            'defaultValue' => $this->defaultValue
+            'defaultValue' => $this->defaultValue,
+            'when' => $this->when
         ], parent::jsonSerialize());
     }
 }
