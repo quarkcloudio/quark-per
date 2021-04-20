@@ -5,14 +5,14 @@ namespace QuarkCMS\QuarkAdmin\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * Class Quark.
+ * Class Admin.
  *
  * @see Quark\Quark
  */
-class Quark extends Facade
+class Admin extends Facade
 {
     protected static function getFacadeAccessor()
     {
-        return 'quark';
+        return 'admin';
     }
 }

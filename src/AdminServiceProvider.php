@@ -6,7 +6,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Route;
 
-class QuarkServiceProvider extends ServiceProvider
+class AdminServiceProvider extends ServiceProvider
 {
     /**
      * @var array

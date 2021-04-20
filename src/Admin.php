@@ -4,12 +4,12 @@ namespace QuarkCMS\QuarkAdmin;
 use QuarkCMS\QuarkAdmin\Layout;
 
 /**
- * Class Quark.
+ * Class Admin.
  */
-class Quark
+class Admin
 {
     /**
-     * Get the current quark version.
+     * Get the current Admin version.
      *
      * @return string
      */
@@ -19,7 +19,7 @@ class Quark
     }
 
     /**
-     * Get the current quark info.
+     * Get the current Admin info.
      *
      * @return string
      */
@@ -40,7 +40,7 @@ class Quark
     }
 
     /**
-     * Get the current quark layout.
+     * Get the current Admin layout.
      *
      * @return string
      */
