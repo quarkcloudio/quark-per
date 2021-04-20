@@ -8,6 +8,7 @@ use QuarkCMS\QuarkAdmin\Models\Admin;
 use Gregwar\Captcha\CaptchaBuilder;
 use Gregwar\Captcha\PhraseBuilder;
 use Illuminate\Support\Str;
+use QuarkCMS\QuarkAdmin\Http\Resources\LoginResource;
 
 class LoginController extends QuarkController
 {
@@ -17,54 +18,61 @@ class LoginController extends QuarkController
      */
     public function login(Request $request)
     {
-        // 账号登录
-        $username = $request->json('username');
-        $password = $request->json('password');
-        $captcha = $request->json('captcha');
+        if($request->isMethod('get')) {
 
-        $getCaptcha = cache('adminCaptcha');
-        if(empty($captcha) || (strtolower($captcha) != strtolower($getCaptcha))) {
-            return error('验证码错误！');
-        }
+            return LoginResource::view();
 
-        if(empty($username)) {
-            return error('用户名不能为空！');
-        }
+        } elseif ($request->isMethod('post')) {
 
-        if(empty($password)) {
-            return error('密码不能为空！');
-        }
+            // 账号登录
+            $username = $request->json('username');
+            $password = $request->json('password');
+            $captcha = $request->json('captcha');
 
-        $loginResult = Auth::guard('admin')->attempt(['username' => $username, 'password' => $password]);
-
-        if($loginResult) {
-
-            $user = Auth::guard('admin')->user();
-
-            if(intval($user['status']) !== 1) {
-                return error('用户被禁用！');
+            $getCaptcha = cache('adminCaptcha');
+            if(empty($captcha) || (strtolower($captcha) != strtolower($getCaptcha))) {
+                return error('验证码错误！');
             }
 
-            // 更新登录信息
-            $data['last_login_ip'] = $request->ip();
-            $data['last_login_time'] = date('Y-m-d H:i:s');
-            Admin::where('id',$user->id)->update($data);
+            if(empty($username)) {
+                return error('用户名不能为空！');
+            }
 
-            $result['id'] = $user->id;
-            $result['username'] = $user->username;
-            $result['nickname'] = $user->nickname;
-            $result['token'] = Str::random(950);
+            if(empty($password)) {
+                return error('密码不能为空！');
+            }
 
-            // 将认证信息写入缓存，这里用hack方法做后台api登录认证
-            cache([$result['token'] => $result],60*60*3);
+            $loginResult = Auth::guard('admin')->attempt(['username' => $username, 'password' => $password]);
 
-            return success('登录成功！','',$result);
-        } else {
+            if($loginResult) {
 
-            // 清除验证码
-            cache(['adminCaptcha'=>null],60*10);
+                $user = Auth::guard('admin')->user();
 
-            return error('用户名或密码错误！');
+                if(intval($user['status']) !== 1) {
+                    return error('用户被禁用！');
+                }
+
+                // 更新登录信息
+                $data['last_login_ip'] = $request->ip();
+                $data['last_login_time'] = date('Y-m-d H:i:s');
+                Admin::where('id',$user->id)->update($data);
+
+                $result['id'] = $user->id;
+                $result['username'] = $user->username;
+                $result['nickname'] = $user->nickname;
+                $result['token'] = Str::random(950);
+
+                // 将认证信息写入缓存，这里用hack方法做后台api登录认证
+                cache([$result['token'] => $result],60*60*3);
+
+                return success('登录成功！','',$result);
+            } else {
+
+                // 清除验证码
+                cache(['adminCaptcha'=>null],60*10);
+
+                return error('用户名或密码错误！');
+            }
         }
     }
 

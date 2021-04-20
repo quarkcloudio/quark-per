@@ -5,18 +5,18 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
-use QuarkCMS\QuarkAdmin\Quark;
+use QuarkCMS\QuarkAdmin\Admin as QuarkAdmin;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 
 class QuarkController extends Controller
 {
     /**
-     * quark object
+     * quarkAdmin object
      *
      * @var object
      */
-    protected $quark;
+    protected $quarkAdmin;
 
     /**
      * Create a new instance.
@@ -24,7 +24,7 @@ class QuarkController extends Controller
      * @return void
      */
     public function __construct() {
-        $this->quark = new Quark;
+        $this->quarkAdmin = new QuarkAdmin;
     }
 
     /**
@@ -53,7 +53,7 @@ class QuarkController extends Controller
      */
     public function info(Request $request)
     {
-        $info = $this->quark->info();
+        $info = $this->quarkAdmin->info();
 
         if($info) {
             return success('ok','',$info);
@@ -71,7 +71,7 @@ class QuarkController extends Controller
      */
     public function layout(Request $request)
     {
-        $layout = $this->quark->layout();
+        $layout = $this->quarkAdmin->layout();
 
         if($layout) {
             return success('ok','',$layout);

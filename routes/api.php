@@ -19,7 +19,7 @@ Route::group([
 	$router->get('admin/quark/test', 'QuarkController@test')->name('api/admin/quark/test');
 
 	$router->get('admin/captcha', 'LoginController@captcha')->name('api/admin/captcha');
-	$router->post('admin/login', 'LoginController@login')->name('api/admin/login');
+	$router->any('admin/login', 'LoginController@login')->name('api/admin/login');
 	$router->any('admin/logout', 'LoginController@logout')->name('api/admin/logout');
 });
 
