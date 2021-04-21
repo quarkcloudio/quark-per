@@ -15,8 +15,7 @@ class LoginResource extends Resource
      */
     public function body()
     {
-        $body = Login::make()
-        ->api('admin/login')
+        $body = Login::api('admin/login')
         ->title('DeepblueCMS')
         ->description('description')
         ->captchaUrl('api/admin/captcha')
