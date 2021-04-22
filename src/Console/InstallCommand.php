@@ -60,13 +60,13 @@ class InstallCommand extends Command
     }
 
     /**
-     * Initialize the admAin directory.
+     * Initialize the admin directory.
      *
      * @return void
      */
     protected function initAdminDirectory()
     {
-        $this->directory = app_path('Http/Controllers/Admin');
+        $this->directory = app_path('Admin');
 
         if (is_dir($this->directory)) {
             $this->line("<error>{$this->directory} directory already exists !</error> ");
@@ -74,12 +74,12 @@ class InstallCommand extends Command
             return;
         }
 
-        $this->makeDir('/');
+        $this->makeDir('/Controllers');
+        $this->makeDir('/Resources');
         $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
         $this->createDashboardController();
-        $this->createUpgradeController();
-        $this->createDemoController();
+        $this->createDashboardResource();
         $this->createRoutesFile();
     }
 
@@ -90,7 +90,7 @@ class InstallCommand extends Command
      */
     public function createDashboardController()
     {
-        $controller = $this->directory.'/DashboardController.php';
+        $controller = $this->directory.'/Controllers/DashboardController.php';
         $contents = $this->getStub('DashboardController');
 
         $this->laravel['files']->put($controller,$contents);
@@ -98,31 +98,17 @@ class InstallCommand extends Command
     }
 
     /**
-     * Create UpgradeController.
+     * Create DashboardResource.
      *
      * @return void
      */
-    public function createUpgradeController()
+    public function createDashboardResource()
     {
-        $controller = $this->directory.'/UpgradeController.php';
-        $contents = $this->getStub('UpgradeController');
+        $resource = $this->directory.'/DashboardResource.php';
+        $contents = $this->getStub('DashboardResource');
 
-        $this->laravel['files']->put($controller,$contents);
-        $this->line('<info>UpgradeController file was created:</info> '.str_replace(base_path(), '', $controller));
-    }
-
-    /**
-     * Create DemoController.
-     *
-     * @return void
-     */
-    public function createDemoController()
-    {
-        $controller = $this->directory.'/DemoController.php';
-        $contents = $this->getStub('DemoController');
-
-        $this->laravel['files']->put($controller,$contents);
-        $this->line('<info>DemoController file was created:</info> '.str_replace(base_path(), '', $controller));
+        $this->laravel['files']->put($resource,$contents);
+        $this->line('<info>DashboardResource file was created:</info> '.str_replace(base_path(), '', $resource));
     }
 
     /**

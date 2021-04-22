@@ -1,6 +1,7 @@
 <?php
 
 namespace QuarkCMS\QuarkAdmin;
+
 use QuarkCMS\QuarkAdmin\Layout;
 
 /**
@@ -15,7 +16,7 @@ class Admin
      */
     public static function version()
     {
-        return 'v1.1.28';
+        return 'v2.0.0';
     }
 
     /**

@@ -33,8 +33,8 @@ class AdminServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton('quark', function ($app) {
-            return new Quark($app['config']);
+        $this->app->singleton('admin', function ($app) {
+            return new Admin($app['config']);
         });
 
         // 注册auth

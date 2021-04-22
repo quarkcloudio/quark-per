@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Admin\Resources;
+
+use QuarkCMS\Quark\Facades\Layout;
+use QuarkCMS\Quark\Facades\Card;
+use QuarkCMS\Quark\Facades\Row;
+use QuarkCMS\Quark\Facades\StatisticCard;
+use QuarkCMS\Quark\Facades\Descriptions;
+use QuarkCMS\QuarkAdmin\Http\Resources\LayoutResource;
+
+class DashboardResource extends LayoutResource
+{
+    /**
+     * 页面标题
+     *
+     * @var string
+     */
+    public $title = '仪表盘';
+
+    /**
+     * 页面内容
+     *
+     * @param  void
+     * @return void
+     */
+    public function body()
+    {
+        $data = $this->data;
+
+        // 卡片统计
+        $row[] = $this->statisticView($data['statistic']);
+
+        // 系统及团队信息
+        $row[] = $this->systemAndTeamView($data);
+
+        return $row;
+    }
+
+    /**
+     * 统计卡片
+     *
+     * @param  array $data
+     * @return void
+     */
+    protected function statisticView($data)
+    {
+        $view = Row::gutter(8)->body(function($col) use ($data) {
+            $cols = [];
+
+            foreach ($data as $key => $value) {
+
+                // 统计卡片
+                $statisticCard = StatisticCard::statistic(function ($statistic) use ($value) {
+                    return $statistic->title($value['title'])
+                    ->valueStyle($value['valueStyle'])
+                    ->value($value['value'])
+                    ->render();
+                })->render();
+                
+                // 列展示
+                $cols[] = $col->span(6)->body($statisticCard)->render();
+            }
+
+            return $cols;
+        })->render();
+
+        return $view;
+    }
+
+    /**
+     * 系统、团队信息
+     *
+     * @param  array $data
+     * @return void
+     */
+    protected function systemAndTeamView($data)
+    {
+        $view = Row::gutter(8)->style(['marginTop' => '8px'])->body(function($col) use ($data) {
+
+            $cols = [];
+
+            $style = ['padding' => '25px','background' => '#fff'];
+
+            $systemInfo = Descriptions::style($style)
+            ->title('系统信息')
+            ->items($data['systemInfo'])
+            ->render();
+            
+            // 列展示
+            $cols[] = $col->span(12)->body($systemInfo)->render();
+
+            $teamInfo = Descriptions::style($style)
+            ->title('团队信息')
+            ->items($data['teamInfo'])
+            ->render();
+            
+            // 列展示
+            $cols[] = $col->span(12)->body($teamInfo)->render();
+
+            return $cols;
+        })->render();
+
+        return $view;
+    }
+}
