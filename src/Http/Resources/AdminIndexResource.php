@@ -9,7 +9,7 @@ use QuarkCMS\Quark\Facades\StatisticCard;
 use QuarkCMS\Quark\Facades\Descriptions;
 use QuarkCMS\QuarkAdmin\Http\Resources\LayoutResource;
 
-class AdminResource extends LayoutResource
+class AdminIndexResource extends LayoutResource
 {
     /**
      * 页面标题

@@ -7,7 +7,7 @@ use QuarkCMS\QuarkAdmin\Models\Admin;
 use QuarkCMS\QuarkAdmin\Table;
 use QuarkCMS\QuarkAdmin\Form;
 use Spatie\Permission\Models\Role;
-use QuarkCMS\QuarkAdmin\Http\Resources\AdminResource;
+use QuarkCMS\QuarkAdmin\Http\Resources\AdminIndexResource;
 use Illuminate\Routing\Controller;
 
 class AdminController extends Controller
@@ -20,6 +20,6 @@ class AdminController extends Controller
      */
     public function index()
     {
-        return AdminResource::view();
+        return AdminIndexResource::view();
     }
 }
