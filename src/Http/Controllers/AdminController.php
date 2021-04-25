@@ -4,8 +4,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Models\Admin;
-use QuarkCMS\QuarkAdmin\Table;
-use QuarkCMS\QuarkAdmin\Form;
 use Spatie\Permission\Models\Role;
 use QuarkCMS\QuarkAdmin\Http\Resources\AdminIndexResource;
 use Illuminate\Routing\Controller;
@@ -18,8 +16,19 @@ class AdminController extends Controller
      * @param  Request  $request
      * @return Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return AdminIndexResource::view();
+        $pageSize = request('pageSize',10);
+        $username = request('username');
+
+        $query = Admin::query();
+
+        if($username) {
+            $query->where('username',$username);
+        }
+
+        $list = $query->paginate($pageSize);
+
+        return AdminIndexResource::view($list);
     }
 }

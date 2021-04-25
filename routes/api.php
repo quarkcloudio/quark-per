@@ -36,7 +36,7 @@ Route::group([
 	$router->post('admin/account/profile', 'AccountController@profile')->name('api/admin/account/profile');
 	$router->post('admin/account/password', 'AccountController@password')->name('api/admin/account/password');
 
-	$router->get('admin/admin/index', 'AdminController@index')->name('api/admin/admin/index');
+	$router->any('admin/admin/index', 'AdminController@index')->name('api/admin/admin/index');
 	$router->get('admin/admin/create', 'AdminController@create')->name('api/admin/admin/create');
 	$router->post('admin/admin/store', 'AdminController@store')->name('api/admin/admin/store');
 	$router->get('admin/admin/edit', 'AdminController@edit')->name('api/admin/admin/edit');

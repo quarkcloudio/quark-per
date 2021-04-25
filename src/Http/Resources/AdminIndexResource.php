@@ -2,14 +2,10 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Resources;
 
-use QuarkCMS\Quark\Facades\Layout;
-use QuarkCMS\Quark\Facades\Card;
-use QuarkCMS\Quark\Facades\Row;
-use QuarkCMS\Quark\Facades\StatisticCard;
-use QuarkCMS\Quark\Facades\Descriptions;
-use QuarkCMS\QuarkAdmin\Http\Resources\LayoutResource;
+use QuarkCMS\Quark\Facades\Column;
+use QuarkCMS\QuarkAdmin\Http\Resources\TableResource;
 
-class AdminIndexResource extends LayoutResource
+class AdminIndexResource extends TableResource
 {
     /**
      * 页面标题
@@ -19,15 +15,43 @@ class AdminIndexResource extends LayoutResource
     public $title = '管理员列表';
 
     /**
-     * 页面内容
+     * 表格列
+     *
+     * @param  Column  $column
+     * @return array
+     */
+    public function column(Column $column)
+    {
+        $columns[] = $column::attribute('username')->title('用户名')->render();
+        $columns[] = $column::attribute('nickname')->title('昵称')->render();
+        $columns[] = $column::attribute('status')->title('状态')->render();
+
+        return $columns;
+    }
+
+    /**
+     * 表格数据
      *
      * @param  void
-     * @return void
+     * @return array
      */
-    public function body()
+    public function datasource()
     {
-        $data = $this->data;
+        return $this->data->items();
+    }
 
-        return 'xxx';
+    /**
+     * 分页
+     *
+     * @param  void
+     * @return array
+     */
+    public function pagination()
+    {
+        $pagination['current'] = $this->data->currentPage();
+        $pagination['pageSize'] = $this->data->perPage();
+        $pagination['total'] = $this->data->total();
+
+        return $pagination;
     }
 }
