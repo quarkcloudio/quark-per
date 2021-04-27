@@ -18,7 +18,7 @@ class AdminController extends Controller
      */
     public function index(Request $request)
     {
-        $pageSize = request('pageSize',10);
+        $pageSize = request('pageSize',1);
         $username = request('username');
 
         $query = Admin::query();

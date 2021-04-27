@@ -36,7 +36,6 @@ class TableResource extends LayoutResource
         $self = new static;
 
         $self->data = $data;
-
         $pagination = $self->pagination();
 
         // 表格

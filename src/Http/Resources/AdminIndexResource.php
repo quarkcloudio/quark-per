@@ -22,9 +22,15 @@ class AdminIndexResource extends TableResource
      */
     public function column(Column $column)
     {
+        $columns[] = $column::attribute('avatar')->title('头像')->render();
         $columns[] = $column::attribute('username')->title('用户名')->render();
         $columns[] = $column::attribute('nickname')->title('昵称')->render();
-        $columns[] = $column::attribute('status')->title('状态')->render();
+        $columns[] = $column::attribute('email')->title('邮箱')->render();
+        $columns[] = $column::attribute('sex')->title('性别')->valueEnum(['1'=>'男','2'=>'女'])->render();
+        $columns[] = $column::attribute('phone')->title('手机号')->render();
+        $columns[] = $column::attribute('last_login_time')->title('最后登录时间')->valueType('dateTime')->render();
+        $columns[] = $column::attribute('status')->title('状态')->valueEnum(['1'=>'正常','0'=>'禁用'])->width(60)->render();
+        $columns[] = $column::attribute('actions')->title('操作')->hideInSearch()->width(60)->render();
 
         return $columns;
     }
