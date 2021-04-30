@@ -26,24 +26,66 @@ class TableResource extends LayoutResource
     public $apiType = 'GET';
 
     /**
-     * 渲染页面
+     * 获取分页参数
      *
      * @param  void
-     * @return void
+     * @return array
+     */
+    public function getPagination()
+    {
+        return $this->pagination($this->data);
+    }
+
+    /**
+     * 获取列
+     *
+     * @param  void
+     * @return array
+     */
+    public function getColumns()
+    {
+        return $this->column(new Column);
+    }
+
+    /**
+     * 获取表格数据
+     *
+     * @param  void
+     * @return array
+     */
+    public function getDatasource()
+    {
+        return $this->datasource($this->data);
+    }
+
+    /**
+     * 渲染页面
+     *
+     * @param array  $data
+     * @return array
      */
     public static function view($data = null)
     {
         $self = new static;
 
         $self->data = $data;
-        $pagination = $self->pagination();
+
+        // 获取列
+        $columns = $self->getColumns();
+
+        // 获取表格数据
+        $datasource = $self->getDatasource();
+
+        // 获取分页
+        $pagination = $self->getPagination();
 
         // 表格
-        $table = Table::api($self->api)
+        $table = Table::key('table')
+        ->api($self->api)
         ->apiType($self->apiType)
         ->title($self->title)
-        ->columns($self->column(new Column))
-        ->datasource($self->datasource())
+        ->columns($columns)
+        ->datasource($datasource)
         ->pagination($pagination['current'], $pagination['pageSize'], $pagination['total'])
         ->render();
 

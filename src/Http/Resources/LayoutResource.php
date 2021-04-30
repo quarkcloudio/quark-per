@@ -157,7 +157,7 @@ class LayoutResource extends Resource
         $pageContainer = PageContainer::title($self->title)->body($self->body());
 
         // 布局
-        $layout = Layout::title($self->layoutTitle)->menu($self->menu)->body($pageContainer);
+        $layout = Layout::title($self->layoutTitle)->fixSiderbar()->menu($self->menu)->body($pageContainer);
 
         // 页面
         $page = Page::style(['height' => '100vh'])->body($layout);

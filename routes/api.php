@@ -42,6 +42,7 @@ Route::group([
 	$router->get('admin/admin/edit', 'AdminController@edit')->name('api/admin/admin/edit');
 	$router->post('admin/admin/update', 'AdminController@update')->name('api/admin/admin/update');
 	$router->any('admin/admin/action', 'AdminController@action')->name('api/admin/admin/action');
+	$router->any('admin/admin/delete', 'AdminController@delete')->name('api/admin/admin/delete');
 
 	$router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');
 	$router->get('admin/permission/sync', 'PermissionController@sync')->name('api/admin/permission/sync');
