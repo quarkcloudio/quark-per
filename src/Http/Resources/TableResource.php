@@ -7,6 +7,7 @@ use QuarkCMS\Quark\Facades\Page;
 use QuarkCMS\Quark\Facades\Layout;
 use QuarkCMS\Quark\Facades\PageContainer;
 use QuarkCMS\Quark\Facades\Column;
+use QuarkCMS\Quark\Facades\ToolBar;
 use QuarkCMS\QuarkAdmin\Http\Resources\LayoutResource;
 
 class TableResource extends LayoutResource
@@ -34,6 +35,17 @@ class TableResource extends LayoutResource
     public function getPagination()
     {
         return $this->pagination($this->data);
+    }
+
+    /**
+     * 获取操作栏
+     *
+     * @param  void
+     * @return array
+     */
+    public function getToolBar()
+    {
+        return $this->toolBar(new ToolBar);
     }
 
     /**
@@ -70,6 +82,9 @@ class TableResource extends LayoutResource
 
         $self->data = $data;
 
+        // 获取操作栏
+        $toolBar = $self->getToolBar();
+
         // 获取列
         $columns = $self->getColumns();
 
@@ -84,6 +99,7 @@ class TableResource extends LayoutResource
         ->api($self->api)
         ->apiType($self->apiType)
         ->title($self->title)
+        ->toolBar($toolBar)
         ->columns($columns)
         ->datasource($datasource)
         ->pagination($pagination['current'], $pagination['pageSize'], $pagination['total'])
