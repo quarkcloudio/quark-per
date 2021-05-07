@@ -6,6 +6,8 @@ use QuarkCMS\Quark\Facades\Page;
 use QuarkCMS\Quark\Facades\Layout;
 use QuarkCMS\Quark\Facades\PageContainer;
 use QuarkCMS\Quark\Facades\Form;
+use QuarkCMS\Quark\Facades\Action;
+use QuarkCMS\Quark\Facades\Card;
 use QuarkCMS\QuarkAdmin\Http\Resources\LayoutResource;
 
 class FormResource extends LayoutResource
@@ -18,13 +20,6 @@ class FormResource extends LayoutResource
     public $api = null;
 
     /**
-     * 接口类型
-     *
-     * @var string
-     */
-    public $apiType = 'GET';
-
-    /**
      * 获取表单项
      *
      * @param  void
@@ -33,6 +28,20 @@ class FormResource extends LayoutResource
     public function getItems()
     {
         return $this->items($this->data);
+    }
+
+    /**
+     * 获取表单按钮
+     *
+     * @param  void
+     * @return array
+     */
+    public function actions()
+    {
+        $actions[] = Action::make("提交")->showStyle('primary')->actionType('submit');
+        $actions[] = Action::make('重置')->actionType('reset');
+
+        return $actions;
     }
 
     /**
@@ -48,18 +57,22 @@ class FormResource extends LayoutResource
         $self->data = $data;
 
         // 获取表单项
-        $toolBar = $self->getItems();
+        $items = $self->getItems();
+
+        // 获取表单按钮
+        $actions = $self->actions();
 
         // 表格
-        $table = Form::key('table')
-        ->api($self->api)
-        ->apiType($self->apiType)
+        $form = Form::api($self->api)
         ->title($self->title)
-        ->items($this->items())
+        ->items($items)
+        ->actions($actions)
         ->render();
 
+        $card = Card::title($self->title)->body($form);
+
         // 页面内容
-        $pageContainer = PageContainer::title($self->title)->body($table);
+        $pageContainer = PageContainer::title($self->title)->body($card);
 
         // 布局
         $layout = Layout::title($self->layoutTitle)->menu($self->menu)->body($pageContainer);

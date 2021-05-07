@@ -82,6 +82,7 @@ class AdminIndexResource extends TableResource
         ->showStyle('link')
         ->size('small')
         ->style(['padding' => '4px 5px'])
+        ->withConfirm("确定要<% data.status==1 ? '启用' : '禁用' %>数据吗？", null, 'pop')
         ->api('admin/admin/changeStatus?id={id}&status={status}');
 
         $actions[] = $action::make('编辑')

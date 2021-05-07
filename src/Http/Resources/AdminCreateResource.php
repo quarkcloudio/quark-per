@@ -2,12 +2,10 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Resources;
 
-use QuarkCMS\Quark\Facades\ToolBar;
-use QuarkCMS\Quark\Facades\Column;
-use QuarkCMS\Quark\Facades\Action;
-use QuarkCMS\QuarkAdmin\Http\Resources\TableResource;
+use QuarkCMS\Quark\Facades\FormItem;
+use QuarkCMS\QuarkAdmin\Http\Resources\FormResource;
 
-class AdminIndexResource extends TableResource
+class AdminCreateResource extends FormResource
 {
     /**
      * 页面标题
@@ -17,6 +15,13 @@ class AdminIndexResource extends TableResource
     public $title = '创建管理员';
 
     /**
+     * 表单提交接口
+     *
+     * @var string
+     */
+    public $api = '/admin/admin/store';
+
+    /**
      * 表单项
      *
      * @param  array $data
@@ -24,6 +29,8 @@ class AdminIndexResource extends TableResource
      */
     public function items($data)
     {
-        return $data->items();
+        $FormItems[] = FormItem::text('username','用户名');
+
+        return $FormItems;
     }
 }
