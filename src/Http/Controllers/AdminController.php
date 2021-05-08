@@ -8,6 +8,7 @@ use Spatie\Permission\Models\Role;
 use QuarkCMS\QuarkAdmin\Http\Resources\AdminIndexResource;
 use QuarkCMS\QuarkAdmin\Http\Resources\AdminCreateResource;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
 {
@@ -25,7 +26,7 @@ class AdminController extends Controller
     }
 
     /**
-     * 创建管理员
+     * 创建页面
      *
      * @param  Request  $request
      * @return Response
@@ -33,6 +34,48 @@ class AdminController extends Controller
     public function create(Request $request)
     {
         return AdminCreateResource::view();
+    }
+
+    /**
+     * 创建操作
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function store(Request $request)
+    {
+        $data = $request->all();
+
+        if(empty($data['username'])) {
+            return error('用户名不能为空！');
+        }
+
+        if(empty($data['password'])) {
+            return error('密码不能为空！');
+        }
+
+        Validator::make($data, [
+            'username' => [
+                'required'
+            ],
+            'email' => [
+                'required',
+                Rule::exists('staff')->where(function ($query) {
+                    $query->where('account_id', 1);
+                }),
+            ],
+        ]);
+        
+        // 将头像转化为数组
+        $data['avatar'] = json_encode($data['avatar']);
+
+        $result = Admin::create($data);
+
+        if($result) {
+            return success('操作成功！');
+        } else {
+            return error('操作失败，请重试！');
+        }
     }
 
     /**

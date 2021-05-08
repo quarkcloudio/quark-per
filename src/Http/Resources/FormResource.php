@@ -20,6 +20,19 @@ class FormResource extends LayoutResource
     public $api = null;
 
     /**
+     * 右上角自定义区域
+     *
+     * @param  void
+     * @return array
+     */
+    public function extra()
+    {
+        $actions[] = Action::make('返回上一页')->showStyle('link')->actionType('back');
+
+        return $actions;
+    }
+
+    /**
      * 获取表单项
      *
      * @param  void
@@ -38,8 +51,9 @@ class FormResource extends LayoutResource
      */
     public function actions()
     {
-        $actions[] = Action::make("提交")->showStyle('primary')->actionType('submit');
         $actions[] = Action::make('重置')->actionType('reset');
+        $actions[] = Action::make("提交")->showStyle('primary')->actionType('submit');
+        $actions[] = Action::make('返回上一页')->actionType('back');
 
         return $actions;
     }
@@ -56,6 +70,9 @@ class FormResource extends LayoutResource
 
         $self->data = $data;
 
+        // 右上角自定义区域
+        $extra = $self->extra();
+
         // 获取表单项
         $items = $self->getItems();
 
@@ -64,12 +81,15 @@ class FormResource extends LayoutResource
 
         // 表格
         $form = Form::api($self->api)
+        ->style([
+            'marginTop' => '30px'
+        ])
         ->title($self->title)
         ->items($items)
         ->actions($actions)
         ->render();
 
-        $card = Card::title($self->title)->body($form);
+        $card = Card::title($self->title)->headerBordered()->extra($extra)->body($form);
 
         // 页面内容
         $pageContainer = PageContainer::title($self->title)->body($card);
