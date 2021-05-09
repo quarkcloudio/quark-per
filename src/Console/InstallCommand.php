@@ -104,7 +104,7 @@ class InstallCommand extends Command
      */
     public function createDashboardResource()
     {
-        $resource = $this->directory.'/DashboardResource.php';
+        $resource = $this->directory.'/Resources/DashboardResource.php';
         $contents = $this->getStub('DashboardResource');
 
         $this->laravel['files']->put($resource,$contents);
