@@ -8,6 +8,7 @@ use QuarkCMS\Quark\Facades\Layout;
 use QuarkCMS\Quark\Facades\PageContainer;
 use QuarkCMS\Quark\Facades\Column;
 use QuarkCMS\Quark\Facades\ToolBar;
+use QuarkCMS\Quark\Facades\Action;
 use QuarkCMS\QuarkAdmin\Http\Resources\LayoutResource;
 
 class TableResource extends LayoutResource
@@ -49,6 +50,17 @@ class TableResource extends LayoutResource
     }
 
     /**
+     * 获取批量操作
+     *
+     * @param  void
+     * @return array
+     */
+    public function getBatchActions()
+    {
+        return $this->batchActions(new Action);
+    }
+
+    /**
      * 获取列
      *
      * @param  void
@@ -85,6 +97,9 @@ class TableResource extends LayoutResource
         // 获取操作栏
         $toolBar = $self->getToolBar();
 
+        // 获取批量操作
+        $batchActions = $self->getBatchActions();
+
         // 获取列
         $columns = $self->getColumns();
 
@@ -101,6 +116,7 @@ class TableResource extends LayoutResource
         ->title($self->title)
         ->toolBar($toolBar)
         ->columns($columns)
+        ->batchActions($batchActions)
         ->datasource($datasource)
         ->pagination($pagination['current'], $pagination['pageSize'], $pagination['total'])
         ->render();

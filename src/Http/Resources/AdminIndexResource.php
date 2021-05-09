@@ -46,7 +46,6 @@ class AdminIndexResource extends TableResource
      */
     public function column(Column $column)
     {
-        $columns[] = $column::make('avatar','头像')->hideInSearch()->render();
         $columns[] = $column::make('username','用户名')->render();
         $columns[] = $column::make('nickname','昵称')->render();
         $columns[] = $column::make('email','邮箱')->render();
@@ -97,7 +96,7 @@ class AdminIndexResource extends TableResource
         ->size('small')
         ->style(['padding' => '4px 5px'])
         ->withConfirm('确定要删除吗？', null, 'pop')
-        ->api('admin/admin/delete?id={id}');
+        ->api('admin/admin/destroy?id={id}');
 
         return $actions;
     }
@@ -110,9 +109,44 @@ class AdminIndexResource extends TableResource
      */
     public function batchActions(Action $action)
     {
-        $actions[] = $action::make('启用')->api('www.baidu.com');
-        $actions[] = $action::make('编辑')->api('www.baidu.com');
-        $actions[] = $action::make('删除')->api('www.baidu.com');
+        $actions[] = $action::make("批量禁用")
+        ->reload('table')
+        ->showStyle('link')
+        ->size('small')
+        ->style(['padding' => '4px 5px'])
+        ->withConfirm("确定要禁用这些数据吗？", '禁用后数据将不可使用！')
+        ->api('admin/admin/changeStatus?id={ids}&status=1');
+        
+        $actions[] = $action::make("批量启用")
+        ->reload('table')
+        ->showStyle('link')
+        ->size('small')
+        ->style(['padding' => '4px 5px'])
+        ->withConfirm("确定要启用这些数据吗？", '启用后数据将可正常使用！')
+        ->api('admin/admin/changeStatus?id={ids}&status=0');
+
+        $actions[] = $action::make('批量删除')
+        ->reload('table')
+        ->showStyle('link')
+        ->size('small')
+        ->style(['padding' => '4px 5px'])
+        ->withConfirm('确定要启用这些数据吗？', '删除后数据将不可恢复！')
+        ->api('admin/admin/destroy?id={ids}');
+
+        // 下拉菜单形式的行为
+        // $action::dropdown('更多')->overlay(function($action) {
+        //     $action->item('禁用')
+        //     ->withConfirm('确认要禁用吗？','禁用后数据将无法使用，请谨慎操作！')
+        //     ->model()
+        //     ->whereIn('id','{ids}')
+        //     ->update(['status'=>0]);
+
+        //     $action->item('启用')
+        //     ->withConfirm('确认要启用吗？','启用后数据可以正常使用！')
+        //     ->model()
+        //     ->whereIn('id','{ids}')
+        //     ->update(['status'=>1]);
+        // });
 
         return $actions;
     }
