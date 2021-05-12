@@ -4,67 +4,30 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
-use QuarkCMS\QuarkAdmin\Table;
+use QuarkCMS\QuarkAdmin\Http\Resources\PermissionIndexResource;
 use Route;
 
 class PermissionController extends Controller
 {
-    public $title = '权限';
-
     /**
      * 列表页面
      *
      * @param  Request  $request
      * @return Response
      */
-    protected function table()
+    public function index(Request $request)
     {
-        $table = new Table(new Permission);
-        $table->headerTitle($this->title.'列表');
-        
-        $table->column('id','序号');
-        $table->column('name','名称');
-        $table->column('guard_name','guard名称');
-        $table->column('created_at','创建时间');
-        $table->column('actions','操作')->width(180)->actions(function($action,$row) {
-            $action->a('删除')
-            ->withPopconfirm('确认要删除吗？')
-            ->model()
-            ->where('id','{id}')
-            ->delete();
-        });
+        $name = request('name');
 
-        $table->toolBar()->actions(function($action) {
-            $action->button('同步权限')->type('primary')->api('admin/permission/sync');
-            $action->button('清空权限')
-            ->withConfirm('确认要清空吗？','清空后数据将无法恢复，请谨慎操作！')
-            ->model()
-            ->where('guard_name','admin')
-            ->delete();
-        });
+        $query = Permission::query();
 
-        // 批量操作
-        $table->batchActions(function($action) {
-            $action->a('批量删除')
-            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-            ->model()
-            ->whereIn('id','{ids}')
-            ->delete();
-        });
+        if(!empty($name)) {
+            $query = $query->where('name', 'like', "%$name%");
+        }
 
-        // 搜索
-        $table->search(function($search) {
+        $list = $query->paginate(request('pageSize',10));
 
-            $search->where('name', '搜索内容',function ($model) {
-                $model->where('name', 'like', "%{input}%");
-            })->placeholder('名称');
-
-            $search->between('created_at', '创建时间')->datetime();
-        });
-
-        $table->model()->orderBy('id','desc')->paginate(request('pageSize',10));
-
-        return $table;
+        return PermissionIndexResource::view($list);
     }
 
     /**
@@ -95,5 +58,22 @@ class PermissionController extends Controller
         Permission::whereNotIn('name',$urls)->delete();
 
         return success('操作成功！');
+    }
+
+    /**
+     * 清空权限
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function clear(Request $request)
+    {
+        $result = Permission::where('guard_name', 'admin')->delete();
+
+        if($result) {
+            return success('操作成功！');
+        } else {
+            return error('操作失败！');
+        }
     }
 }

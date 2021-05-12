@@ -32,16 +32,8 @@ class AdminCreateResource extends FormResource
         return [
             FormItem::image('avatar','头像'),
             FormItem::text('username','用户名')->rules(
-                [
-                    'required',
-                    'min:6',
-                    'max:20'
-                ],
-                [
-                    'required' => '用户名必须填写',
-                    'min' => '用户名不能少于6个字符',
-                    'max' => '用户名不能超过20个字符'
-                ]
+                ['required','min:6','max:20'],
+                ['required' => '用户名必须填写','min' => '用户名不能少于6个字符','max' => '用户名不能超过20个字符']
             ),
             FormItem::checkbox('role_ids','角色')->options($data['roles']),
             FormItem::text('nickname','昵称')->rules(['required'], ['required' => '昵称必须填写']),
