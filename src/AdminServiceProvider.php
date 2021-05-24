@@ -24,6 +24,7 @@ class AdminServiceProvider extends ServiceProvider
      */
     protected $routeMiddleware = [
         'admin' => Http\Middleware\AdminMiddleware::class,
+        'admin.guest' => Http\Middleware\RedirectIfAuthenticated::class,
     ];
 
     /**
@@ -64,19 +65,7 @@ class AdminServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../resources/views' => resource_path('views/admin')], 'quark-admin-resources-views');
         }
         
-        $this->registerRoutes();
-    }
-
-    /**
-     * Register the package routes.
-     *
-     * @return void
-     */
-    protected function registerRoutes()
-    {
         $this->registerApiRoutes();
-
-        $this->registerAdminRoutes();
     }
 
     /**
@@ -88,23 +77,38 @@ class AdminServiceProvider extends ServiceProvider
      */
     protected function registerApiRoutes()
     {
-        Route::middleware('api')
-        ->group(__DIR__.'/../routes/api.php');
+        Route::namespace('QuarkCMS\QuarkAdmin\Http\Controllers')
+            ->middleware('admin.guest')
+            ->prefix('api')
+            ->group(function () {
+                Route::get('admin/captcha', 'CaptchaController@captcha');
+                Route::get('admin/login', 'ResourceLoginShowController@handle');
+                Route::post('admin/login', 'ResourceLoginController@login')->name('admin/login');
+            });
+
+        Route::namespace('QuarkCMS\QuarkAdmin\Http\Controllers')
+            ->middleware([])
+            ->prefix('api')
+            ->group(function () {
+                Route::get('admin/logout', 'LoginController@logout')->name('admin/logout');
+            });
+
+        Route::group($this->routeConfiguration(), function () {
+            $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
+        });
     }
 
     /**
-     * Define the "admin" routes for the application.
+     * Get the route group configuration array.
      *
-     * These routes all receive session state, CSRF protection, etc.
-     *
-     * @return void
+     * @return array
      */
-    protected function registerAdminRoutes()
+    protected function routeConfiguration()
     {
-        if(file_exists(base_path().'/routes/admin.php')) {
-            Route::prefix('api')
-            ->middleware('api')
-            ->group(base_path().'/routes/admin.php');
-        }
+        return [
+            'namespace' => 'QuarkCMS\QuarkAdmin\Http\Controllers',
+            'prefix' => 'api',
+            'middleware' => 'admin',
+        ];
     }
 }
