@@ -82,8 +82,8 @@ class AdminServiceProvider extends ServiceProvider
             ->prefix('api')
             ->group(function () {
                 Route::get('admin/captcha', 'CaptchaController@captcha');
-                Route::get('admin/login', 'ResourceLoginShowController@handle');
-                Route::post('admin/login', 'ResourceLoginController@login')->name('admin/login');
+                Route::get('admin/login', 'LoginController@show');
+                Route::post('admin/login', 'LoginController@login')->name('admin/login');
             });
 
         Route::namespace('QuarkCMS\QuarkAdmin\Http\Controllers')

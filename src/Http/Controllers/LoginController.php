@@ -5,22 +5,34 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use QuarkCMS\QuarkAdmin\Login;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 
-class ResourceLoginController extends Controller
+class LoginController extends Controller
 {
+    /**
+     * 登录展示
+     *
+     * @param  Login  $login
+     * @return array
+     */
+    public function show(Login $login)
+    {
+        return $login->resource();
+    }
+
     /**
      * 登录方法
      * @author  tangtanglove <dai_hang_love@126.com>
      */
-    public function login(Request $request)
+    public function login(Request $request, Login $login)
     {
         // 账号登录
         $username = $request->json('username');
         $password = $request->json('password');
         $captcha = $request->json('captcha');
 
-        if(captchaValidate($captcha) === false) {
+        if(config('admin.captchaUrl') !== false && captchaValidate($captcha) === false) {
             return error('验证码错误！');
         }
 
@@ -43,9 +55,7 @@ class ResourceLoginController extends Controller
             }
 
             // 更新登录信息
-            $data['last_login_ip'] = $request->ip();
-            $data['last_login_time'] = date('Y-m-d H:i:s');
-            Admin::where('id',$user->id)->update($data);
+            Admin::where('id',$user->id)->first()->updateLastLoginInfo();
 
             $result['id'] = $user->id;
             $result['username'] = $user->username;
@@ -58,8 +68,10 @@ class ResourceLoginController extends Controller
             return success('登录成功！','',$result);
         } else {
 
-            // 清除验证码
-            clearCaptcha();
+            if(config('admin.captchaUrl') !== false) {
+                // 清除验证码
+                clearCaptcha();
+            }
 
             return error('用户名或密码错误！');
         }
@@ -71,19 +83,13 @@ class ResourceLoginController extends Controller
      */
     public function logout(Request $request)
     {
-        // 得到认证凭据
         $authorization = $request->header('Authorization');
-
-        // 分割出token
         $token = explode(' ',$authorization);
-
-        // 删除认证缓存
-        cache([$token[1] => null]);
-
-        // 同时退出登录
         $result = Auth::guard('admin')->logout();
 
         if($result !== false) {
+
+            cache([$token[1] => null]);
 
             return success('已退出！');
         } else {

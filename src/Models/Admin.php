@@ -75,4 +75,20 @@ class Admin extends Authenticatable
 
         return $self;
     }
+
+    /**
+     * 更新最后登录信息
+     *
+     * @param  void
+     * @return object
+     */
+    public function updateLastLoginInfo()
+    {
+        $this->update(
+            [
+                'last_login_ip' => request()->ip(),
+                'last_login_time' => date('Y-m-d H:i:s')
+            ]
+        );
+    }
 }
