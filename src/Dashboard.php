@@ -2,7 +2,9 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-use QuarkCMS\QuarkAdmin\Layout;
+use QuarkCMS\Quark\Facades\Card;
+use QuarkCMS\Quark\Facades\Row;
+use QuarkCMS\Quark\Facades\Col;
 
 /**
  * Class Dashboard.
@@ -19,6 +21,19 @@ abstract class Dashboard
      */
     public function resource()
     {
-        return $this->setLayoutContent('xxx');
+        $cards = $this->cards();
+        
+        $colNum = 0;
+        $rows = $cols = [];
+
+        foreach ($cards as $key => $card) {
+            $colNum = $colNum + $card->col;
+
+            $cols[] = Col::span($card->col)->body($card->calculate(request()));
+        }
+
+        $rows = Row::gutter(8)->body($cols);
+
+        return $this->setLayoutContent($rows);
     }
 }
