@@ -60,6 +60,7 @@ class LoginController extends Controller
             $result['id'] = $user->id;
             $result['username'] = $user->username;
             $result['nickname'] = $user->nickname;
+            $result['avatar'] = get_picture($user->avatar);
             $result['token'] = Str::random(950);
 
             // 将认证信息写入缓存，这里用hack方法做后台api登录认证

@@ -17,7 +17,7 @@ trait Layout
      * @param  array $menu
      * @return $this
      */
-    public function menu($menu = null)
+    protected function menu($menu = null)
     {
         if($menu === null) {
             // 通过当前url倒推二级菜单和一级菜单
@@ -124,11 +124,23 @@ trait Layout
         // 页面内容
         $pageContainer = PageContainer::title($this->title)->body($content);
 
-        // 布局
-        $layout = LayoutFacade::title(config('admin.name','QuarkAdmin'))
-        ->fixSiderbar()
-        ->menu($this->menu())
-        ->body($pageContainer);
+        $layout = LayoutFacade::title(config('admin.name','QuarkAdmin'));
+
+        $layout->logo(config('admin.logo'));
+        $layout->headerActions(config('admin.layout.header_actions'));
+        $layout->layout(config('admin.layout.layout'));
+        $layout->splitMenus(config('admin.layout.split_menus'));
+        $layout->headerTheme(config('admin.layout.header_theme'));
+        $layout->contentWidth(config('admin.layout.content_width'));
+        $layout->navTheme(config('admin.layout.nav_theme'));
+        $layout->primaryColor(config('admin.layout.primary_color'));
+        $layout->fixedHeader(config('admin.layout.fixed_header'));
+        $layout->fixSiderbar(config('admin.layout.fix_siderbar'));
+        $layout->iconfontUrl(config('admin.layout.iconfont_url'));
+        $layout->locale(config('admin.layout.locale'));
+        $layout->siderWidth(config('admin.layout.sider_width'));
+        $layout->menu($this->menu());
+        $layout->body($pageContainer);
 
         // 页面
         return Page::style(['height' => '100vh'])->body($layout);
