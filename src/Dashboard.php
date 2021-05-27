@@ -28,11 +28,27 @@ abstract class Dashboard
 
         foreach ($cards as $key => $card) {
             $colNum = $colNum + $card->col;
-
-            $cols[] = Col::span($card->col)->body($card->calculate(request()));
+            $cardItem = Card::style(['padding' => '24px'])->body(
+                $card->calculate(request())
+            );
+            $cols[] = Col::span($card->col)->body($cardItem);
+            if($colNum%24 === 0) {
+                $row = Row::gutter(8);
+                if($key !== 1) {
+                    $row = $row->style(['marginTop' => '20px']);
+                }
+                $rows[] = $row->body($cols);
+                $cols = [];
+            }
         }
 
-        $rows = Row::gutter(8)->body($cols);
+        if($cols) {
+            $row = Row::gutter(8);
+            if($colNum > 24) {
+                $row = $row->style(['marginTop' => '20px']);
+            }
+            $rows[] = $row->body($cols);
+        }
 
         return $this->setLayoutContent($rows);
     }

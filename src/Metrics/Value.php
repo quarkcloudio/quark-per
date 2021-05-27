@@ -2,7 +2,7 @@
 
 namespace QuarkCMS\QuarkAdmin\Metrics;
 
-use QuarkCMS\Quark\Facades\StatisticCard;
+use QuarkCMS\Quark\Facades\Statistic;
 
 /**
  * Class Value.
@@ -59,11 +59,6 @@ abstract class Value extends Metric
      */
     public function result($value)
     {
-        $title = $this->title;
-        return StatisticCard::statistic(function ($statistic) use ($title, $value) {
-            return $statistic->title($title)
-            ->value($value)
-            ->render();
-        })->render();
+        return Statistic::title($this->title)->value($value);
     }
 }

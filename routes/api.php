@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('admin/dashboard/{resource}', 'DashboardController@show');
 
 // Resource Management...
-Route::get('admin/{resource}', 'ResourceIndexController@handle');
-Route::get('admin/{resource}/count', 'ResourceCountController@show');
-Route::delete('admin/{resource}/detach', 'ResourceDetachController@handle');
+Route::get('admin/{resource}/index', 'ResourceIndexController@handle');
 Route::put('admin/{resource}/restore', 'ResourceRestoreController@handle');
 Route::delete('admin/{resource}/force', 'ResourceForceDeleteController@handle');
 Route::get('admin/{resource}/{resourceId}', 'ResourceShowController@handle');

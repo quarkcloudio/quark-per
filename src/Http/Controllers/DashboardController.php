@@ -21,8 +21,8 @@ class DashboardController extends Controller
             throw new \Exception("Class {$getCalledClass} does not exist.");
         }
 
-        $dashboard = new $getCalledClass();
+        $calledClass = new $getCalledClass();
 
-        return $dashboard->resource();
+        return $calledClass->resource();
     }
 }
