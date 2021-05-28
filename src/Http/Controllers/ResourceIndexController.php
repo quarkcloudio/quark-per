@@ -18,13 +18,11 @@ class ResourceIndexController extends Controller
     public function handle($resource, Request $request)
     {
         $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
-
         if(!class_exists($getCalledClass)) {
             throw new \Exception("Class {$getCalledClass} does not exist.");
         }
-
         $calledClass = new $getCalledClass();
 
-        return $calledClass->indexResource();
+        return $calledClass->indexResource($request);
     }
 }
