@@ -58,31 +58,7 @@ abstract class Resource
 
         foreach ($fields as $key => $value) {
             if($value->showOnIndex) {
-                $column = Column::make($value->name, $value->label);
-
-                if(isset($value->options)) {
-                    $options = [];
-                    if(in_array($value->type, ['checkbox', 'radio', 'select'])) {
-                        foreach ($value->options as $optionKey => $optionValue) {
-                            $options[$optionValue['value']] = $optionValue['label'];
-                        }
-                    } else {
-                        $options = $value->options;
-                    }
-                    $column->valueEnum($options);
-                }
-
-                if($value->type === 'datetime') {
-                    $columns[] = Column::make($value->name.'_range', $value->label)->hideInTable()->valueType('dateTimeRange')->render();
-                    $column->hideInSearch()->valueType('dateTime');
-                }
-
-                if($value->type === 'date') {
-                    $columns[] = Column::make($value->name.'_range', $value->label)->hideInTable()->valueType('dateRange')->render();
-                    $column->hideInSearch()->valueType('date');
-                }
-
-                $columns[] = $column->render();
+                $columns[] = Column::make($value->name, $value->label);
             }
         }
 
@@ -121,6 +97,21 @@ abstract class Resource
         ->toolBar(false)
         ->columns($this->fieldsToColumns($request))
         ->batchActions([]);
+        
+        $table->search(function($search) {
+
+            $search->where('title', '搜索内容',function ($query) {
+                $query->where('title', 'like', "%{input}%");
+            })->placeholder('搜索内容');
+        
+            $search->equal('status', '所选状态')
+            ->select([''=>'全部',1=>'正常',2=>'已禁用'])
+            ->placeholder('选择状态')
+            ->width(110);
+        
+            $search->between('created_at', '发布时间')
+            ->datetime();
+        });
 
         if(static::pagination()) {
             $table = $table->datasource($data->items())->pagination($data->currentPage(), $data->perPage(), $data->total());

@@ -31,45 +31,6 @@ class Admin extends Resource
     public static $pagination = 10;
 
     /**
-     * 查询
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Laravel\Scout\Builder  $query
-     * @return \Laravel\Scout\Builder
-     */
-    public static function scoutQuery(Request $request, $query)
-    {
-        return $query;
-    }
-
-    /**
-     * 过滤器
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function filters(Request $request)
-    {
-        return [
-            new Filters\TimestampFilter('created_at'),
-            new Filters\TimestampFilter('deleted_at'),
-        ];
-    }
-
-    /**
-     * 行为
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function actions(Request $request)
-    {
-        return [
-
-        ];
-    }
-
-    /**
      * 字段
      *
      * @param  \Illuminate\Http\Request  $request
@@ -112,5 +73,44 @@ class Admin extends Resource
         }
 
         return $roles;
+    }
+
+    /**
+     * 过滤器
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function filters(Request $request)
+    {
+        return [
+            new Filters\InputFilter('username'),
+            new Filters\InputFilter('nickname')
+        ];
+    }
+
+    /**
+     * 查询
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Laravel\Scout\Builder  $query
+     * @return \Laravel\Scout\Builder
+     */
+    public static function scoutQuery(Request $request, $query)
+    {
+        return $query;
+    }
+
+    /**
+     * 行为
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [
+
+        ];
     }
 }
