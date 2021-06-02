@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Resource;
 use QuarkCMS\QuarkAdmin\Field;
 use Spatie\Permission\Models\Role;
+use App\Admin\Searches\Input;
+use App\Admin\Searches\DateTimeRange;
+use App\Admin\Searches\Status;
 
 class Admin extends Resource
 {
@@ -28,17 +31,22 @@ class Admin extends Resource
      *
      * @var int|bool
      */
-    public static $pagination = 10;
+    public static $perPage = 10;
 
     /**
      * 字段
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  Request  $request
      * @return array
      */
     public function fields(Request $request)
     {
-        $roles = $this->getRoles();
+        $getRoles = Role::where('guard_name','admin')->get()->toArray();
+        $roles = [];
+
+        foreach ($getRoles as $key => $role) {
+            $roles[$role['id']] = $role['name'];
+        }
 
         return [
             Field::image('avatar','头像')->onlyOnForms(),
@@ -58,59 +66,18 @@ class Admin extends Resource
     }
 
     /**
-     * 获取角色
+     * 搜索表单
      *
-     * @param  void
-     * @return array
+     * @param  Request  $request
+     * @return object
      */
-    protected function getRoles()
-    {
-        $getRoles = Role::where('guard_name','admin')->get()->toArray();
-        $roles = [];
-
-        foreach ($getRoles as $key => $role) {
-            $roles[$role['id']] = $role['name'];
-        }
-
-        return $roles;
-    }
-
-    /**
-     * 过滤器
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function filters(Request $request)
+    public function Searches(Request $request)
     {
         return [
-            new Filters\InputFilter('username'),
-            new Filters\InputFilter('nickname')
-        ];
-    }
-
-    /**
-     * 查询
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \Laravel\Scout\Builder  $query
-     * @return \Laravel\Scout\Builder
-     */
-    public static function scoutQuery(Request $request, $query)
-    {
-        return $query;
-    }
-
-    /**
-     * 行为
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return array
-     */
-    public function actions(Request $request)
-    {
-        return [
-
+            new Input('username', '用户名'),
+            new Input('nickname', '昵称'),
+            new Status,
+            new DateTimeRange('last_login_time', '登录时间')
         ];
     }
 }

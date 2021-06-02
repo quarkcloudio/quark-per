@@ -15,16 +15,17 @@ use QuarkCMS\Quark\Facades\Action;
 abstract class Resource
 {
     use Layout;
+    use PerformsQueries;
 
     /**
      * 分页
      *
      * @var int|bool
      */
-    public static $pagination = false;
+    public static $perPage = false;
 
     /**
-     * Get a fresh instance of the model represented by the resource.
+     * 模型
      *
      * @return mixed
      */
@@ -36,13 +37,46 @@ abstract class Resource
     }
 
     /**
+     * 字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function fields(Request $request)
+    {
+        return [];
+    }
+
+    /**
+     * 过滤器
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function filters(Request $request)
+    {
+        return [];
+    }
+
+    /**
+     * 行为
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function actions(Request $request)
+    {
+        return [];
+    }
+
+    /**
      * 配置分页
      *
      * @return mixed
      */
     public static function pagination()
     {
-        return static::$pagination;
+        return static::$perPage;
     }
 
     /**
@@ -73,13 +107,15 @@ abstract class Resource
      */
     protected function getData($request)
     {
-        $model = static::newModel();
+        $query = $this->buildIndexQuery($request);
 
         if(static::pagination()) {
-            return $model->paginate(request('pageSize',static::pagination()));
+            $result = $query->paginate(request('pageSize', static::pagination()));
         } else {
-            return $model->get()->toArray();
+            $result = $query->get()->toArray();
         }
+
+        return $result;
     }
 
     /**
@@ -91,6 +127,7 @@ abstract class Resource
     public function indexResource(Request $request)
     {
         $data = $this->getData($request);
+        $searches = $this->Searches($request);
 
         $table = Table::key('table')
         ->title($this->title)
@@ -98,23 +135,41 @@ abstract class Resource
         ->columns($this->fieldsToColumns($request))
         ->batchActions([]);
         
-        $table->search(function($search) {
+        $table->search(function($search) use ($searches, $request) {
 
-            $search->where('title', '搜索内容',function ($query) {
-                $query->where('title', 'like', "%{input}%");
-            })->placeholder('搜索内容');
-        
-            $search->equal('status', '所选状态')
-            ->select([''=>'全部',1=>'正常',2=>'已禁用'])
-            ->placeholder('选择状态')
-            ->width(110);
-        
-            $search->between('created_at', '发布时间')
-            ->datetime();
+            foreach ($searches as $key => $value) {
+                $item = $search->item($value->column, $value->name)->operator($value->operator);
+
+                switch ($value->type) {
+                    case 'select':
+                        $item->select($value->options($request));
+                        break;
+
+                    case 'multipleSelect':
+                        $item->multipleSelect($value->options($request));
+                        break;
+
+                    case 'datetime':
+                        $item->datetime();
+                        break;
+
+                    case 'date':
+                        $item->date();
+                        break;
+
+                    default:
+                        # code...
+                        break;
+                }
+            }
         });
 
         if(static::pagination()) {
-            $table = $table->datasource($data->items())->pagination($data->currentPage(), $data->perPage(), $data->total());
+            $table = $table->pagination(
+                $data->currentPage(),
+                $data->perPage(),
+                $data->total()
+            )->datasource($data->items());
         } else {
             $table = $table->datasource($data);
         }
