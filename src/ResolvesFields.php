@@ -20,7 +20,28 @@ trait ResolvesFields
 
         foreach ($fields as $key => $value) {
             if($value->showOnIndex) {
-                $columns[] = Column::make($value->name, $value->label);
+                $column = Column::make($value->name, $value->label);
+
+                if(in_array($value->type, ['select', 'radio'])) {
+                    if($value->options) {
+                        foreach ($value->options as $optionKey => $optionValue) {
+                            $options[$optionValue['value']] = $optionValue['label'];
+                        }
+                        
+                        $column = $column->valueEnum($options);
+                    }
+                }
+
+                if ($value->type === 'switch') {
+                    foreach ($value->options as $optionKey => $optionValue) {
+                        $valueKey = ($optionKey === 'on') ? 1 : 0;
+                        $options[$valueKey] = $optionValue;
+                    }
+
+                    $column = $column->valueEnum($options);
+                }
+
+                $columns[] = $column->render();
             }
         }
 

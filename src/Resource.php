@@ -5,6 +5,7 @@ namespace QuarkCMS\QuarkAdmin;
 use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Form;
 use QuarkCMS\Quark\Facades\FormItem;
+use QuarkCMS\Quark\Facades\ToolBar;
 use QuarkCMS\Quark\Facades\Table;
 use QuarkCMS\Quark\Facades\Action;
 
@@ -19,7 +20,7 @@ abstract class Resource
     use ResolvesFields;
     use ResolvesActions;
     use ResolvesFilters;
-    use ResolvesSearchs;
+    use ResolvesSearches;
 
     /**
      * 分页
@@ -70,6 +71,17 @@ abstract class Resource
     }
 
     /**
+     * 工具栏
+     *
+     * @param  ToolBar $toolBar
+     * @return array
+     */
+    public function toolBar($request, ToolBar $toolBar)
+    {
+        return $toolBar::make($this->title)->actions($this->indexActions($request));
+    }
+
+    /**
      * 列表资源
      *
      * @param  void
@@ -78,36 +90,13 @@ abstract class Resource
     public function indexResource(Request $request)
     {
         $data = $this->getData($request);
-        $searches = $this->searches($request);
 
         $table = Table::key('table')
         ->title($this->title)
-        ->toolBar(false)
+        ->toolBar($this->toolBar($request, new ToolBar))
         ->columns($this->indexFields($request))
-        ->batchActions([]);
-        
-        $table->search(function($search) use ($searches, $request) {
-            foreach ($searches as $key => $value) {
-                $item = $search->item($value->column, $value->name)->operator($value->operator);
-                switch ($value->type) {
-                    case 'select':
-                        $item->select($value->options($request));
-                        break;
-                    case 'multipleSelect':
-                        $item->multipleSelect($value->options($request));
-                        break;
-                    case 'datetime':
-                        $item->datetime();
-                        break;
-                    case 'date':
-                        $item->date();
-                        break;
-                    default:
-                        # code...
-                        break;
-                }
-            }
-        });
+        ->batchActions([])
+        ->searches($this->resolveSearches($request));
 
         if(static::pagination()) {
             $table = $table->pagination(
