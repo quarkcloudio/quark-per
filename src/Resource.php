@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Form;
 use QuarkCMS\Quark\Facades\FormItem;
 use QuarkCMS\Quark\Facades\Table;
-use QuarkCMS\Quark\Facades\Column;
 use QuarkCMS\Quark\Facades\Action;
 
 /**
@@ -16,6 +15,11 @@ abstract class Resource
 {
     use Layout;
     use PerformsQueries;
+    use PerformsValidation;
+    use ResolvesFields;
+    use ResolvesActions;
+    use ResolvesFilters;
+    use ResolvesSearchs;
 
     /**
      * 分页
@@ -37,39 +41,6 @@ abstract class Resource
     }
 
     /**
-     * 字段
-     *
-     * @param  Request  $request
-     * @return array
-     */
-    public function fields(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * 过滤器
-     *
-     * @param  Request  $request
-     * @return array
-     */
-    public function filters(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * 行为
-     *
-     * @param  Request  $request
-     * @return array
-     */
-    public function actions(Request $request)
-    {
-        return [];
-    }
-
-    /**
      * 配置分页
      *
      * @return mixed
@@ -80,26 +51,6 @@ abstract class Resource
     }
 
     /**
-     * 将字段转换表格列
-     *
-     * @param  Request $request
-     * @return array
-     */
-    protected function fieldsToColumns($request)
-    {
-        $fields = $this->fields($request);
-        $columns = [];
-
-        foreach ($fields as $key => $value) {
-            if($value->showOnIndex) {
-                $columns[] = Column::make($value->name, $value->label);
-            }
-        }
-
-        return $columns;
-    }
-
-    /**
      * 获取表格数据
      *
      * @param  Request $request
@@ -107,7 +58,7 @@ abstract class Resource
      */
     protected function getData($request)
     {
-        $query = $this->buildIndexQuery($request);
+        $query = $this->buildIndexQuery($request, static::newModel(), $this->searches($request), $this->fieldFilters($request));
 
         if(static::pagination()) {
             $result = $query->paginate(request('pageSize', static::pagination()));
@@ -127,36 +78,30 @@ abstract class Resource
     public function indexResource(Request $request)
     {
         $data = $this->getData($request);
-        $searches = $this->Searches($request);
+        $searches = $this->searches($request);
 
         $table = Table::key('table')
         ->title($this->title)
         ->toolBar(false)
-        ->columns($this->fieldsToColumns($request))
+        ->columns($this->indexFields($request))
         ->batchActions([]);
         
         $table->search(function($search) use ($searches, $request) {
-
             foreach ($searches as $key => $value) {
                 $item = $search->item($value->column, $value->name)->operator($value->operator);
-
                 switch ($value->type) {
                     case 'select':
                         $item->select($value->options($request));
                         break;
-
                     case 'multipleSelect':
                         $item->multipleSelect($value->options($request));
                         break;
-
                     case 'datetime':
                         $item->datetime();
                         break;
-
                     case 'date':
                         $item->date();
                         break;
-
                     default:
                         # code...
                         break;

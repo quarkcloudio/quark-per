@@ -46,7 +46,7 @@ abstract class Search
      */
     public function __construct()
     {
-        $this->column = Str::afterLast(get_class($this), '\\');
+        $this->column = Str::kebab(class_basename(get_called_class()));
     }
 
     /**
@@ -91,5 +91,23 @@ abstract class Search
     public function options(Request $request)
     {
         return [];
+    }
+
+    /**
+     * 魔术方法
+     *
+     * @param  Request  $request
+     * @param  Builder  $query
+     * @return array
+     */
+    public function __invoke($request, $query)
+    {
+        $search = $request->input('search');
+
+        if(isset($search[$this->column])) {
+            return $this->apply($request, $query, $search[$this->column]);
+        }
+
+        return $query;
     }
 }

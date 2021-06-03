@@ -13,9 +13,15 @@ trait PerformsQueries
      * @param  Builder  $query
      * @return Builder
      */
-    public static function buildIndexQuery(Request $request, $query, $search = [] ,$filters = [])
+    public static function buildIndexQuery(Request $request, $query, $search = [] , $filters = [])
     {
-        return static::indexQuery($request, static::initializeQuery($request, $query));
+        return static::applyFilters($request, static::applySearch(
+                $request,
+                static::indexQuery($request, static::initializeQuery($request, $query)),
+                $search
+            ),
+            $filters
+        );
     }
 
     /**
@@ -35,11 +41,15 @@ trait PerformsQueries
      *
      * @param  Request  $request
      * @param  Builder  $query
-     * @param  array  $filters
+     * @param  array  $search
      * @return Builder
      */
-    protected static function applySearch(Request $request, $query, array $search)
+    protected static function applySearch(Request $request, $query, $search)
     {
+        foreach ($search as $key => $value) {
+            $query = $value->__invoke($request, $query);
+        }
+        
         return $query;
     }
 
@@ -51,7 +61,7 @@ trait PerformsQueries
      * @param  array  $filters
      * @return Builder
      */
-    protected static function applyFilters(Request $request, $query, array $filters)
+    protected static function applyFilters(Request $request, $query, $filters)
     {
         return $query;
     }
