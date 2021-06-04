@@ -15,6 +15,7 @@ use QuarkCMS\Quark\Facades\Action;
 abstract class Resource
 {
     use Layout;
+    use PerformsActions;
     use PerformsQueries;
     use PerformsValidation;
     use ResolvesFields;
@@ -78,7 +79,7 @@ abstract class Resource
      */
     public function toolBar($request, ToolBar $toolBar)
     {
-        return $toolBar::make($this->title)->actions($this->indexActions($request));
+        return $toolBar::make($this->title . '列表')->actions($this->indexActions($request));
     }
 
     /**
@@ -95,7 +96,7 @@ abstract class Resource
         ->title($this->title)
         ->toolBar($this->toolBar($request, new ToolBar))
         ->columns($this->indexFields($request))
-        ->batchActions([])
+        ->batchActions($this->tableAlertActions($request))
         ->searches($this->resolveSearches($request));
 
         if(static::pagination()) {

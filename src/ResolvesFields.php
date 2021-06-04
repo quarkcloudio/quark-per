@@ -15,37 +15,13 @@ trait ResolvesFields
      */
     public function indexFields(Request $request)
     {
-        $fields = $this->fields($request);
-        $columns = [];
-
-        foreach ($fields as $key => $value) {
+        foreach ($this->fields($request) as $key => $value) {
             if($value->showOnIndex) {
-                $column = Column::make($value->name, $value->label);
-
-                if(in_array($value->type, ['select', 'radio'])) {
-                    if($value->options) {
-                        foreach ($value->options as $optionKey => $optionValue) {
-                            $options[$optionValue['value']] = $optionValue['label'];
-                        }
-                        
-                        $column = $column->valueEnum($options);
-                    }
-                }
-
-                if ($value->type === 'switch') {
-                    foreach ($value->options as $optionKey => $optionValue) {
-                        $valueKey = ($optionKey === 'on') ? 1 : 0;
-                        $options[$valueKey] = $optionValue;
-                    }
-
-                    $column = $column->valueEnum($options);
-                }
-
-                $columns[] = $column->render();
+                $columns[] = $this->columnBuilder($value);
             }
         }
 
-        return $columns;
+        return $columns ?? [];
     }
 
     /**
@@ -57,6 +33,38 @@ trait ResolvesFields
     public function detailFields(NovaRequest $request)
     {
 
+    }
+
+    /**
+     * 列创建器
+     *
+     * @param  object  $field
+     * @return array
+     */
+    protected function columnBuilder($field)
+    {
+        $column = Column::make($field->name, $field->label);
+
+        if(in_array($field->type, ['select', 'radio'])) {
+            if($field->options) {
+                foreach ($field->options as $optionKey => $optionValue) {
+                    $options[$optionValue['value']] = $optionValue['label'];
+                }
+                
+                $column = $column->valueEnum($options);
+            }
+        }
+
+        if ($field->type === 'switch') {
+            foreach ($field->options as $optionKey => $optionValue) {
+                $valueKey = ($optionKey === 'on') ? 1 : 0;
+                $options[$valueKey] = $optionValue;
+            }
+
+            $column = $column->valueEnum($options);
+        }
+
+        return $column->render();
     }
 
     /**

@@ -6,9 +6,6 @@ use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Resource;
 use QuarkCMS\QuarkAdmin\Field;
 use Spatie\Permission\Models\Role;
-use App\Admin\Searches\Input;
-use App\Admin\Searches\DateTimeRange;
-use App\Admin\Searches\Status;
 
 class Admin extends Resource
 {
@@ -71,13 +68,27 @@ class Admin extends Resource
      * @param  Request  $request
      * @return object
      */
-    public function Searches(Request $request)
+    public function searches(Request $request)
     {
         return [
-            new Input('username', '用户名'),
-            new Input('nickname', '昵称'),
-            new Status,
-            new DateTimeRange('last_login_time', '登录时间')
+            new \App\Admin\Searches\Input('username', '用户名'),
+            new \App\Admin\Searches\Input('nickname', '昵称'),
+            new \App\Admin\Searches\Status,
+            new \App\Admin\Searches\DateTimeRange('last_login_time', '登录时间')
+        ];
+    }
+
+    /**
+     * 行为
+     *
+     * @param  Request  $request
+     * @return object
+     */
+    public function actions(Request $request)
+    {
+        return [
+            (new \App\Admin\Actions\CreateLink('创建' . $this->title))->onlyOnIndex(),
+            (new \App\Admin\Actions\BatchDelete)->onlyOnTableAlert(),
         ];
     }
 }
