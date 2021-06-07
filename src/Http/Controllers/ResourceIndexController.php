@@ -3,8 +3,6 @@
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 
 class ResourceIndexController extends Controller
 {
@@ -23,6 +21,6 @@ class ResourceIndexController extends Controller
         }
         $calledClass = new $getCalledClass();
 
-        return $calledClass->indexResource($request);
+        return $calledClass->index($request);
     }
 }

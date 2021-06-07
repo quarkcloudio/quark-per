@@ -18,7 +18,7 @@ trait ResolvesActions
     {
         foreach ($this->actions($request) as $key => $value) {
             if($value->shownOnIndex()) {
-                $actions[] = $this->actionBuilder($value);
+                $actions[] = $this->buildAction($value);
             }
         }
 
@@ -35,7 +35,7 @@ trait ResolvesActions
     {
         foreach ($this->actions($request) as $key => $value) {
             if($value->shownOnTableRow()) {
-                $actions[] = $this->actionBuilder($value);
+                $actions[] = $this->buildAction($value);
             }
         }
 
@@ -52,7 +52,7 @@ trait ResolvesActions
     {
         foreach ($this->actions($request) as $key => $value) {
             if($value->shownOnTableAlert()) {
-                $actions[] = $this->actionBuilder($value);
+                $actions[] = $this->buildAction($value);
             }
         }
 
@@ -60,27 +60,37 @@ trait ResolvesActions
     }
 
     /**
-     * 行为创建器
+     * 创建行为组件
      *
      * @param  object  $action
      * @return array
      */
-    protected function actionBuilder($action)
+    protected function buildAction($action)
     {
         $builder = Action::make($action->name())
+        ->reload('table')
+        ->api($action->api())
         ->actionType($action->actionType())
         ->showStyle($action->showStyle())
-        ->icon($action->icon());
+        ->size($action->size());
 
-        if($action->actionType === 'link') {
+        if($action->icon()) {
+            $builder->icon($action->icon());
+        }
+
+        if($action->actionType() === 'link') {
             $builder->link($action->href(), $action->target());
+        }
+
+        if($action->confirmTitle) {
+            $builder->withConfirm($action->confirmTitle, $action->confirmText, $action->confirmType);
         }
 
         return $builder->render();
     }
 
     /**
-     * 行为
+     * 定义行为
      *
      * @param  Request  $request
      * @return array

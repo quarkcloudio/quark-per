@@ -8,7 +8,7 @@ use QuarkCMS\Quark\Facades\Column;
 trait ResolvesFields
 {
     /**
-     * 首页字段
+     * 列表页表格列
      *
      * @param  Request  $request
      * @return array
@@ -17,7 +17,7 @@ trait ResolvesFields
     {
         foreach ($this->fields($request) as $key => $value) {
             if($value->showOnIndex) {
-                $columns[] = $this->columnBuilder($value);
+                $columns[] = $this->buildTableColumn($value);
             }
         }
 
@@ -30,18 +30,22 @@ trait ResolvesFields
      * @param  Request  $request
      * @return array
      */
-    public function detailFields(NovaRequest $request)
+    public function detailFields(Request $request)
     {
+        foreach ($this->fields($request) as $key => $value) {
+            if($value->showOnDetail) {
 
+            }
+        }
     }
 
     /**
-     * 列创建器
+     * 创建表格的列
      *
      * @param  object  $field
      * @return array
      */
-    protected function columnBuilder($field)
+    protected function buildTableColumn($field)
     {
         $column = Column::make($field->name, $field->label);
 
@@ -68,7 +72,7 @@ trait ResolvesFields
     }
 
     /**
-     * 字段
+     * 定义字段
      *
      * @param  Request  $request
      * @return array

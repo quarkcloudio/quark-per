@@ -2,7 +2,6 @@
 
 namespace QuarkCMS\QuarkAdmin\Actions;
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 /**
@@ -11,25 +10,11 @@ use Illuminate\Support\Str;
 abstract class Action
 {
     /**
-     * 行为key
-     *
-     * @var string
-     */
-    public $uriKey;
-
-    /**
      * 名称
      *
      * @var string
      */
     public $name = null;
-
-    /**
-     * 执行行为的接口链接
-     *
-     * @var string
-     */
-    public $api = null;
 
     /**
      * 【必填】这是 action 最核心的配置，来指定该 action 的作用类型，支持：ajax、link、url、drawer、dialog、confirm、cancel、prev、next、copy、close。
@@ -41,9 +26,9 @@ abstract class Action
     /**
      * 设置按钮的图标组件
      *
-     * @var string
+     * @var string|bool
      */
-    public $icon = null;
+    public $icon = false;
 
     /**
      * 设置按钮类型,primary | ghost | dashed | link | text | default
@@ -51,6 +36,41 @@ abstract class Action
      * @var string
      */
     public $showStyle = 'default';
+
+    /**
+     * 设置按钮大小,large | middle | small | default
+     *
+     * @var string
+     */
+    public $size = 'default';
+
+    /**
+     * 行为表单字段
+     *
+     * @var array|object
+     */
+    public $fields = [];
+
+    /**
+     * 确认信息的标题
+     *
+     * @var array
+     */
+    public $confirmTitle;
+
+    /**
+     * 确认信息的内容
+     *
+     * @var array
+     */
+    public $confirmText;
+
+    /**
+     * 确认信息弹框的类型
+     *
+     * @var array
+     */
+    public $confirmType;
 
     /**
      * 只在列表页展示
@@ -95,14 +115,13 @@ abstract class Action
     public $showOnTableAlert = false;
 
     /**
-     * 初始化
+     * 行为key
      *
-     * @param  void
-     * @return void
+     * @return string
      */
-    public function __construct()
+    public function uriKey()
     {
-        $this->uriKey = Str::kebab(class_basename(get_called_class()));
+        return Str::kebab(class_basename(get_called_class()));
     }
 
     /**
@@ -116,13 +135,13 @@ abstract class Action
     }
 
     /**
-     * 执行行为的接口链接
+     * 执行行为的接口
      *
      * @return string
      */
     public function api()
     {
-        return $this->api;
+        return Str::beforeLast(Str::replaceFirst('api/','',\request()->path()), '/') . '/action/' . $this->uriKey() . '?id={id}';
     }
 
     /**
@@ -146,6 +165,16 @@ abstract class Action
     }
 
     /**
+     * 设置按钮大小,large | middle | small | default
+     *
+     * @return string
+     */
+    public function size()
+    {
+        return $this->size;
+    }
+
+    /**
      * 设置按钮的图标组件
      *
      * @return string
@@ -153,6 +182,49 @@ abstract class Action
     public function icon()
     {
         return $this->icon;
+    }
+
+    /**
+     * 行为表单字段
+     *
+     * @return mixed
+     */
+    public function fields()
+    {
+        return $this->fields;
+    }
+
+    /**
+     * 执行行为句柄
+     *
+     * @param  Fields  $fields
+     * @param  Collection  $models
+     * @return mixed
+     */
+    public function handle($fields, $models)
+    {
+        return [];
+    }
+
+    /**
+     * 设置行为前的确认操作
+     *
+     * @param  string  $title
+     * @param  string  $text
+     * @param  string  $type
+     * @return $this
+     */
+    public function withConfirm($title = null, $text = '', $type = 'modal')
+    {
+        if(!in_array($type,['modal', 'pop'])) {
+            throw new \Exception("Argument must be in 'modal', 'pop'!");
+        }
+
+        $this->confirmTitle = $title;
+        $this->confirmText = $text;
+        $this->confirmType = $type;
+
+        return $this;
     }
 
     /**
@@ -383,17 +455,5 @@ abstract class Action
     public function shownOnTableAlert()
     {
         return $this->showOnTableAlert;
-    }
-
-    /**
-     * 执行行为句柄
-     *
-     * @param  Fields  $fields
-     * @param  Collection  $models
-     * @return mixed
-     */
-    public function handle($fields, $models)
-    {
-        return [];
     }
 }

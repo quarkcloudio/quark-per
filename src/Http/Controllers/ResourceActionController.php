@@ -3,8 +3,6 @@
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 
 class ResourceActionController extends Controller
 {
@@ -15,7 +13,7 @@ class ResourceActionController extends Controller
      * @param  Request  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function handle($resource, Request $request)
+    public function handle($resource, $uriKey, Request $request)
     {
         $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
         if(!class_exists($getCalledClass)) {
@@ -23,6 +21,6 @@ class ResourceActionController extends Controller
         }
         $calledClass = new $getCalledClass();
 
-        return $calledClass->executeAction($request);
+        return $calledClass->action($request, $uriKey);
     }
 }

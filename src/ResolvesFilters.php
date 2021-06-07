@@ -7,12 +7,23 @@ use Illuminate\Http\Request;
 trait ResolvesFilters
 {
     /**
-     * 获取字段上的过滤器
+     * 表格列上的筛选表单
      *
      * @param  Request  $request
      * @return array
      */
-    public function fieldFilters(Request $request)
+    public function tableColumnFilters(Request $request)
+    {
+        return [];
+    }
+
+    /**
+     * 定义筛选表单
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function filters(Request $request)
     {
         return [];
     }

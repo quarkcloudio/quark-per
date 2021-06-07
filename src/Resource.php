@@ -3,11 +3,8 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Http\Request;
-use QuarkCMS\Quark\Facades\Form;
-use QuarkCMS\Quark\Facades\FormItem;
 use QuarkCMS\Quark\Facades\ToolBar;
 use QuarkCMS\Quark\Facades\Table;
-use QuarkCMS\Quark\Facades\Action;
 
 /**
  * Class Resource.
@@ -22,6 +19,20 @@ abstract class Resource
     use ResolvesActions;
     use ResolvesFilters;
     use ResolvesSearches;
+
+    /**
+     * 页面标题
+     *
+     * @var string
+     */
+    public $title = null;
+
+    /**
+     * 模型
+     *
+     * @var string
+     */
+    public static $model = null;
 
     /**
      * 分页
@@ -53,25 +64,6 @@ abstract class Resource
     }
 
     /**
-     * 获取表格数据
-     *
-     * @param  Request $request
-     * @return array
-     */
-    protected function getData($request)
-    {
-        $query = $this->buildIndexQuery($request, static::newModel(), $this->searches($request), $this->fieldFilters($request));
-
-        if(static::pagination()) {
-            $result = $query->paginate(request('pageSize', static::pagination()));
-        } else {
-            $result = $query->get()->toArray();
-        }
-
-        return $result;
-    }
-
-    /**
      * 工具栏
      *
      * @param  ToolBar $toolBar
@@ -83,21 +75,40 @@ abstract class Resource
     }
 
     /**
+     * 获取表格数据
+     *
+     * @param  Request $request
+     * @return array|object
+     */
+    protected function getIndexData($request)
+    {
+        $query = $this->buildIndexQuery($request, static::newModel(), $this->searches($request), $this->filters($request));
+
+        if(static::pagination()) {
+            $result = $query->paginate(request('pageSize', static::pagination()));
+        } else {
+            $result = $query->get()->toArray();
+        }
+
+        return $result;
+    }
+
+    /**
      * 列表资源
      *
      * @param  void
      * @return array
      */
-    public function indexResource(Request $request)
+    public function index(Request $request)
     {
-        $data = $this->getData($request);
+        $data = $this->getIndexData($request);
 
         $table = Table::key('table')
-        ->title($this->title)
+        ->title($this->title . '列表')
         ->toolBar($this->toolBar($request, new ToolBar))
         ->columns($this->indexFields($request))
         ->batchActions($this->tableAlertActions($request))
-        ->searches($this->resolveSearches($request));
+        ->searches($this->indexSearches($request));
 
         if(static::pagination()) {
             $table = $table->pagination(
@@ -110,5 +121,16 @@ abstract class Resource
         }
 
         return $this->setLayoutContent($table);
+    }
+
+    /**
+     * 执行行为
+     *
+     * @param  void
+     * @return array
+     */
+    public function action(Request $request, $uriKey)
+    {
+        return $this->handleRequest($request, static::newModel(), $uriKey, $this->actions($request));
     }
 }

@@ -46,7 +46,7 @@ abstract class Search
      */
     public function __construct()
     {
-        $this->column = Str::kebab(class_basename(get_called_class()));
+        $this->column = lcfirst(class_basename(get_called_class()));
     }
 
     /**

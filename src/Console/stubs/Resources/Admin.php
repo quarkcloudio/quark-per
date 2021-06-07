@@ -88,7 +88,9 @@ class Admin extends Resource
     {
         return [
             (new \App\Admin\Actions\CreateLink('创建' . $this->title))->onlyOnIndex(),
-            (new \App\Admin\Actions\BatchDelete)->onlyOnTableAlert(),
+            (new \App\Admin\Actions\Delete('批量删除'))->onlyOnTableAlert(),
+            (new \App\Admin\Actions\Disable('批量禁用'))->onlyOnTableAlert(),
+            (new \App\Admin\Actions\Enable('批量启用'))->onlyOnTableAlert(),
         ];
     }
 }

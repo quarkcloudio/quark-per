@@ -8,12 +8,12 @@ use QuarkCMS\Quark\Facades\Search;
 trait ResolvesSearches
 {
     /**
-     * 解决表单
+     * 列表页搜索表单
      *
      * @param  Request  $request
      * @return array
      */
-    public function resolveSearches(Request $request)
+    public function indexSearches(Request $request)
     {
         $search = Search::make();
         
@@ -28,7 +28,7 @@ trait ResolvesSearches
     }
 
     /**
-     * 搜索表单
+     * 定义搜索表单
      *
      * @param  Request  $request
      * @return array
