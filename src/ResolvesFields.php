@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Column;
+use QuarkCMS\Quark\Facades\FormItem;
 
 trait ResolvesFields
 {
@@ -16,12 +17,51 @@ trait ResolvesFields
     public function indexFields(Request $request)
     {
         foreach ($this->fields($request) as $key => $value) {
-            if($value->showOnIndex) {
+            if($value->isShownOnIndex()) {
                 $columns[] = $this->buildTableColumn($value);
             }
         }
 
+        $columns[] = Column::make('actions','操作')->valueType('option')
+        ->actions(
+            $this->tableRowActions($request)
+        )->render();
+
         return $columns ?? [];
+    }
+
+    /**
+     * 创建页字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function creationFields(Request $request)
+    {
+        foreach ($this->fields($request) as $key => $value) {
+            if($value->isShownOnCreation()) {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
+    }
+
+    /**
+     * 编辑页字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function updateFields(Request $request)
+    {
+        foreach ($this->fields($request) as $key => $value) {
+            if($value->isShownOnUpdate()) {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
     }
 
     /**
@@ -33,10 +73,12 @@ trait ResolvesFields
     public function detailFields(Request $request)
     {
         foreach ($this->fields($request) as $key => $value) {
-            if($value->showOnDetail) {
-
+            if($value->isShownOnDetail()) {
+                $items[] = $value;
             }
         }
+
+        return $items ?? [];
     }
 
     /**

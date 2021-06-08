@@ -3,13 +3,11 @@
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 
-class ResourceController extends Controller
+class ResourceStoreController extends Controller
 {
     /**
-     * List the resources for administration.
+     * Store the resources for administration.
      *
      * @param  string  $resource
      * @param  Request  $request
@@ -17,8 +15,20 @@ class ResourceController extends Controller
      */
     public function handle($resource, Request $request)
     {
-        return response()->json([
-            'label' => $resource,
-        ]);
+        $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
+
+        if(!class_exists($getCalledClass)) {
+            throw new \Exception("Class {$getCalledClass} does not exist.");
+        }
+
+        $model = $getCalledClass::newModel();
+
+        $result = $model->create($request);
+
+        if($result) {
+            return success('操作成功！');
+        } else {
+            return error('操作失败，请重试！');
+        }
     }
 }

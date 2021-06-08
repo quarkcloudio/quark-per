@@ -14,6 +14,33 @@ abstract class Dashboard
     use Layout;
 
     /**
+     * 页面标题
+     *
+     * @var string
+     */
+    public $title = null;
+
+    /**
+     * 获取页面标题
+     *
+     * @return string
+     */
+    public function title()
+    {
+        return $this->title;
+    }
+
+    /**
+     * 卡片列表
+     *
+     * @return array
+     */
+    public function cards()
+    {
+        return [];
+    }
+
+    /**
      * 资源对象
      *
      * @param  void

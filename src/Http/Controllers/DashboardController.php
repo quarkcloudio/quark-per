@@ -2,9 +2,6 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-
 class DashboardController extends Controller
 {
     /**

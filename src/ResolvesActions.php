@@ -39,7 +39,7 @@ trait ResolvesActions
             }
         }
 
-        return Space::body($actions ?? []);
+        return $actions ?? [];
     }
 
     /**

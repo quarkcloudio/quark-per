@@ -4,7 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class ResourceCreateController extends Controller
+class ResourceShowController extends Controller
 {
     /**
      * Creation the resources for administration.

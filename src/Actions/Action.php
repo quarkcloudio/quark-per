@@ -135,13 +135,34 @@ abstract class Action
     }
 
     /**
+     * 行为接口接收的参数，当行为在表格行展示的时候，可以配置当前行的任意字段
+     *
+     * @return array
+     */
+    public function apiParams()
+    {
+        return ['id'];
+    }
+
+    /**
      * 执行行为的接口
      *
      * @return string
      */
     public function api()
     {
-        return Str::beforeLast(Str::replaceFirst('api/','',\request()->path()), '/') . '/action/' . $this->uriKey() . '?id={id}';
+        $params = $this->apiParams();
+        $paramsUri = '';
+
+        foreach ($params as $key => $value) {
+            if(is_string($key)) {
+                $paramsUri = $paramsUri.$key.'={'.$value.'}&';
+            } else {
+                $paramsUri = $paramsUri.$value.'={'.$value.'}&';
+            }
+        }
+
+        return Str::beforeLast(Str::replaceFirst('api/','',\request()->path()), '/') . '/action/' . $this->uriKey() . '?' . $paramsUri;
     }
 
     /**

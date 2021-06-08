@@ -122,7 +122,7 @@ trait Layout
     public function setLayoutContent($content)
     {
         // 页面内容
-        $pageContainer = PageContainer::title($this->title)->body($content);
+        $pageContainer = PageContainer::title($this->title())->body($content);
 
         $layout = LayoutFacade::title(config('admin.name','QuarkAdmin'));
 

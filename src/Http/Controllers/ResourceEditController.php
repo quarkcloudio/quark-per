@@ -3,10 +3,8 @@
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
 
-class ResourceController extends Controller
+class ResourceEditController extends Controller
 {
     /**
      * List the resources for administration.
