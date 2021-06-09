@@ -21,14 +21,37 @@ class ResourceStoreController extends Controller
             throw new \Exception("Class {$getCalledClass} does not exist.");
         }
 
-        $model = $getCalledClass::newModel();
+        $data = $this->getSubmitData(
+            (new $getCalledClass)->creationFields($request), $request
+        );
 
-        $result = $model->create($request);
+        $result = $getCalledClass::newModel()->create($data);
 
         if($result) {
             return success('操作成功！');
         } else {
             return error('操作失败，请重试！');
         }
+    }
+
+    /**
+     * 获取提交表单的数据
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    protected function getSubmitData($fields, $request)
+    {
+        $requestData = $request->all();
+        $result = [];
+
+        foreach ($fields as $value) {
+            if(isset($requestData[$value->name])) {
+                $result[$value->name] = is_array($requestData[$value->name]) ? 
+                json_encode($requestData[$value->name]) : $requestData[$value->name];
+            }
+        }
+
+        return $result;
     }
 }
