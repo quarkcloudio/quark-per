@@ -21,14 +21,37 @@ class ResourceStoreController extends Controller
             throw new \Exception("Class {$getCalledClass} does not exist.");
         }
 
+        $validator = $getCalledClass::validatorForCreation($request, new $getCalledClass);
+
+        if ($validator->fails()) {
+            $errorMsg = null;
+            $errors = $validator->errors()->getMessages();
+
+            foreach($errors as $value) {
+                $errorMsg = $value[0];
+            }
+            
+            if($errorMsg) {
+                return error($errorMsg);
+            }
+        }
+
         $data = $this->getSubmitData(
-            (new $getCalledClass)->creationFields($request), $request
+            (new $getCalledClass)->creationFields($request),
+            (new $getCalledClass)->beforeSaving($request, $request->all()) // 保存前回调
         );
 
-        $result = $getCalledClass::newModel()->create($data);
+        $model = $getCalledClass::newModel()->create($data);
+
+        // 保存后回调
+        $result = (new $getCalledClass)->afterSaved($request, $model);
+
+        if(isset($result['msg'])) {
+            return $result;
+        }
 
         if($result) {
-            return success('操作成功！');
+            return success('操作成功！','/index?api=admin/' . $resource . '/index');
         } else {
             return error('操作失败，请重试！');
         }
@@ -38,17 +61,21 @@ class ResourceStoreController extends Controller
      * 获取提交表单的数据
      *
      * @param  Request  $request
+     * @param  array $submitData
      * @return Response
      */
-    protected function getSubmitData($fields, $request)
+    protected function getSubmitData($fields, $submitData)
     {
-        $requestData = $request->all();
         $result = [];
 
         foreach ($fields as $value) {
-            if(isset($requestData[$value->name])) {
-                $result[$value->name] = is_array($requestData[$value->name]) ? 
-                json_encode($requestData[$value->name]) : $requestData[$value->name];
+            if(isset($submitData[$value->name])) {
+                $result[$value->name] = is_array($submitData[$value->name]) ? 
+                json_encode($submitData[$value->name]) : $submitData[$value->name];
+
+                if($value->type === 'password') {
+                    $result[$value->name] = bcrypt($submitData[$value->name]);
+                }
             }
         }
 

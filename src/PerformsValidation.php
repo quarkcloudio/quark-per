@@ -16,7 +16,9 @@ trait PerformsValidation
      */
     public static function validatorForCreation(Request $request, $resource)
     {
-        return Validator::make($request->all(), static::rulesForCreation($request, $resource))
+        $ruleData = static::rulesForCreation($request, $resource);
+
+        return Validator::make($request->all(), $ruleData['rules'], $ruleData['messages'])
                 ->after(function ($validator) use ($request) {
                     static::afterValidation($request, $validator);
                     static::afterCreationValidation($request, $validator);
@@ -33,10 +35,63 @@ trait PerformsValidation
     public static function rulesForCreation(Request $request, $resource)
     {
         $fields = $resource->creationFields($request);
+        $rules = [];
+        $ruleMessages = [];
 
-        foreach ($fields as $key => $value) {
-            $getRules[$value->name] = $value->rules;
+        foreach ($fields as $value) {
+
+            $getResult = static::getRulesForCreation($request, $value);
+
+            $rules = array_merge($rules, $getResult['rules']);
+            $ruleMessages = array_merge($ruleMessages, $getResult['messages']);
+
+            // when中的变量
+            if(!empty($value->when)) {
+                foreach ($value->when as $when) {
+                    foreach ($when['items'] as $whenItem) {
+                        $whenItemResult = static::getRulesForCreation($request, $whenItem);
+                        $rules = array_merge($rules, $whenItemResult['rules']);
+                        $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
+                    }
+                }
+            }
         }
+
+        $result['rules'] = $rules;
+        $result['messages'] = $ruleMessages;
+
+        return $result;
+    }
+
+    /**
+     * 获取创建请求资源规则
+     *
+     * @param  Request  $request
+     * @param  array  $rules
+     * @return array
+     */
+    protected static function getRulesForCreation(Request $request, $field)
+    {
+        foreach (static::formatRules($request, $field->rules) as $ruleKey => $ruleValue) {
+            $getRules[$field->name][$ruleKey] = $ruleValue;
+        }
+
+        foreach ($field->ruleMessages as $messageKey => $messageValue) {
+            $getRuleMessages[$field->name.'.'.$messageKey] = $messageValue;
+        }
+
+        foreach (static::formatRules($request, $field->rules) as $creationRuleKey => $creationRuleValue) {
+            $getRules[$field->name][$creationRuleKey] = $creationRuleValue;
+        }
+
+        foreach ($field->creationRuleMessages as $creationMessageKey => $creationMessageValue) {
+            $getRuleMessages[$field->name.'.'.$creationMessageKey] = $creationMessageValue;
+        }
+
+        $result['rules'] = $getRules ?? [];
+        $result['messages'] = $getRuleMessages ?? [];
+
+        return $result;
     }
 
     /**
@@ -48,7 +103,9 @@ trait PerformsValidation
      */
     public static function validatorForUpdate(Request $request, $resource)
     {
-        return Validator::make($request->all(), static::rulesForUpdate($request, $resource))
+        $ruleData = static::rulesForUpdate($request, $resource);
+
+        return Validator::make($request->all(), $ruleData['rules'], $ruleData['messages'])
                 ->after(function ($validator) use ($request) {
                     static::afterValidation($request, $validator);
                     static::afterUpdateValidation($request, $validator);
@@ -64,115 +121,82 @@ trait PerformsValidation
      */
     public static function rulesForUpdate(Request $request, $resource)
     {
+        $fields = $resource->updateFields($request);
+        $rules = [];
+        $ruleMessages = [];
 
-    }
+        foreach ($fields as $value) {
 
-    /**
-     * 解析验证提交数据库前的值
-     *
-     * @param array $data
-     * @return array
-     */
-    public function itemValidator($data,$name,$rules,$ruleMessages)
-    {
-        $errorMsg = null;
-        foreach ($rules as &$rule) {
-            if(is_string($rule) && isset($data['id'])) {
-                $rule = str_replace('{id}', $data['id'], $rule);
-            }
-        }
-        $getRules[$name] = $rules;
-        $validator = Validator::make($data,$getRules,$ruleMessages);
-        if($validator->fails()) {
-            $errors = $validator->errors()->getMessages();
-            foreach($errors as $key => $value) {
-                $errorMsg = $value[0];
-            }
-            return $errorMsg;
-        }
+            $getResult = static::getRulesForUpdate($request, $value);
 
-        return $errorMsg;
-    }
-
-    /**
-     * 验证提交数据库前的值
-     *
-     * @param array $data
-     * @return array
-     */
-    public function validator($data = null)
-    {
-        $items = $this->items;
-
-        if(empty($data)) {
-            $data = $this->data;
-        }
-
-        foreach ($items as $key => $value) {
-
-            // 通用验证规则
-            if($value->rules) {
-                $errorMsg = $this->itemValidator($data,$value->name,$value->rules,$value->ruleMessages);
-                if($errorMsg) {
-                    return $errorMsg;
-                }
-            }
-
-            // 新增数据，验证规则
-            if($this->isCreating()) {
-                if($value->creationRules) {
-                    $errorMsg = $this->itemValidator($data,$value->name,$value->creationRules,$value->creationRuleMessages);
-                    if($errorMsg) {
-                        return $errorMsg;
-                    }
-                }
-            }
-
-            // 编辑数据，验证规则
-            if($this->isEditing()) {
-                if($value->updateRules) {
-                    $errorMsg = $this->itemValidator($data,$value->name,$value->updateRules,$value->updateRuleMessages);
-                    if($errorMsg) {
-                        return $errorMsg;
-                    }
-                }
-            }
+            $rules = array_merge($rules, $getResult['rules']);
+            $ruleMessages = array_merge($ruleMessages, $getResult['messages']);
 
             // when中的变量
             if(!empty($value->when)) {
                 foreach ($value->when as $when) {
                     foreach ($when['items'] as $whenItem) {
-                        // 通用验证规则
-                        if($whenItem->rules) {
-                            $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->rules,$whenItem->ruleMessages);
-                            if($errorMsg) {
-                                return $errorMsg;
-                            }
-                        }
-
-                        // 新增数据，验证规则
-                        if($this->isCreating()) {
-                            if($whenItem->creationRules) {
-                                $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->creationRules,$whenItem->creationRuleMessages);
-                                if($errorMsg) {
-                                    return $errorMsg;
-                                }
-                            }
-                        }
-
-                        // 编辑数据，验证规则
-                        if($this->isEditing()) {
-                            if($whenItem->updateRules) {
-                                $errorMsg = $this->itemValidator($data,$whenItem->name,$whenItem->updateRules,$whenItem->updateRuleMessages);
-                                if($errorMsg) {
-                                    return $errorMsg;
-                                }
-                            }
-                        }
+                        $whenItemResult = static::getRulesForUpdate($request, $whenItem);
+                        $rules = array_merge($rules, $whenItemResult['rules']);
+                        $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
                     }
                 }
             }
         }
+
+        $result['rules'] = $rules;
+        $result['messages'] = $ruleMessages;
+
+        return $result;
+    }
+
+    /**
+     * 获取更新请求资源规则
+     *
+     * @param  Request  $request
+     * @param  array  $rules
+     * @return array
+     */
+    protected static function getRulesForUpdate(Request $request, $field)
+    {
+        foreach (static::formatRules($request, $field->rules) as $ruleKey => $ruleValue) {
+            $getRules[$field->name][$ruleKey] = $ruleValue;
+        }
+
+        foreach ($field->ruleMessages as $messageKey => $messageValue) {
+            $getRuleMessages[$field->name.'.'.$messageKey] = $messageValue;
+        }
+
+        foreach (static::formatRules($request, $field->rules) as $updateRuleKey => $updateRuleValue) {
+            $getRules[$field->name][$updateRuleKey] = $updateRuleValue;
+        }
+
+        foreach ($field->updateRuleMessages as $updateMessageKey => $updateMessageValue) {
+            $getRuleMessages[$field->name.'.'.$updateMessageKey] = $updateMessageValue;
+        }
+
+        $result['rules'] = $getRules ?? [];
+        $result['messages'] = $getRuleMessages ?? [];
+
+        return $result;
+    }
+
+    /**
+     * 格式化规则
+     *
+     * @param  Request  $request
+     * @param  array  $rules
+     * @return array
+     */
+    protected static function formatRules(Request $request, $rules)
+    {
+        foreach ($rules as &$rule) {
+            if(is_string($rule) && isset($request->id)) {
+                $rule = str_replace('{id}', $request->id, $rule);
+            }
+        }
+
+        return $rules;
     }
 
     /**

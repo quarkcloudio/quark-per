@@ -194,6 +194,54 @@ abstract class Resource
     }
 
     /**
+     * 创建页面显示前回调
+     * 
+     * @param Request $request
+     * @param array $data
+     * @return array
+     */
+    public function beforeCreating(Request $request, $data)
+    {
+        return $data;
+    }
+
+    /**
+     * 编辑页面显示前回调
+     *
+     * @param Request $request
+     * @param array $data
+     * @return array
+     */
+    public function beforeEditing(Request $request, $data)
+    {
+        return $data;
+    }
+
+    /**
+     * 保存数据前回调
+     *
+     * @param Request $request
+     * @param array $submitData
+     * @return array
+     */
+    public function beforeSaving(Request $request, $submitData)
+    {
+        return $submitData;
+    }
+
+    /**
+     * 保存数据后回调
+     *
+     * @param Request $request
+     * @param object $model
+     * @return array|object
+     */
+    public function afterSaved(Request $request, $model)
+    {
+        return $model;
+    }
+
+    /**
      * 创建页资源
      *
      * @param  void
