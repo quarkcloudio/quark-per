@@ -46,37 +46,6 @@ class Admin extends Authenticatable
     }
 
     /**
-     * 自动查询
-     *
-     * @param  void
-     * @return object
-     */
-    public static function withQuerys()
-    {
-        $self = new static;
-        $requestData = request()->all();
-
-        if(!empty($requestData)) {
-            foreach ($requestData as $key => $value) {
-            
-                if(in_array($key, ['username', 'nickname', 'email', 'phone'])) {
-                    $self = $self->where($key, 'like', "%$value%");
-                }
-    
-                if(in_array($key, ['sex', 'status'])) {
-                    $self = $self->where($key, $value);
-                }
-    
-                if(in_array($key, ['last_login_time_range'])) {
-                    $self = $self->whereBetween(str_replace('_range','',$key), $value);
-                }
-            }
-        }
-
-        return $self;
-    }
-
-    /**
      * 更新最后登录信息
      *
      * @param  void
