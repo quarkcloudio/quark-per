@@ -2,13 +2,12 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-use Illuminate\Http\Request;
-use QuarkCMS\Quark\Facades\FormItem;
+use QuarkCMS\Quark\Facades\Field as BaseField;
 
 /**
  * Class Field.
  */
-class Field extends FormItem
+class Field extends BaseField
 {
-    
+    // 
 }
