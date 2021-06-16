@@ -62,28 +62,28 @@ trait ResolvesActions
     /**
      * 创建行为组件
      *
-     * @param  object  $action
+     * @param  object  $item
      * @return array
      */
-    protected function buildAction($action)
+    protected function buildAction($item)
     {
-        $builder = Action::make($action->name())
+        $builder = Action::make($item->name())
         ->reload('table')
-        ->api($action->api())
-        ->actionType($action->actionType())
-        ->showStyle($action->showStyle())
-        ->size($action->size());
+        ->api($item->api())
+        ->actionType($item->actionType())
+        ->showStyle($item->showStyle())
+        ->size($item->size());
 
-        if($action->icon()) {
-            $builder->icon($action->icon());
+        if($item->icon()) {
+            $builder->icon($item->icon());
         }
 
-        if($action->actionType() === 'link') {
-            $builder->link($action->href(), $action->target());
+        if($item->actionType() === 'link') {
+            $builder->link($item->href(), $item->target());
         }
 
-        if($action->confirmTitle) {
-            $builder->withConfirm($action->confirmTitle, $action->confirmText, $action->confirmType);
+        if($item->confirmTitle) {
+            $builder->withConfirm($item->confirmTitle, $item->confirmText, $item->confirmType);
         }
 
         return $builder->render();

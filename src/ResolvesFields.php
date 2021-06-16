@@ -4,11 +4,12 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Column;
+use QuarkCMS\Quark\Facades\Action;
 
 trait ResolvesFields
 {
     /**
-     * 列表页表格列
+     * 列表页字段
      *
      * @param  Request  $request
      * @return array
@@ -17,16 +18,11 @@ trait ResolvesFields
     {
         foreach ($this->fields($request) as $value) {
             if($value->isShownOnIndex()) {
-                $columns[] = $this->buildTableColumn($value);
+                $items[] = $value;
             }
         }
 
-        $columns[] = Column::make('actions','操作')->valueType('option')
-        ->actions(
-            $this->tableRowActions($request)
-        )->render();
-
-        return $columns ?? [];
+        return $items ?? [];
     }
 
     /**
@@ -64,7 +60,7 @@ trait ResolvesFields
     }
 
     /**
-     * 详情字段
+     * 详情页字段
      *
      * @param  Request  $request
      * @return array
@@ -78,6 +74,29 @@ trait ResolvesFields
         }
 
         return $items ?? [];
+    }
+
+    /**
+     * 列表页表格列
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function columns(Request $request)
+    {
+        foreach ($this->indexFields($request) as $value) {
+            $columns[] = $this->buildTableColumn($value);
+        }
+
+        $tableRowActions = $this->tableRowActions($request);
+
+        if(!empty($tableRowActions)) {
+            $columns[] = Column::make('actions','操作')
+            ->valueType('option')
+            ->actions($tableRowActions)->render();
+        }
+
+        return $columns ?? [];
     }
 
     /**

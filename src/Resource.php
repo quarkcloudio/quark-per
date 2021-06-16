@@ -118,12 +118,12 @@ abstract class Resource
     /**
      * 工具栏
      *
-     * @param  ToolBar $toolBar
+     * @param  Request $request
      * @return array
      */
-    public function toolBar($request, ToolBar $toolBar)
+    public function toolBar($request)
     {
-        return $toolBar::make($this->title() . '列表')->actions($this->indexActions($request));
+        return ToolBar::make($this->title() . '列表')->actions($this->indexActions($request));
     }
 
     /**
@@ -157,8 +157,8 @@ abstract class Resource
 
         $table = Table::key('table')
         ->title($this->title() . '列表')
-        ->toolBar($this->toolBar($request, new ToolBar))
-        ->columns($this->indexFields($request))
+        ->toolBar($this->toolBar($request))
+        ->columns($this->columns($request))
         ->batchActions($this->tableAlertActions($request))
         ->searches($this->indexSearches($request));
 
@@ -170,6 +170,12 @@ abstract class Resource
             )->datasource($data->items());
         } else {
             $table = $table->datasource($data);
+        }
+
+        foreach ($this->indexFields($request) as $value) {
+            if(!empty($value->callback)) {
+                call_user_func($value->callback);
+            }
         }
 
         return $this->setLayoutContent($table);
@@ -210,53 +216,6 @@ abstract class Resource
             Action::make("提交")->showStyle('primary')->actionType('submit'),
             Action::make('返回上一页')->actionType('back')
         ];
-    }
-
-    /**
-     * 创建页面显示前回调
-     * 
-     * @param Request $request
-     * @return array
-     */
-    public function beforeCreating(Request $request)
-    {
-        return [];
-    }
-
-    /**
-     * 编辑页面显示前回调
-     *
-     * @param Request $request
-     * @param array $data
-     * @return array
-     */
-    public function beforeEditing(Request $request, $data)
-    {
-        return $data;
-    }
-
-    /**
-     * 保存数据前回调
-     *
-     * @param Request $request
-     * @param array $submitData
-     * @return array
-     */
-    public function beforeSaving(Request $request, $submitData)
-    {
-        return $submitData;
-    }
-
-    /**
-     * 保存数据后回调
-     *
-     * @param Request $request
-     * @param mixed $model
-     * @return array|object
-     */
-    public function afterSaved(Request $request, $model)
-    {
-        return $model;
     }
 
     /**
@@ -323,5 +282,52 @@ abstract class Resource
         $card = Card::title('编辑' . $this->title())->headerBordered()->extra($extra)->body($form);
 
         return $this->setLayoutContent($card);
+    }
+
+    /**
+     * 创建页面显示前回调
+     * 
+     * @param Request $request
+     * @return array
+     */
+    public function beforeCreating(Request $request)
+    {
+        return [];
+    }
+
+    /**
+     * 编辑页面显示前回调
+     *
+     * @param Request $request
+     * @param array $data
+     * @return array
+     */
+    public function beforeEditing(Request $request, $data)
+    {
+        return $data;
+    }
+
+    /**
+     * 保存数据前回调
+     *
+     * @param Request $request
+     * @param array $submitData
+     * @return array
+     */
+    public function beforeSaving(Request $request, $submitData)
+    {
+        return $submitData;
+    }
+
+    /**
+     * 保存数据后回调
+     *
+     * @param Request $request
+     * @param mixed $model
+     * @return array|object
+     */
+    public function afterSaved(Request $request, $model)
+    {
+        return $model;
     }
 }
