@@ -4,7 +4,6 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Column;
-use QuarkCMS\Quark\Facades\FormItem;
 
 trait ResolvesFields
 {
@@ -16,7 +15,7 @@ trait ResolvesFields
      */
     public function indexFields(Request $request)
     {
-        foreach ($this->fields($request) as $key => $value) {
+        foreach ($this->fields($request) as $value) {
             if($value->isShownOnIndex()) {
                 $columns[] = $this->buildTableColumn($value);
             }
@@ -38,7 +37,7 @@ trait ResolvesFields
      */
     public function creationFields(Request $request)
     {
-        foreach ($this->fields($request) as $key => $value) {
+        foreach ($this->fields($request) as $value) {
             if($value->isShownOnCreation()) {
                 $items[] = $value;
             }
@@ -55,7 +54,7 @@ trait ResolvesFields
      */
     public function updateFields(Request $request)
     {
-        foreach ($this->fields($request) as $key => $value) {
+        foreach ($this->fields($request) as $value) {
             if($value->isShownOnUpdate()) {
                 $items[] = $value;
             }
@@ -72,7 +71,7 @@ trait ResolvesFields
      */
     public function detailFields(Request $request)
     {
-        foreach ($this->fields($request) as $key => $value) {
+        foreach ($this->fields($request) as $value) {
             if($value->isShownOnDetail()) {
                 $items[] = $value;
             }
