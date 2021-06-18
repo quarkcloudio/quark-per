@@ -2,25 +2,47 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
+use QuarkCMS\Quark\Facades\Form;
+use QuarkCMS\Quark\Facades\Card;
+use QuarkCMS\QuarkAdmin\Http\Requests\ResourceEditRequest;
 
 class ResourceEditController extends Controller
 {
     /**
-     * List the resources for administration.
+     * 编辑页
      *
-     * @param  string  $resource
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param  ResourceEditRequest  $request
+     * @return array
      */
-    public function handle($resource, Request $request)
+    public function handle(ResourceEditRequest $request)
     {
-        $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
-        if(!class_exists($getCalledClass)) {
-            throw new \Exception("Class {$getCalledClass} does not exist.");
-        }
-        $calledClass = new $getCalledClass();
+        return $request->newResource()->setLayoutContent(
+            $this->buildComponent(
+                $request,
+                $request->newResourceWith($request->fillData())->toArray($request)
+            )
+        );
+    }
 
-        return $calledClass->edit($request);
+    /**
+     * 创建组件
+     *
+     * @param  ResourceEditRequest  $request
+     * @param  array  $data
+     * @return array
+     */
+    public function buildComponent($request, $data)
+    {
+        // 表单
+        $form = Form::api($request->newResource()->updateApi())
+        ->style(['marginTop' => '30px'])
+        ->items($request->newResource()->updateFields($request))
+        ->actions($request->newResource()->formActions())
+        ->initialValues($request->newResource()->beforeEditing($request, $data));
+
+        return Card::title('编辑' . $request->newResource()->title())
+        ->headerBordered()
+        ->extra($request->newResource()->formExtra())
+        ->body($form);
     }
 }

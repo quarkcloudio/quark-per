@@ -2,25 +2,18 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
+use QuarkCMS\QuarkAdmin\Http\Requests\ResourceActionRequest;
 
 class ResourceActionController extends Controller
 {
     /**
      * 解析行为
      *
-     * @param  string  $resource
-     * @param  Request  $request
+     * @param  ResourceActionRequest  $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function handle($resource, $uriKey, Request $request)
+    public function handle(ResourceActionRequest $request)
     {
-        $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
-        if(!class_exists($getCalledClass)) {
-            throw new \Exception("Class {$getCalledClass} does not exist.");
-        }
-        $calledClass = new $getCalledClass();
-
-        return $calledClass->action($request, $uriKey);
+        return $request->handleRequest();
     }
 }

@@ -2,25 +2,56 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
+use QuarkCMS\QuarkAdmin\Http\Requests\ResourceIndexRequest;
+use QuarkCMS\Quark\Facades\Table;
 
 class ResourceIndexController extends Controller
 {
     /**
-     * List the resources for administration.
+     * 列表页
      *
-     * @param  string  $resource
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param  ResourceIndexRequest  $request
+     * @return array
      */
-    public function handle($resource, Request $request)
+    public function handle(ResourceIndexRequest $request)
     {
-        $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
-        if(!class_exists($getCalledClass)) {
-            throw new \Exception("Class {$getCalledClass} does not exist.");
-        }
-        $calledClass = new $getCalledClass();
+        $resource = $request->resource();
+        $component = $this->buildComponent(
+                    $request,
+                    $resource,
+                    $request->newResource()::collection($request->indexQuery())
+                );
 
-        return $calledClass->index($request);
+        return $request->newResource()->setLayoutContent($component);
+    }
+    
+    /**
+     * 创建组件
+     *
+     * @param  ResourceIndexRequest  $request
+     * @param  object  $resource
+     * @param  object  $data
+     * @return array
+     */
+    public function buildComponent($request, $resource , $data)
+    {
+        $table = Table::key('table')
+        ->title($request->newResource()->title() . '列表')
+        ->toolBar($request->newResource()->toolBar($request))
+        ->columns($request->newResource()->columns($request))
+        ->batchActions($request->newResource()->tableAlertActions($request))
+        ->searches($request->newResource()->indexSearches($request));
+
+        if($resource::pagination()) {
+            $table = $table->pagination(
+                $data->currentPage(),
+                $data->perPage(),
+                $data->total()
+            )->datasource($data->items());
+        } else {
+            $table = $table->datasource($data);
+        }
+
+        return $table;
     }
 }

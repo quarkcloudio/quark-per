@@ -9,17 +9,6 @@ use QuarkCMS\Quark\Facades\Space;
 trait ResolvesActions
 {
     /**
-     * 执行行为
-     *
-     * @param  void
-     * @return array
-     */
-    public function action(Request $request, $uriKey)
-    {
-        return $this->handleRequest($request, static::newModel(), $uriKey, $this->actions($request));
-    }
-
-    /**
      * 列表行为
      *
      * @param  Request  $request

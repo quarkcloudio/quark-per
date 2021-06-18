@@ -2,25 +2,41 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
+use QuarkCMS\Quark\Facades\Form;
+use QuarkCMS\Quark\Facades\Card;
+use QuarkCMS\QuarkAdmin\Http\Requests\ResourceCreateRequest;
 
 class ResourceCreateController extends Controller
 {
     /**
-     * Creation the resources for administration.
+     * 创建页
      *
-     * @param  string  $resource
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param  ResourceCreateRequest  $request
+     * @return array
      */
-    public function handle($resource, Request $request)
+    public function handle(ResourceCreateRequest $request)
     {
-        $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
-        if(!class_exists($getCalledClass)) {
-            throw new \Exception("Class {$getCalledClass} does not exist.");
-        }
-        $calledClass = new $getCalledClass();
+        return $request->newResource()->setLayoutContent($this->buildComponent($request));
+    }
+    
+    /**
+     * 创建组件
+     *
+     * @param  ResourceCreateRequest  $request
+     * @return array
+     */
+    public function buildComponent($request)
+    {
+        // 表单
+        $form = Form::api($request->newResource()->creationApi())
+        ->style(['marginTop' => '30px'])
+        ->items($request->newResource()->creationFields($request))
+        ->actions($request->newResource()->formActions())
+        ->initialValues($request->newResource()->beforeCreating($request));
 
-        return $calledClass->create($request);
+        return Card::title('创建' . $request->newResource()->title())
+        ->headerBordered()
+        ->extra($request->newResource()->formExtra())
+        ->body($form);
     }
 }
