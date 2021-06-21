@@ -151,6 +151,54 @@ abstract class Resource extends JsonResource
     }
 
     /**
+     * 判断当前页面是否为列表页面
+     *
+     * @return bool
+     */
+    public function isIndex()
+    {
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        return in_array(end($uri), ['index']);
+    }
+
+    /**
+     * 判断当前页面是否为创建页面
+     *
+     * @return bool
+     */
+    public function isCreating()
+    {
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        return in_array(end($uri), ['create', 'store']);
+    }
+
+    /**
+     * 判断当前页面是否为编辑页面
+     *
+     * @return bool
+     */
+    public function isEditing()
+    {
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        return in_array(end($uri), ['edit', 'update']);
+    }
+
+    /**
+     * 判断当前页面是否为详情页面
+     *
+     * @return bool
+     */
+    public function isDetail()
+    {
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        return in_array(end($uri), ['detail']);
+    }
+
+    /**
      * 右上角自定义区域
      *
      * @param  void
@@ -232,7 +280,7 @@ abstract class Resource extends JsonResource
     public function toArray($request)
     {
         foreach ($this->fields($request) as $value) {
-            $result[$value->name] = $value->callback ? call_user_func($value->callback) : $this->{$value->name};
+            $result[$value->name] = $value->callback && ($this->isIndex() || $this->isDetail()) ? call_user_func($value->callback) : $this->{ $value->name };
         }
 
         return $result ?? [];

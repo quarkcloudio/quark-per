@@ -93,7 +93,8 @@ trait ResolvesFields
         if(!empty($tableRowActions)) {
             $columns[] = Column::make('actions','操作')
             ->valueType('option')
-            ->actions($tableRowActions)->render();
+            ->actions($tableRowActions)
+            ->render();
         }
 
         return $columns ?? [];
@@ -107,14 +108,14 @@ trait ResolvesFields
      */
     protected function buildTableColumn($field)
     {
-        $column = Column::make($field->name, $field->label);
+        $column = Column::make($field->name, $field->label)->valueType($field->type);
 
         if(in_array($field->type, ['select', 'radio'])) {
             if($field->options) {
                 foreach ($field->options as $optionKey => $optionValue) {
                     $options[$optionValue['value']] = $optionValue['label'];
                 }
-                
+
                 $column = $column->valueEnum($options);
             }
         }
@@ -126,6 +127,10 @@ trait ResolvesFields
             }
 
             $column = $column->valueEnum($options);
+        }
+
+        if ($field->editable) {
+            $column = $column->editable($field->type, $field->options ?? []);
         }
 
         return $column->render();
