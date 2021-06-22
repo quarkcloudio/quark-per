@@ -108,25 +108,24 @@ trait ResolvesFields
      */
     protected function buildTableColumn($field)
     {
-        $column = Column::make($field->name, $field->label)->valueType($field->type);
+        $column = Column::make($field->name, $field->label);
 
-        if(in_array($field->type, ['select', 'radio'])) {
-            if($field->options) {
-                foreach ($field->options as $optionKey => $optionValue) {
-                    $options[$optionValue['value']] = $optionValue['label'];
-                }
+        switch ($field->type) {
+            case 'select':
+                $column = $column->valueType($field->type)->valueEnum($field->getValueEnum());
+                break;
 
-                $column = $column->valueEnum($options);
-            }
-        }
+            case 'radio':
+                $column = $column->valueType($field->type)->valueEnum($field->getValueEnum());
+                break;
 
-        if ($field->type === 'switch') {
-            foreach ($field->options as $optionKey => $optionValue) {
-                $valueKey = ($optionKey === 'on') ? 1 : 0;
-                $options[$valueKey] = $optionValue;
-            }
+            case 'switch':
+                $column = $column->valueType('select')->valueEnum($field->getValueEnum());
+                break;
 
-            $column = $column->valueEnum($options);
+            default:
+                $column = $column->valueType($field->type);
+                break;
         }
 
         if ($field->editable) {

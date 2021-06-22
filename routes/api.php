@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 // 仪表盘
-Route::get('admin/dashboard/{resource}', 'DashboardController@show');
+Route::get('admin/dashboard/{dashboard}', 'DashboardController@show');
 
 // 资源管理
 Route::get('admin/{resource}/index', 'ResourceIndexController@handle');

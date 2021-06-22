@@ -18,10 +18,10 @@ class ActionLog extends Model
         'updated_at' => 'datetime:Y-m-d H:i:s',
     ];
 
-     protected $fillable=['object_id','url','remark','ip','type','status'];   //允许批量赋值的字段
+    protected $fillable=['object_id','url','remark','ip','type','status'];   //允许批量赋值的字段
 
-     public function admin()
-     {
-         return $this->hasOne('QuarkCMS\QuarkAdmin\Models\Admin', 'id', 'object_id');
-     }
+    public function admin()
+    {
+        return $this->hasOne('QuarkCMS\QuarkAdmin\Models\Admin', 'id', 'object_id');
+    }
 }

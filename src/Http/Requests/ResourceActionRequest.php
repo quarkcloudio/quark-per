@@ -7,10 +7,6 @@ class ResourceActionRequest extends QuarkRequest
     /**
      * 执行行为
      *
-     * @param  Request  $request
-     * @param  Builder  $model
-     * @param  string  $uriKey
-     * @param  object  $actions
      * @return array
      */
     public function handleRequest()
