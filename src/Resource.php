@@ -283,6 +283,14 @@ abstract class Resource extends JsonResource
             $result[$value->name] = $value->callback && ($this->isIndex() || $this->isDetail()) ? call_user_func($value->callback) : $this->{ $value->name };
         }
 
-        return $result ?? [];
+        if (is_null($this->resource)) {
+            return [];
+        }
+
+        return is_array($this->resource)
+            ? $this->resource
+            : $this->resource->toArray();
+
+        // return $result ?? [];
     }
 }
