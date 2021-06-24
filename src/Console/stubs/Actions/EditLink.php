@@ -5,21 +5,21 @@ namespace App\Admin\Actions;
 use Illuminate\Support\Str;
 use QuarkCMS\QuarkAdmin\Actions\Link;
 
-class CreateLink extends Link
+class EditLink extends Link
 {
     /**
      * 设置按钮类型,primary | ghost | dashed | link | text | default
      *
      * @var string
      */
-    public $showStyle = 'primary';
+    public $showStyle = 'link';
 
     /**
-     * 设置图标
+     * 设置按钮大小,large | middle | small | default
      *
      * @var string
      */
-    public $icon = 'plus-circle';
+    public $size = 'small';
 
     /**
      * 初始化
@@ -30,7 +30,7 @@ class CreateLink extends Link
      */
     public function __construct($name)
     {
-        $this->name = '创建' . $name;
+        $this->name = $name;
     }
 
     /**
@@ -40,7 +40,7 @@ class CreateLink extends Link
      */
     public function href()
     {
-        return '#/index?api=' . Str::replaceLast('/index', '/create', 
+        return '#/index?api=' . Str::replaceLast('/index', '/edit&id={id}', 
             Str::replaceFirst('api/','',\request()->path())
         );
     }
