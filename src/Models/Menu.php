@@ -3,49 +3,50 @@
 namespace QuarkCMS\QuarkAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DateTimeInterface;
 
 class Menu extends Model
 {
-
     /**
-     * 该模型是否被自动维护时间戳
+     * 属性黑名单
      *
-     * @var bool
+     * @var array
      */
-    public $timestamps = true;
-    
-    protected $casts = [
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
-
-    protected $fillable=['name','guard_name','icon','type','pid','sort','path','show','status'];   //允许批量赋值的字段
+    protected $guarded = [];
 
     /**
-     * 自动查询
+     * 为 array / JSON 序列化准备日期格式
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
+
+    /**
+     * 获取菜单的有序列表
      *
      * @param  void
      * @return object
      */
-    public static function withQuerys()
+    public static function orderedList()
     {
-        $self = new static;
-        $requestData = request()->all();
+        $menus = static::query()->where('guard_name','admin')
+        ->orderBy('sort', 'asc')
+        ->orderBy('id', 'asc')
+        ->get()
+        ->toArray();
 
-        if(!empty($requestData)) {
-            foreach ($requestData as $key => $value) {
-            
-                if(in_array($key, ['name', 'guard_name'])) {
-                    $self = $self->where($key, 'like', "%$value%");
-                }
-    
-                if(in_array($key, ['show', 'status'])) {
-                    $self = $self->where($key, $value);
-                }
-            }
+        $menuTrees = list_to_tree($menus,'id','pid','children',0);
+        $menuTreeLists = tree_to_ordered_list($menuTrees,0,'name','children');
+
+        $list[0] = '根节点';
+        foreach ($menuTreeLists as $key => $menuTreeList) {
+            $list[$menuTreeList['id']] = $menuTreeList['name'];
         }
 
-        return $self;
+        return $list;
     }
-
 }

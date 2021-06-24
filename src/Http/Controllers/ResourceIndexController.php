@@ -42,6 +42,9 @@ class ResourceIndexController extends Controller
         ->batchActions($request->newResource()->tableAlertActions($request))
         ->searches($request->newResource()->indexSearches($request));
 
+        // 列表页展示前回调
+        $data = $request->newResource()->beforeIndexShowing($request, $data);
+
         if($resource::pagination()) {
             $table = $table->pagination(
                 $data->currentPage(),

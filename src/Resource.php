@@ -225,6 +225,18 @@ abstract class Resource extends JsonResource
     }
 
     /**
+     * 列表页面显示前回调
+     * 
+     * @param Request $request
+     * @param mixed $list
+     * @return mixed
+     */
+    public function beforeIndexShowing(Request $request, $list)
+    {
+        return $list;
+    }
+
+    /**
      * 创建页面显示前回调
      * 
      * @param Request $request

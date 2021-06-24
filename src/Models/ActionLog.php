@@ -8,11 +8,11 @@ use DateTimeInterface;
 class ActionLog extends Model
 {
     /**
-     * 该模型是否被自动维护时间戳
+     * 属性黑名单
      *
-     * @var bool
+     * @var array
      */
-    public $timestamps = true;
+    protected $guarded = [];
 
     /**
      * 为 array / JSON 序列化准备日期格式
@@ -24,19 +24,6 @@ class ActionLog extends Model
     {
         return $date->format('Y-m-d H:i:s');
     }
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array
-     */
-    protected $fillable = [
-        'object_id','url',
-        'remark',
-        'ip',
-        'type',
-        'status'
-    ];
 
     /**
      * 一对一，获取管理员信息

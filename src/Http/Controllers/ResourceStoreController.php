@@ -2,83 +2,28 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use Illuminate\Http\Request;
+use QuarkCMS\QuarkAdmin\Http\Requests\ResourceStoreRequest;
 
 class ResourceStoreController extends Controller
 {
     /**
-     * Store the resources for administration.
+     * 保存创建数据
      *
-     * @param  string  $resource
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param  ResourceStoreRequest  $request
+     * @return array
      */
-    public function handle($resource, Request $request)
+    public function handle(ResourceStoreRequest $request)
     {
-        $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
-
-        if(!class_exists($getCalledClass)) {
-            throw new \Exception("Class {$getCalledClass} does not exist.");
-        }
-
-        $validator = $getCalledClass::validatorForCreation($request, new $getCalledClass);
-
-        if ($validator->fails()) {
-            $errorMsg = null;
-            $errors = $validator->errors()->getMessages();
-
-            foreach($errors as $value) {
-                $errorMsg = $value[0];
-            }
-            
-            if($errorMsg) {
-                return error($errorMsg);
-            }
-        }
-
-        $data = $this->getSubmitData(
-            (new $getCalledClass)->creationFields($request),
-            (new $getCalledClass)->beforeSaving($request, $request->all()) // 保存前回调
-        );
-
-        $model = $getCalledClass::newModel()->create($data);
-
-        // 保存后回调
-        $result = (new $getCalledClass)->afterSaved($request, $model);
+        $result = $request->handleRequest();
 
         if(isset($result['msg'])) {
             return $result;
         }
 
         if($result) {
-            return success('操作成功！','/index?api=admin/' . $resource . '/index');
+            return success('操作成功！','/index?api=admin/' . $request->route('resource') . '/index');
         } else {
             return error('操作失败，请重试！');
         }
-    }
-
-    /**
-     * 获取提交表单的数据
-     *
-     * @param  Request  $request
-     * @param  array $submitData
-     * @return Response
-     */
-    protected function getSubmitData($fields, $submitData)
-    {
-        $result = [];
-
-        foreach ($fields as $value) {
-            if(isset($submitData[$value->name])) {
-                $result[$value->name] = is_array($submitData[$value->name]) ? 
-                json_encode($submitData[$value->name]) : $submitData[$value->name];
-
-                if($value->type === 'password') {
-                    $result[$value->name] = bcrypt($submitData[$value->name]);
-                }
-            }
-        }
-
-        return $result;
     }
 }

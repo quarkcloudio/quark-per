@@ -6,6 +6,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Permission\Traits\HasRoles;
+use DateTimeInterface;
 
 class Admin extends Authenticatable
 {
@@ -28,11 +29,15 @@ class Admin extends Authenticatable
     ];
 
     /**
-     * 日期格式
+     * 为 array / JSON 序列化准备日期格式
      *
-     * @var array
+     * @param  \DateTimeInterface  $date
+     * @return string
      */
-    protected $dates = ['delete_at'];
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 
     /**
      * 一对一，获取头像

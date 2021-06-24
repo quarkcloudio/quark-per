@@ -4,31 +4,27 @@ namespace QuarkCMS\QuarkAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use DateTimeInterface;
 
 class Config extends Model
 {
     use SoftDeletes;
 
     /**
-     * 该模型是否被自动维护时间戳
-     *
-     * @var bool
-     */
-    public $timestamps = true;
-    
-    protected $casts = [
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
-
-    /**
-     * The attributes that are mass assignable.
+     * 属性黑名单
      *
      * @var array
      */
-     protected $fillable = [
-        'id', 'title', 'type','name','group_name','value','remark','status'
-    ];
-     
-    protected $dates = ['delete_at'];
+    protected $guarded = [];
+
+    /**
+     * 为 array / JSON 序列化准备日期格式
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }
