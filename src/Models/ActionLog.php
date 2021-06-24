@@ -14,11 +14,6 @@ class ActionLog extends Model
      */
     public $timestamps = true;
 
-    protected $casts = [
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
-
     /**
      * 为 array / JSON 序列化准备日期格式
      *
@@ -27,11 +22,28 @@ class ActionLog extends Model
      */
     protected function serializeDate(DateTimeInterface $date)
     {
-        return $date->format('Y-m-d');
+        return $date->format('Y-m-d H:i:s');
     }
 
-    protected $fillable=['object_id','url','remark','ip','type','status'];   //允许批量赋值的字段
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'object_id','url',
+        'remark',
+        'ip',
+        'type',
+        'status'
+    ];
 
+    /**
+     * 一对一，获取管理员信息
+     *
+     * @param  void
+     * @return object
+     */
     public function admin()
     {
         return $this->hasOne('QuarkCMS\QuarkAdmin\Models\Admin', 'id', 'object_id');

@@ -280,17 +280,18 @@ abstract class Resource extends JsonResource
     public function toArray($request)
     {
         foreach ($this->fields($request) as $value) {
-            $result[$value->name] = $value->callback && ($this->isIndex() || $this->isDetail()) ? call_user_func($value->callback) : $this->{ $value->name };
+            $this->resource->{$value->name} = $value->callback && ($this->isIndex() || $this->isDetail()) ? call_user_func($value->callback) : $this->{ $value->name };
+            
+            // 关联属性
+            if (Str::contains($value->name, '.')) {
+                list($relation, $relationColumn) = explode('.', $value->name);
+
+                if(isset($this->resource->{$relation})) {
+                    $this->resource->{$value->name} = $this->resource->{$relation}->$relationColumn;
+                }
+            }
         }
 
-        if (is_null($this->resource)) {
-            return [];
-        }
-
-        return is_array($this->resource)
-            ? $this->resource
-            : $this->resource->toArray();
-
-        // return $result ?? [];
+        return $this->resource;
     }
 }
