@@ -110,13 +110,13 @@ trait ResolvesFields
     {
         $column = Column::make($field->name, $field->label);
 
-        switch ($field->type) {
+        switch ($field->component) {
             case 'select':
-                $column = $column->valueType($field->type)->valueEnum($field->getValueEnum());
+                $column = $column->valueType($field->component)->valueEnum($field->getValueEnum());
                 break;
 
             case 'radio':
-                $column = $column->valueType($field->type)->valueEnum($field->getValueEnum());
+                $column = $column->valueType($field->component)->valueEnum($field->getValueEnum());
                 break;
 
             case 'switch':
@@ -124,12 +124,12 @@ trait ResolvesFields
                 break;
 
             default:
-                $column = $column->valueType($field->type);
+                $column = $column->valueType($field->component);
                 break;
         }
 
         if ($field->editable) {
-            $column = $column->editable($field->type, $field->options ?? []);
+            $column = $column->editable($field->component, $field->options ?? []);
         }
 
         return $column->render();

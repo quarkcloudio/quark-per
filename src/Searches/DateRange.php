@@ -12,7 +12,7 @@ abstract class DateRange extends Search
      *
      * @var string
      */
-    public $type = 'date';
+    public $component = 'date';
 
     /**
      * 操作符

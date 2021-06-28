@@ -12,5 +12,5 @@ abstract class Select extends Search
      *
      * @var string
      */
-    public $type = 'select';
+    public $component = 'select';
 }

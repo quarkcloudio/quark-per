@@ -12,5 +12,5 @@ abstract class Date extends Search
      *
      * @var string
      */
-    public $type = 'date';
+    public $component = 'date';
 }

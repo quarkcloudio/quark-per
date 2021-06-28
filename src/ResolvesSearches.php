@@ -21,7 +21,7 @@ trait ResolvesSearches
             $item = $search->item($value->column, $value->name)->operator($value->operator);
 
             // 根据控件类型进行回调，生成表单的字段项
-            call_user_func_array([$item, $value->type], [$value->options($request)]);
+            call_user_func_array([$item, $value->component], [$value->options($request)]);
         }
 
         return $search;

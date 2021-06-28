@@ -29,7 +29,7 @@ abstract class Search
      *
      * @var string
      */
-    public $type = 'input';
+    public $component = 'input';
 
     /**
      * 操作符

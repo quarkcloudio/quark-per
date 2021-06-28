@@ -12,7 +12,7 @@ abstract class DateTimeRange extends Search
      *
      * @var string
      */
-    public $type = 'datetime';
+    public $component = 'datetime';
 
     /**
      * 操作符

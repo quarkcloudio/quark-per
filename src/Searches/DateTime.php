@@ -12,5 +12,5 @@ abstract class DateTime extends Search
      *
      * @var string
      */
-    public $type = 'datetime';
+    public $component = 'datetime';
 }
