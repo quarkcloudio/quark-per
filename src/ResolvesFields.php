@@ -4,7 +4,6 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Column;
-use QuarkCMS\Quark\Facades\Action;
 
 trait ResolvesFields
 {
@@ -111,15 +110,19 @@ trait ResolvesFields
         $column = Column::make($field->name, $field->label);
 
         switch ($field->component) {
-            case 'select':
-                $column = $column->valueType($field->component)->valueEnum($field->getValueEnum());
+            case 'textField':
+                $column = $column->valueType('text');
                 break;
 
-            case 'radio':
-                $column = $column->valueType($field->component)->valueEnum($field->getValueEnum());
+            case 'selectField':
+                $column = $column->valueType('select')->valueEnum($field->getValueEnum());
                 break;
 
-            case 'switch':
+            case 'radioField':
+                $column = $column->valueType('radio')->valueEnum($field->getValueEnum());
+                break;
+
+            case 'switchField':
                 $column = $column->valueType('select')->valueEnum($field->getValueEnum());
                 break;
 
