@@ -71,7 +71,7 @@ trait ResolvesActions
         ->reload('table')
         ->api($item->api())
         ->actionType($item->actionType())
-        ->showStyle($item->showStyle())
+        ->type($item->type())
         ->size($item->size());
 
         if($item->icon()) {

@@ -206,7 +206,7 @@ abstract class Resource extends JsonResource
      */
     public function formExtra()
     {
-        return Action::make('返回上一页')->showStyle('link')->actionType('back');
+        return Action::make('返回上一页')->type('link')->actionType('back');
     }
 
     /**
@@ -219,7 +219,7 @@ abstract class Resource extends JsonResource
     {
         return [
             Action::make('重置')->actionType('reset'),
-            Action::make("提交")->showStyle('primary')->actionType('submit'),
+            Action::make("提交")->type('primary')->actionType('submit'),
             Action::make('返回上一页')->actionType('back')
         ];
     }

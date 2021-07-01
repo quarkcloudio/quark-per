@@ -24,6 +24,13 @@ abstract class Action
     public $actionType = 'ajax';
 
     /**
+     * 当action 的作用类型为submit的时候，可以指定提交哪个表格，submitForm为提交表单的key值，为空时提交当前表单
+     *
+     * @var string
+     */
+    public $submitForm = null;
+
+    /**
      * 设置按钮的图标组件
      *
      * @var string|bool
@@ -35,7 +42,7 @@ abstract class Action
      *
      * @var string
      */
-    public $showStyle = 'default';
+    public $type = 'default';
 
     /**
      * 设置按钮大小,large | middle | small | default
@@ -176,13 +183,23 @@ abstract class Action
     }
 
     /**
+     * 当action 的作用类型为submit的时候，可以指定提交哪个表格，submitForm为提交表单的key值，为空时提交当前表单
+     *
+     * @return string
+     */
+    public function submitForm()
+    {
+        return $this->submitForm;
+    }
+
+    /**
      * 设置按钮类型，primary | ghost | dashed | link | text | default
      *
      * @return string
      */
-    public function showStyle()
+    public function type()
     {
-        return $this->showStyle;
+        return $this->type;
     }
 
     /**
