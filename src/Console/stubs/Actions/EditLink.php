@@ -12,7 +12,7 @@ class EditLink extends Link
      *
      * @var string
      */
-    public $showStyle = 'link';
+    public $type = 'link';
 
     /**
      * 设置按钮大小,large | middle | small | default

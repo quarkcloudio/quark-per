@@ -12,7 +12,7 @@ class CreateLink extends Link
      *
      * @var string
      */
-    public $showStyle = 'primary';
+    public $type = 'primary';
 
     /**
      * 设置图标
