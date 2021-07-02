@@ -13,4 +13,31 @@ abstract class Modal extends Action
      * @var string
      */
     public $actionType = 'modal';
+
+    /**
+     * 宽度
+     *
+     * @var string | number
+     */
+    public $width = 520;
+
+    /**
+     * 宽度
+     *
+     * @return string
+     */
+    public function width()
+    {
+        return $this->width;
+    }
+
+    /**
+     * 内容
+     *
+     * @return string
+     */
+    public function body()
+    {
+        return null;
+    }
 }

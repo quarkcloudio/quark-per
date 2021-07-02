@@ -82,6 +82,14 @@ trait ResolvesActions
             $builder->link($item->href(), $item->target());
         }
 
+        if($item->actionType() === 'modal') {
+            $builder->modal(function($modal) use ($item) {
+                return $modal->title($item->name())
+                ->width($item->width())
+                ->body($item->body());
+            });
+        }
+
         if($item->confirmTitle) {
             $builder->withConfirm($item->confirmTitle, $item->confirmText, $item->confirmType);
         }

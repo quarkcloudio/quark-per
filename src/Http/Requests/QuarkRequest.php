@@ -25,7 +25,7 @@ class QuarkRequest extends FormRequest
      */
     public function resource()
     {
-        $resource = 'App\\Admin\\Resources\\'.ucfirst($this->route('resource'));
+        $resource = 'App\\Admin\\Resources\\'.ucfirst(request()->route('resource'));
 
         if(!class_exists($resource)) {
             throw new \Exception("Class { $resource } does not exist.");

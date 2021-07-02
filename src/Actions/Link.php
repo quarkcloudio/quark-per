@@ -41,7 +41,7 @@ abstract class Link extends Action
     /**
      * 相当于 a 链接的 target 属性，href 存在时生效
      *
-     * @return $this
+     * @return string
      */
     public function target()
     {
