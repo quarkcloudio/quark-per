@@ -129,7 +129,7 @@ class Menu extends Resource
     public function actions(Request $request)
     {
         return [
-            (new \App\Admin\Actions\CreateLink($this->title()))->onlyOnIndex(),
+            (new \App\Admin\Actions\CreateModal($this->title()))->onlyOnIndex(),
             (new \App\Admin\Actions\Delete('批量删除'))->onlyOnTableAlert(),
             (new \App\Admin\Actions\Disable('批量禁用'))->onlyOnTableAlert(),
             (new \App\Admin\Actions\Enable('批量启用'))->onlyOnTableAlert(),

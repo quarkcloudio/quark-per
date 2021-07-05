@@ -86,7 +86,8 @@ trait ResolvesActions
             $builder->modal(function($modal) use ($item) {
                 return $modal->title($item->name())
                 ->width($item->width())
-                ->body($item->body());
+                ->body($item->body())
+                ->actions($item->actions());
             });
         }
 

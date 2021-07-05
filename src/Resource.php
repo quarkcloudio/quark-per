@@ -133,7 +133,19 @@ abstract class Resource extends JsonResource
      */
     public static function creationApi()
     {
-        return static::$creationApi ?? Str::replaceLast('/create', '/store', 
+        if(static::$creationApi) {
+            return static::$creationApi;
+        }
+
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        if(in_array(end($uri), ['index'])) {
+            return Str::replaceLast('/index', '/store', 
+                Str::replaceFirst('api/','',\request()->path())
+            );
+        }
+
+        return Str::replaceLast('/create', '/store', 
             Str::replaceFirst('api/','',\request()->path())
         );
     }
@@ -145,7 +157,19 @@ abstract class Resource extends JsonResource
      */
     public static function updateApi()
     {
-        return static::$updateApi ?? Str::replaceLast('/edit', '/save', 
+        if(static::$updateApi) {
+            return static::$updateApi;
+        }
+
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        if(in_array(end($uri), ['index'])) {
+            return Str::replaceLast('/index', '/save', 
+                Str::replaceFirst('api/','',\request()->path())
+            );
+        }
+
+        return Str::replaceLast('/edit', '/save', 
             Str::replaceFirst('api/','',\request()->path())
         );
     }

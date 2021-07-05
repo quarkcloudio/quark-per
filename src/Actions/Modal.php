@@ -40,4 +40,14 @@ abstract class Modal extends Action
     {
         return null;
     }
+
+    /**
+     * 弹窗行为
+     *
+     * @return $this
+     */
+    public function actions()
+    {
+        return null;
+    }
 }
