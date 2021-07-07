@@ -87,6 +87,17 @@ trait ResolvesActions
                 return $modal->title($item->name())
                 ->width($item->width())
                 ->body($item->body())
+                ->destroyOnClose()
+                ->actions($item->actions());
+            });
+        }
+
+        if($item->actionType() === 'drawer') {
+            $builder->drawer(function($drawer) use ($item) {
+                return $drawer->title($item->name())
+                ->width($item->width())
+                ->body($item->body())
+                ->destroyOnClose()
                 ->actions($item->actions());
             });
         }

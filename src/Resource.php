@@ -57,6 +57,13 @@ abstract class Resource extends JsonResource
     public static $creationApi = null;
 
     /**
+     * 编辑页面获取表单数据接口
+     *
+     * @var string
+     */
+    public static $editValueApi = null;
+
+    /**
      * 编辑表单的接口
      *
      * @var string
@@ -146,6 +153,30 @@ abstract class Resource extends JsonResource
         }
 
         return Str::replaceLast('/create', '/store', 
+            Str::replaceFirst('api/','',\request()->path())
+        );
+    }
+
+    /**
+     * 编辑页面获取表单数据接口
+     *
+     * @return string
+     */
+    public static function editValueApi()
+    {
+        if(static::$editValueApi) {
+            return static::$editValueApi;
+        }
+
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        if(in_array(end($uri), ['index'])) {
+            return Str::replaceLast('/index', '/edit/values?id={id}', 
+                Str::replaceFirst('api/','',\request()->path())
+            );
+        }
+
+        return Str::replaceLast('/edit', '/edit/values?id={id}', 
             Str::replaceFirst('api/','',\request()->path())
         );
     }

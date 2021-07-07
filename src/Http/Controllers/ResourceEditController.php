@@ -25,6 +25,19 @@ class ResourceEditController extends Controller
     }
 
     /**
+     * 获取表单初始化数据
+     *
+     * @param  ResourceEditRequest  $request
+     * @return array
+     */
+    public function values(ResourceEditRequest $request)
+    {
+        $data = $request->newResourceWith($request->fillData())->toArray($request);
+
+        return success('获取成功','',$request->newResource()->beforeEditing($request, $data));
+    }
+
+    /**
      * 创建组件
      *
      * @param  ResourceEditRequest  $request

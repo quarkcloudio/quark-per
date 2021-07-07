@@ -4,24 +4,24 @@ namespace App\Admin\Actions;
 
 use QuarkCMS\Quark\Facades\Form;
 use QuarkCMS\QuarkAdmin\Actions\Modal;
-use QuarkCMS\QuarkAdmin\Http\Requests\ResourceCreateRequest;
+use QuarkCMS\QuarkAdmin\Http\Requests\ResourceEditRequest;
 use QuarkCMS\Quark\Facades\Action;
 
-class CreateModal extends Modal
+class EditModal extends Modal
 {
     /**
      * 设置按钮类型,primary | ghost | dashed | link | text | default
      *
      * @var string
      */
-    public $type = 'primary';
+    public $type = 'link';
 
     /**
-     * 设置图标
+     * 设置按钮大小,large | middle | small | default
      *
      * @var string
      */
-    public $icon = 'plus-circle';
+    public $size = 'small';
 
     /**
      * 初始化
@@ -32,7 +32,7 @@ class CreateModal extends Modal
      */
     public function __construct($name)
     {
-        $this->name = '创建' . $name;
+        $this->name = $name;
     }
 
     /**
@@ -42,13 +42,13 @@ class CreateModal extends Modal
      */
     public function body()
     {
-        $request = new ResourceCreateRequest;
+        $request = new ResourceEditRequest;
 
         // 表单
-        return Form::key('createModalForm')
-        ->api($request->newResource()->creationApi())
-        ->items($request->newResource()->creationFields($request))
-        ->initialValues($request->newResource()->beforeCreating($request))
+        return Form::key('editModalForm')
+        ->api($request->newResource()->updateApi())
+        ->initApi($request->newResource()->editValueApi())
+        ->items($request->newResource()->updateFields($request))
         ->labelCol([
             'span' => 6
         ])
@@ -66,12 +66,12 @@ class CreateModal extends Modal
     {
         return [
             Action::make('取消')->actionType('cancel'),
-            
+
             Action::make("提交")
             ->reload('table')
             ->type('primary')
             ->actionType('submit')
-            ->submitForm('createModalForm')
+            ->submitForm('editModalForm')
         ];
     }
 }

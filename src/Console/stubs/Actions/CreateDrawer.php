@@ -3,11 +3,11 @@
 namespace App\Admin\Actions;
 
 use QuarkCMS\Quark\Facades\Form;
-use QuarkCMS\QuarkAdmin\Actions\Modal;
+use QuarkCMS\QuarkAdmin\Actions\Drawer;
 use QuarkCMS\QuarkAdmin\Http\Requests\ResourceCreateRequest;
 use QuarkCMS\Quark\Facades\Action;
 
-class CreateModal extends Modal
+class CreateDrawer extends Drawer
 {
     /**
      * 设置按钮类型,primary | ghost | dashed | link | text | default
@@ -45,7 +45,7 @@ class CreateModal extends Modal
         $request = new ResourceCreateRequest;
 
         // 表单
-        return Form::key('createModalForm')
+        return Form::key('createDrawerForm')
         ->api($request->newResource()->creationApi())
         ->items($request->newResource()->creationFields($request))
         ->initialValues($request->newResource()->beforeCreating($request))
@@ -71,7 +71,7 @@ class CreateModal extends Modal
             ->reload('table')
             ->type('primary')
             ->actionType('submit')
-            ->submitForm('createModalForm')
+            ->submitForm('createDrawerForm')
         ];
     }
 }

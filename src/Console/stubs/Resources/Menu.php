@@ -46,10 +46,6 @@ class Menu extends Resource
             $getPermissions[$permission['id']] = $permission['name'];
         }
 
-        if($request->id) {
-            $permissionIds = Permission::where('menu_id',$request->id)->pluck('id');
-        }
-
         return [
             Field::hidden('id','ID')
             ->onlyOnForms(),
@@ -88,7 +84,6 @@ class Menu extends Resource
             Field::select('permission_ids','绑定权限')
             ->mode('tags')
             ->options($getPermissions ?? [])
-            ->default($permissionIds ?? [])
             ->onlyOnForms(),
 
             Field::switch('show','显示')
@@ -129,12 +124,12 @@ class Menu extends Resource
     public function actions(Request $request)
     {
         return [
-            (new \App\Admin\Actions\CreateModal($this->title()))->onlyOnIndex(),
+            (new \App\Admin\Actions\CreateDrawer($this->title()))->onlyOnIndex(),
             (new \App\Admin\Actions\Delete('批量删除'))->onlyOnTableAlert(),
             (new \App\Admin\Actions\Disable('批量禁用'))->onlyOnTableAlert(),
             (new \App\Admin\Actions\Enable('批量启用'))->onlyOnTableAlert(),
             (new \App\Admin\Actions\ChangeStatus)->onlyOnTableRow(),
-            (new \App\Admin\Actions\EditLink('编辑'))->onlyOnTableRow(),
+            (new \App\Admin\Actions\EditDrawer('编辑'))->onlyOnTableRow(),
             (new \App\Admin\Actions\Delete('删除'))->onlyOnTableRow(),
         ];
     }
@@ -150,6 +145,20 @@ class Menu extends Resource
     {
         // 转换成树形表格
         return list_to_tree($list,'id','pid','children', 0);
+    }
+
+    /**
+     * 编辑页面显示前回调
+     *
+     * @param Request $request
+     * @param array $data
+     * @return array
+     */
+    public function beforeEditing(Request $request, $data)
+    {
+        $data['permission_ids'] = $request->id ? Permission::where('menu_id',$request->id)->pluck('id') : [];
+
+        return $data;
     }
 
     /**
@@ -177,7 +186,11 @@ class Menu extends Resource
         // 先清空权限
         Permission::where('menu_id',request('id'))->update(['menu_id' => 0]);
 
-        // 更新权限
-        return Permission::whereIn('id',request('permission_ids'))->update(['menu_id' => $model->id]);
+        if(request('permission_ids')) {
+            // 更新权限
+            return Permission::whereIn('id',request('permission_ids'))->update(['menu_id' => $model->id]);
+        } else {
+            return $model;
+        }
     }
 }

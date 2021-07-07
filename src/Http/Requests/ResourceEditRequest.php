@@ -11,6 +11,6 @@ class ResourceEditRequest extends QuarkRequest
      */
     public function fillData()
     {
-        return $this->model()->find(request()->id);
+        return $this->model()->find(request()->get('id'));
     }
 }

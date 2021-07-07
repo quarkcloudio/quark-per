@@ -12,6 +12,7 @@ Route::any('admin/{resource}/editable', 'ResourceEditableController@handle');
 Route::get('admin/{resource}/create', 'ResourceCreateController@handle');
 Route::post('admin/{resource}/store', 'ResourceStoreController@handle');
 Route::get('admin/{resource}/edit', 'ResourceEditController@handle');
+Route::get('admin/{resource}/edit/values', 'ResourceEditController@values');
 Route::post('admin/{resource}/save', 'ResourceUpdateController@handle');
 Route::get('admin/{resource}/detail', 'ResourceShowController@handle');
 
