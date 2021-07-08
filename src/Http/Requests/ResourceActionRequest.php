@@ -11,11 +11,15 @@ class ResourceActionRequest extends QuarkRequest
      */
     public function handleRequest()
     {
-        $model = $this->model()->whereIn('id', explode(',', $this->input('id')));
+        $model = $this->model();
+
+        if($this->input('id')) {
+            $model = $model->whereIn('id', explode(',', $this->input('id')));
+        }
 
         foreach ($this->newResource()->actions($this) as $value) {
             if($this->route('uriKey') === $value->uriKey()) {
-                return $value->handle($this, [0 => $model]);
+                return $value->handle($this, $model);
             }
         }
     }

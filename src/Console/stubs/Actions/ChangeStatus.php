@@ -53,17 +53,15 @@ class ChangeStatus extends Action
      * 执行行为
      *
      * @param  Fields  $fields
-     * @param  Collection  $models
+     * @param  Collection  $model
      * @return mixed
      */
-    public function handle($fields, $models)
+    public function handle($fields, $model)
     {
-        foreach ($models as $model) {
-            $model->update([
-                'status' => !$fields['status']
-            ]);
-        }
+        $result = $model->update([
+            'status' => !$fields['status']
+        ]);
 
-        return success('操作成功！');
+        return $result ? success('操作成功！') : error('操作失败，请重试！');
     }
 }

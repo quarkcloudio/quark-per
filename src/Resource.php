@@ -254,6 +254,34 @@ abstract class Resource extends JsonResource
     }
 
     /**
+     * 列表标题
+     *
+     * @param  void
+     * @return array
+     */
+    public function indexTitle()
+    {
+        return $this->title() . '列表';
+    }
+
+    /**
+     * 表单标题
+     *
+     * @param  void
+     * @return array
+     */
+    public function formTitle()
+    {
+        if($this->isCreating()) {
+            return '创建' . $this->title();
+        } elseif ($this->isEditing()) {
+            return '编辑' . $this->title();
+        }
+
+        return '编辑' . $this->title();
+    }
+
+    /**
      * 右上角自定义区域
      *
      * @param  void

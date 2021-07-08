@@ -148,7 +148,7 @@ abstract class Action
      */
     public function apiParams()
     {
-        return ['id'];
+        return [];
     }
 
     /**
@@ -236,10 +236,10 @@ abstract class Action
      * 执行行为句柄
      *
      * @param  Fields  $fields
-     * @param  Collection  $models
+     * @param  Collection  $model
      * @return mixed
      */
-    public function handle($fields, $models)
+    public function handle($fields, $model)
     {
         return [];
     }

@@ -42,20 +42,28 @@ class Enable extends Action
     }
 
     /**
+     * 行为接口接收的参数，当行为在表格行展示的时候，可以配置当前行的任意字段
+     *
+     * @return array
+     */
+    public function apiParams()
+    {
+        return ['id'];
+    }
+
+    /**
      * 执行行为
      *
      * @param  Fields  $fields
-     * @param  Collection  $models
+     * @param  Collection  $model
      * @return mixed
      */
-    public function handle($fields, $models)
+    public function handle($fields, $model)
     {
-        foreach ($models as $model) {
-            $model->update([
-                'status' => 1
-            ]);
-        }
+        $result = $model->update([
+            'status' => 1
+        ]);
 
-        return success('操作成功！');
+        return $result ? success('操作成功！') : error('操作失败，请重试！');
     }
 }

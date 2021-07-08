@@ -34,7 +34,7 @@ class ResourceCreateController extends Controller
         ->actions($request->newResource()->formActions())
         ->initialValues($request->newResource()->beforeCreating($request));
 
-        return Card::title('创建' . $request->newResource()->title())
+        return Card::title($request->newResource()->formTitle())
         ->headerBordered()
         ->extra($request->newResource()->formExtra())
         ->body($form);
