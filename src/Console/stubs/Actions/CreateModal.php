@@ -46,7 +46,7 @@ class CreateModal extends Modal
 
         // 表单
         return Form::key('createModalForm')
-        ->api($request->newResource()->creationApi())
+        ->api($request->newResource()->creationApi($request))
         ->items($request->newResource()->creationFields($request))
         ->initialValues($request->newResource()->beforeCreating($request))
         ->labelCol([

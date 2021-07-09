@@ -46,8 +46,8 @@ class EditModal extends Modal
 
         // 表单
         return Form::key('editModalForm')
-        ->api($request->newResource()->updateApi())
-        ->initApi($request->newResource()->editValueApi())
+        ->api($request->newResource()->updateApi($request))
+        ->initApi($request->newResource()->editValueApi($request))
         ->items($request->newResource()->updateFields($request))
         ->labelCol([
             'span' => 6

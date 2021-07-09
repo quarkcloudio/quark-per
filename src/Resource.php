@@ -50,27 +50,6 @@ abstract class Resource extends JsonResource
     public static $perPage = false;
 
     /**
-     * 创建表单的接口
-     *
-     * @var string
-     */
-    public static $creationApi = null;
-
-    /**
-     * 编辑页面获取表单数据接口
-     *
-     * @var string
-     */
-    public static $editValueApi = null;
-
-    /**
-     * 编辑表单的接口
-     *
-     * @var string
-     */
-    public static $updateApi = null;
-
-    /**
      * 初始化
      *
      * @var mixed
@@ -134,78 +113,6 @@ abstract class Resource extends JsonResource
     }
 
     /**
-     * 创建表单的接口
-     *
-     * @return string
-     */
-    public static function creationApi()
-    {
-        if(static::$creationApi) {
-            return static::$creationApi;
-        }
-
-        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-
-        if(in_array(end($uri), ['index'])) {
-            return Str::replaceLast('/index', '/store', 
-                Str::replaceFirst('api/','',\request()->path())
-            );
-        }
-
-        return Str::replaceLast('/create', '/store', 
-            Str::replaceFirst('api/','',\request()->path())
-        );
-    }
-
-    /**
-     * 编辑页面获取表单数据接口
-     *
-     * @return string
-     */
-    public static function editValueApi()
-    {
-        if(static::$editValueApi) {
-            return static::$editValueApi;
-        }
-
-        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-
-        if(in_array(end($uri), ['index'])) {
-            return Str::replaceLast('/index', '/edit/values?id={id}', 
-                Str::replaceFirst('api/','',\request()->path())
-            );
-        }
-
-        return Str::replaceLast('/edit', '/edit/values?id={id}', 
-            Str::replaceFirst('api/','',\request()->path())
-        );
-    }
-
-    /**
-     * 更新表单的接口
-     *
-     * @return string
-     */
-    public static function updateApi()
-    {
-        if(static::$updateApi) {
-            return static::$updateApi;
-        }
-
-        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
-
-        if(in_array(end($uri), ['index'])) {
-            return Str::replaceLast('/index', '/save', 
-                Str::replaceFirst('api/','',\request()->path())
-            );
-        }
-
-        return Str::replaceLast('/edit', '/save', 
-            Str::replaceFirst('api/','',\request()->path())
-        );
-    }
-
-    /**
      * 判断当前页面是否为列表页面
      *
      * @return bool
@@ -256,21 +163,103 @@ abstract class Resource extends JsonResource
     /**
      * 列表标题
      *
-     * @param  void
+     * @param  Request $request
      * @return array
      */
-    public function indexTitle()
+    public function indexTitle(Request $request)
     {
         return $this->title() . '列表';
     }
 
     /**
+     * 表单接口
+     *
+     * @param  Request $request
+     * @return string
+     */
+    public function formApi($request)
+    {
+        return null;
+    }
+
+    /**
+     * 创建表单的接口
+     *
+     * @param  Request $request
+     * @return string
+     */
+    public function creationApi($request)
+    {
+        if($this->formApi($request)) {
+            return $this->formApi($request);
+        }
+
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        if(in_array(end($uri), ['index'])) {
+            return Str::replaceLast('/index', '/store', 
+                Str::replaceFirst('api/','',\request()->path())
+            );
+        }
+
+        return Str::replaceLast('/create', '/store', 
+            Str::replaceFirst('api/','',\request()->path())
+        );
+    }
+
+    /**
+     * 更新表单的接口
+     *
+     * @param  Request $request
+     * @return string
+     */
+    public function updateApi($request)
+    {
+        if($this->formApi($request)) {
+            return $this->formApi($request);
+        }
+
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        if(in_array(end($uri), ['index'])) {
+            return Str::replaceLast('/index', '/save', 
+                Str::replaceFirst('api/','',\request()->path())
+            );
+        }
+
+        return Str::replaceLast('/edit', '/save', 
+            Str::replaceFirst('api/','',\request()->path())
+        );
+    }
+
+    /**
+     * 编辑页面获取表单数据接口
+     *
+     * @param  Request $request
+     * @return string
+     */
+    public function editValueApi($request)
+    {
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        if(in_array(end($uri), ['index'])) {
+            return Str::replaceLast('/index', '/edit/values?id={id}', 
+                Str::replaceFirst('api/','',\request()->path())
+            );
+        }
+
+        return Str::replaceLast('/edit', '/edit/values?id={id}', 
+            Str::replaceFirst('api/','',\request()->path())
+        );
+    }
+
+    /**
      * 表单标题
      *
-     * @param  void
+     * @param  Request $request
      * @return array
      */
-    public function formTitle()
+    public function formTitle(Request $request)
     {
         if($this->isCreating()) {
             return '创建' . $this->title();
@@ -278,16 +267,16 @@ abstract class Resource extends JsonResource
             return '编辑' . $this->title();
         }
 
-        return '编辑' . $this->title();
+        return $this->title();
     }
 
     /**
      * 右上角自定义区域
      *
-     * @param  void
+     * @param  Request $request
      * @return array
      */
-    public function formExtra()
+    public function formExtra(Request $request)
     {
         return Action::make('返回上一页')->type('link')->actionType('back');
     }
@@ -295,10 +284,10 @@ abstract class Resource extends JsonResource
     /**
      * 获取表单按钮
      *
-     * @param  void
+     * @param  Request $request
      * @return array
      */
-    public function formActions()
+    public function formActions(Request $request)
     {
         return [
             Action::make('重置')->actionType('reset'),
@@ -317,6 +306,17 @@ abstract class Resource extends JsonResource
     public function beforeIndexShowing(Request $request, $list)
     {
         return $list;
+    }
+
+    /**
+     * 表单显示前回调
+     * 
+     * @param Request $request
+     * @return array
+     */
+    public function beforeFormShowing(Request $request)
+    {
+        return [];
     }
 
     /**

@@ -6,7 +6,7 @@ use QuarkCMS\Quark\Facades\Form;
 use QuarkCMS\Quark\Facades\Card;
 use QuarkCMS\QuarkAdmin\Http\Requests\ResourceCreateRequest;
 
-class ResourceCreateController extends Controller
+class ResourceFormController extends Controller
 {
     /**
      * 创建页
@@ -28,13 +28,11 @@ class ResourceCreateController extends Controller
     public function buildComponent($request)
     {
         // 表单
-        $form = Form::api($request->newResource()->creationApi($request))
+        $form = Form::api($request->newResource()->formApi($request))
         ->style(['marginTop' => '30px'])
-        ->items($request->newResource()->creationFields($request))
+        ->items($request->newResource()->fields($request))
         ->actions($request->newResource()->formActions($request))
-        ->initialValues(
-            $request->newResource()->beforeCreating($request)
-        );
+        ->initialValues($request->newResource()->beforeFormShowing($request));
 
         return Card::title($request->newResource()->formTitle($request))
         ->headerBordered()

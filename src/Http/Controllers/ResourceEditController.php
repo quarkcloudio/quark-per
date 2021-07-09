@@ -47,15 +47,17 @@ class ResourceEditController extends Controller
     public function buildComponent($request, $data)
     {
         // 表单
-        $form = Form::api($request->newResource()->updateApi())
+        $form = Form::api($request->newResource()->updateApi($request))
         ->style(['marginTop' => '30px'])
         ->items($request->newResource()->updateFields($request))
-        ->actions($request->newResource()->formActions())
-        ->initialValues($request->newResource()->beforeEditing($request, $data));
+        ->actions($request->newResource()->formActions($request))
+        ->initialValues(
+            $request->newResource()->beforeEditing($request, $data)
+        );
 
-        return Card::title($request->newResource()->formTitle())
+        return Card::title($request->newResource()->formTitle($request))
         ->headerBordered()
-        ->extra($request->newResource()->formExtra())
+        ->extra($request->newResource()->formExtra($request))
         ->body($form);
     }
 }

@@ -36,7 +36,7 @@ class ResourceIndexController extends Controller
     public function buildComponent($request, $resource , $data)
     {
         $table = Table::key('table')
-        ->title($request->newResource()->indexTitle())
+        ->title($request->newResource()->indexTitle($request))
         ->toolBar($request->newResource()->toolBar($request))
         ->columns($request->newResource()->columns($request))
         ->batchActions($request->newResource()->tableAlertActions($request))

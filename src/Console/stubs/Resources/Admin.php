@@ -70,7 +70,7 @@ class Admin extends Resource
                 ['required','min:6','max:20'],
                 ['required' => '用户名必须填写','min' => '用户名不能少于6个字符','max' => '用户名不能超过20个字符']
             )->creationRules(
-                ['unique:admins'],
+                ['unique:admins,username'],
                 ['unique'=>'用户名已存在']
             )->updateRules(
                 ['unique:admins,username,{id}'],
@@ -90,7 +90,7 @@ class Admin extends Resource
                 ['required'],
                 ['required'=>'邮箱必须填写']
             )->creationRules(
-                ['unique:admins'],
+                ['unique:admins,email'],
                 ['unique'=>'邮箱已存在']
             )->updateRules(
                 ['unique:admins,email,{id}'],
@@ -102,7 +102,7 @@ class Admin extends Resource
                 ['required'],
                 ['required' => '手机号必须填写']
             )->creationRules(
-                ['unique:admins'],
+                ['unique:admins,phone'],
                 ['unique'=>'手机号已存在']
             )->updateRules(
                 ['unique:admins,phone,{id}'],

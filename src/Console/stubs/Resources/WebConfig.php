@@ -30,17 +30,6 @@ class WebConfig extends Resource
     public static $creationApi = 'www.baidu.com';
 
     /**
-     * 表单标题
-     *
-     * @param  void
-     * @return array
-     */
-    public function formTitle()
-    {
-        return $this->title();
-    }
-
-    /**
      * 字段
      *
      * @param  Request  $request

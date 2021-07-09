@@ -73,15 +73,15 @@ trait PerformsValidation
     protected static function getRulesForCreation(Request $request, $field)
     {
         foreach (static::formatRules($request, $field->rules) as $ruleKey => $ruleValue) {
-            $getRules[$field->name][$ruleKey] = $ruleValue;
+            $getRules[$field->name][] = $ruleValue;
         }
 
         foreach ($field->ruleMessages as $messageKey => $messageValue) {
             $getRuleMessages[$field->name.'.'.$messageKey] = $messageValue;
         }
 
-        foreach (static::formatRules($request, $field->rules) as $creationRuleKey => $creationRuleValue) {
-            $getRules[$field->name][$creationRuleKey] = $creationRuleValue;
+        foreach (static::formatRules($request, $field->creationRules) as $creationRuleKey => $creationRuleValue) {
+            $getRules[$field->name][] = $creationRuleValue;
         }
 
         foreach ($field->creationRuleMessages as $creationMessageKey => $creationMessageValue) {
@@ -160,15 +160,15 @@ trait PerformsValidation
     protected static function getRulesForUpdate(Request $request, $field)
     {
         foreach (static::formatRules($request, $field->rules) as $ruleKey => $ruleValue) {
-            $getRules[$field->name][$ruleKey] = $ruleValue;
+            $getRules[$field->name][] = $ruleValue;
         }
 
         foreach ($field->ruleMessages as $messageKey => $messageValue) {
             $getRuleMessages[$field->name.'.'.$messageKey] = $messageValue;
         }
 
-        foreach (static::formatRules($request, $field->rules) as $updateRuleKey => $updateRuleValue) {
-            $getRules[$field->name][$updateRuleKey] = $updateRuleValue;
+        foreach (static::formatRules($request, $field->updateRules) as $updateRuleKey => $updateRuleValue) {
+            $getRules[$field->name][] = $updateRuleValue;
         }
 
         foreach ($field->updateRuleMessages as $updateMessageKey => $updateMessageValue) {

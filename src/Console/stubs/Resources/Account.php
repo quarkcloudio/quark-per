@@ -23,22 +23,12 @@ class Account extends Resource
     public static $model = 'QuarkCMS\QuarkAdmin\Models\Admin';
 
     /**
-     * 表单标题
-     *
-     * @param  void
-     * @return array
-     */
-    public function formTitle()
-    {
-        return static::$title;
-    }
-
-    /**
      * 表单接口
      *
+     * @param  Request  $request
      * @return string
      */
-    public static function creationApi()
+    public function formApi($request)
     {
         return (new \App\Admin\Actions\ChangeAccount)->api();
     }
@@ -94,14 +84,14 @@ class Account extends Resource
     }
 
     /**
-     * 创建页面显示前回调
+     * 表单显示前回调
      * 
      * @param Request $request
      * @return array
      */
-    public function beforeCreating(Request $request)
+    public function beforeFormShowing(Request $request)
     {
-        $adminInfo = $this->newModel()->where('id',ADMINID)->first();
+        $adminInfo = $this->newModel()->where('id', ADMINID)->first();
 
         unset($adminInfo['password']);
 

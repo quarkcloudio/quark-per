@@ -46,7 +46,7 @@ class CreateDrawer extends Drawer
 
         // 表单
         return Form::key('createDrawerForm')
-        ->api($request->newResource()->creationApi())
+        ->api($request->newResource()->creationApi($request))
         ->items($request->newResource()->creationFields($request))
         ->initialValues($request->newResource()->beforeCreating($request))
         ->labelCol([
