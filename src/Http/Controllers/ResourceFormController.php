@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use QuarkCMS\Quark\Facades\Form;
 use QuarkCMS\Quark\Facades\Card;
+use QuarkCMS\Quark\Facades\Tabs;
 use QuarkCMS\QuarkAdmin\Http\Requests\ResourceCreateRequest;
 
 class ResourceFormController extends Controller
@@ -27,16 +28,47 @@ class ResourceFormController extends Controller
      */
     public function buildComponent($request)
     {
-        // 表单
-        $form = Form::api($request->newResource()->formApi($request))
-        ->style(['marginTop' => '30px'])
-        ->items($request->newResource()->fields($request))
-        ->actions($request->newResource()->formActions($request))
-        ->initialValues($request->newResource()->beforeFormShowing($request));
+        $items = $request->newResource()->fields($request);
 
-        return Card::title($request->newResource()->formTitle($request))
-        ->headerBordered()
-        ->extra($request->newResource()->formExtra($request))
-        ->body($form);
+        // 表单
+        $form = Form::api(
+            $request->newResource()->formApi($request)
+        )
+        ->actions(
+            $request->newResource()->formActions($request)
+        );
+
+        switch ($items[0]->component) {
+            case 'tabPane':
+                $component = $form->style([
+                    'marginTop' => '30px',
+                    'backgroundColor' => '#fff',
+                    'paddingBottom' => '20px'
+                ])
+                ->items(
+                    Tabs::tabPanes($items)->tabBarExtraContent($request->newResource()->formExtra($request))
+                )
+                ->initialValues(
+                    $request->newResource()->beforeFormShowing($request)
+                );
+                break;
+            
+            default:
+                $form = $form->style([
+                    'marginTop' => '30px'
+                ])
+                ->items($items)
+                ->initialValues(
+                    $request->newResource()->beforeFormShowing($request)
+                );
+
+                $component = Card::title($request->newResource()->formTitle($request))
+                ->headerBordered()
+                ->extra($request->newResource()->formExtra($request))
+                ->body($form);
+                break;
+        }
+
+        return $component;
     }
 }

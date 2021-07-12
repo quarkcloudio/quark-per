@@ -5,6 +5,7 @@ namespace App\Admin\Resources;
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Field;
 use QuarkCMS\QuarkAdmin\Resource;
+use QuarkCMS\Quark\Facades\TabPane;
 
 class WebConfig extends Resource
 {
@@ -23,11 +24,15 @@ class WebConfig extends Resource
     public static $model = 'QuarkCMS\QuarkAdmin\Models\Config';
 
     /**
-     * 创建表单的接口
+     * 表单接口
      *
-     * @var string
+     * @param  Request  $request
+     * @return string
      */
-    public static $creationApi = 'www.baidu.com';
+    public function formApi($request)
+    {
+        return (new \App\Admin\Actions\ChangeWebConfig)->api();
+    }
 
     /**
      * 字段
@@ -37,45 +42,112 @@ class WebConfig extends Resource
      */
     public function fields(Request $request)
     {
-        return [
-            Field::hidden('id','ID')
-            ->onlyOnForms(),
+        $groupNames = $this->newModel()
+        ->where('status', 1)
+        ->distinct()
+        ->pluck('group_name');
 
-            Field::text('title','标题')
-            ->editable()
-            ->rules(
-                ['required'],
-                ['required' => '标题必须填写']
-            ),
+        foreach ($groupNames as $groupName) {
 
-            Field::select('type','表单类型')
-            ->options([
-                'text'=>'输入框',
-                'textarea'=>'文本域',
-                'picture'=>'图片',
-                'file'=>'文件',
-                'switch'=>'开关'
-            ])
-            ->default('text')
-            ->onlyOnForms(),
-
-            Field::text('name','名称')
-            ->editable()
-            ->rules(['required','max:255'],['required'=>'名称必须填写','max'=>'名称不能超过255个字符'])
-            ->creationRules(["unique:configs"],['unique'=>'名称已经存在'])
-            ->updateRules(["unique:configs,name,{id}"],['unique'=>'名称已经存在']),
+            $configs = $this->newModel()
+            ->where('status', 1)
+            ->where('group_name',$groupName)
+            ->get()
+            ->toArray();
             
-            Field::text('group_name','分组名称')
-            ->onlyOnForms(),
+            $fields = [];
 
-            Field::textArea('remark','备注')
-            ->rules(['max:255'],['max'=>'备注不能超过255个字符']),
+            foreach ($configs as $config) {
+                switch ($config['type']) {
+                    case 'text':
+                        $fields[] = Field::text($config['name'],$config['title'])
+                        ->extra($config['remark']);
+                        break;
 
-            Field::switch('status','状态')
-            ->editable()
-            ->trueValue('正常')
-            ->falseValue('禁用')
-            ->default(true)
+                    case 'file':
+                        $files = null;
+                        if($config['value']) {
+                            $file['id'] = $config['value'];
+                            $file['uid'] = $config['value'];
+                            $file['name'] = get_file($config['value'],'name');
+                            $file['size'] = get_file($config['value'],'size');
+                            $file['url'] = get_file($config['value'],'path');
+                            $files[] = $file;
+                        }
+
+                        $fields[] = Field::file($config['name'],$config['title'])
+                        ->extra($config['remark'])
+                        ->button('上传'.$config['title']);
+                        break;
+
+                    case 'textarea':
+                        $fields[] = Field::textArea($config['name'],$config['title'])
+                        ->extra($config['remark']);
+                        break;
+
+                    case 'switch':
+                        $fields[] = Field::switch($config['name'],$config['title'])
+                        ->extra($config['remark'])
+                        ->trueValue('正常')
+                        ->falseValue('禁用');
+                        break;
+
+                    case 'picture':
+                        $image = null;
+                        if($config['value']) {
+                            $image['id'] = $config['value'];
+                            $image['name'] = get_picture($config['value'],0,'name');
+                            $image['size'] = get_picture($config['value'],0,'size');
+                            $image['url'] = get_picture($config['value'],0,'path');
+                        }
+
+                        $fields[] = Field::image($config['name'],$config['title'])
+                        ->extra($config['remark'])
+                        ->button('上传'.$config['name']);
+                        break;
+
+                    default:
+                        $fields[] = Field::text($config['name'],$config['title'])
+                        ->extra($config['remark']);
+                        break;
+                }
+            }
+
+            $tabPanes[] = TabPane::make($groupName, $fields);
+        }
+
+        return $tabPanes;
+    }
+
+    /**
+     * 表单显示前回调
+     * 
+     * @param Request $request
+     * @return array
+     */
+    public function beforeFormShowing(Request $request)
+    {
+        $configs = $this->newModel()
+        ->where('status', 1)
+        ->get();
+
+        foreach ($configs as $value) {
+            $data[$value->name] = $value->value;
+        }
+
+        return $data ?? [];
+    }
+
+    /**
+     * 注册行为，注册后才能被资源调用
+     *
+     * @param  Request  $request
+     * @return object
+     */
+    public function actions(Request $request)
+    {
+        return [
+            new \App\Admin\Actions\ChangeWebConfig
         ];
     }
 }
