@@ -309,17 +309,6 @@ abstract class Resource extends JsonResource
     }
 
     /**
-     * 表单显示前回调
-     * 
-     * @param Request $request
-     * @return array
-     */
-    public function beforeFormShowing(Request $request)
-    {
-        return [];
-    }
-
-    /**
      * 创建页面显示前回调
      * 
      * @param Request $request
@@ -374,7 +363,7 @@ abstract class Resource extends JsonResource
      */
     public function toArray($request)
     {
-        foreach ($this->fields($request) as $value) {
+        foreach ($this->getFields($request) as $value) {
             $this->resource->{$value->name} = $value->callback && ($this->isIndex() || $this->isDetail()) ? call_user_func($value->callback) : $this->{ $value->name };
             
             // 关联属性

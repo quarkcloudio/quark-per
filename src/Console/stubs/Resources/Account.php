@@ -89,7 +89,7 @@ class Account extends Resource
      * @param Request $request
      * @return array
      */
-    public function beforeFormShowing(Request $request)
+    public function beforeCreating(Request $request)
     {
         $adminInfo = $this->newModel()->where('id', ADMINID)->first();
 

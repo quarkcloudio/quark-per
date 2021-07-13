@@ -5,6 +5,10 @@ namespace QuarkCMS\QuarkAdmin;
 use QuarkCMS\Quark\Facades\Layout as LayoutFacade;
 use QuarkCMS\Quark\Facades\Page;
 use QuarkCMS\Quark\Facades\PageContainer;
+use QuarkCMS\Quark\Facades\Table;
+use QuarkCMS\Quark\Facades\Form;
+use QuarkCMS\Quark\Facades\Card;
+use QuarkCMS\Quark\Facades\Tabs;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use Illuminate\Support\Str;
@@ -144,5 +148,136 @@ trait Layout
 
         // 页面
         return Page::style(['height' => '100vh'])->body($layout);
+    }
+
+    /**
+     * 渲染列表页组件
+     *
+     * @param  ResourceIndexRequest  $request
+     * @param  object  $data
+     * @return array
+     */
+    public function indexComponentRender($request, $data)
+    {
+        $resource = $request->resource();
+
+        $table = Table::key('table')
+        ->title($this->indexTitle($request))
+        ->toolBar($this->toolBar($request))
+        ->columns($this->columns($request))
+        ->batchActions($this->tableAlertActions($request))
+        ->searches($this->indexSearches($request));
+
+        return $resource::pagination() ? 
+                $table->pagination(
+                    $data->currentPage(),
+                    $data->perPage(),
+                    $data->total()
+                )->datasource($data->items()) : $table->datasource($data);
+    }
+
+    /**
+     * 渲染创建页组件
+     *
+     * @param  ResourceCreateRequest  $request
+     * @param  array  $data
+     * @return array
+     */
+    public function creationComponentRender($request, $data)
+    {
+        return $this->formComponentRender(
+            $request,
+            $this->formTitle($request),
+            $this->formExtra($request),
+            $this->creationApi($request),
+            $this->creationFields($request),
+            $this->formActions($request),
+            $data
+        );
+    }
+
+    /**
+     * 渲染编辑页组件
+     *
+     * @param  ResourceEditRequest  $request
+     * @param  array  $data
+     * @return array
+     */
+    public function updateComponentRender($request, $data)
+    {
+        return $this->formComponentRender(
+            $request,
+            $this->formTitle($request),
+            $this->formExtra($request),
+            $this->updateApi($request),
+            $this->updateFields($request),
+            $this->formActions($request),
+            $data
+        );
+    }
+
+    /**
+     * 渲染表单组件
+     *
+     * @param  mixed   $request
+     * @param  string  $title
+     * @param  mixed   $extra
+     * @param  string  $api
+     * @param  array   $fields
+     * @param  array   $actions
+     * @param  array   $data
+     * @return array
+     */
+    public function formComponentRender($request, $title, $extra, $api, $fields, $actions, $data)
+    {
+        $form = Form::api($api)
+        ->style(['marginTop' => '30px'])
+        ->actions($actions)
+        ->initialValues($data)
+        ->body($fields);
+
+        return Card::title($title)
+        ->headerBordered()
+        ->extra($extra)
+        ->body($form);
+    }
+
+    /**
+     * 在卡片内的From组件
+     *
+     * @param  mixed  $request
+     * @return array
+     */
+    public function formWithinCard($request, $title, $extra, $api, $fields, $actions, $data)
+    {
+        $form = Form::api($api)
+        ->style(['marginTop' => '30px'])
+        ->actions($actions)
+        ->initialValues($data)
+        ->body($fields);
+
+        return Card::title($title)
+        ->headerBordered()
+        ->extra($extra)
+        ->body($form);
+    }
+
+    /**
+     * 在标签页内的From组件
+     *
+     * @param  mixed  $request
+     * @return array
+     */
+    public function formWithinTabs($request, $title, $extra, $api, $fields, $actions, $data)
+    {
+        return Form::api($api)
+        ->actions($actions)
+        ->style([
+            'marginTop' => '30px',
+            'backgroundColor' => '#fff',
+            'paddingBottom' => '20px'
+        ])
+        ->initialValues($data)
+        ->body(Tabs::tabPanes($fields)->tabBarExtraContent($extra));
     }
 }

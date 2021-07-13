@@ -15,7 +15,7 @@ trait ResolvesFields
      */
     public function indexFields(Request $request)
     {
-        foreach ($this->fields($request) as $value) {
+        foreach ($this->getFields($request) as $value) {
             if($value->isShownOnIndex()) {
                 $items[] = $value;
             }
@@ -32,13 +32,32 @@ trait ResolvesFields
      */
     public function creationFields(Request $request)
     {
-        foreach ($this->fields($request) as $value) {
+        foreach ($this->getFields($request) as $value) {
             if($value->isShownOnCreation()) {
                 $items[] = $value;
             }
         }
 
         return $items ?? [];
+    }
+
+    /**
+     * 包裹在组件内的创建页字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function creationFieldsWithinComponents(Request $request)
+    {
+        foreach ($this->fields($request) as $value) {
+            if($value->component === 'tabPane') {
+                foreach ($value->body as $subValue) {
+                    $items[] = $subValue;
+                }
+            } else {
+                $items[] = $value;
+            }
+        }
     }
 
     /**
@@ -49,7 +68,7 @@ trait ResolvesFields
      */
     public function updateFields(Request $request)
     {
-        foreach ($this->fields($request) as $value) {
+        foreach ($this->getFields($request) as $value) {
             if($value->isShownOnUpdate()) {
                 $items[] = $value;
             }
@@ -66,7 +85,7 @@ trait ResolvesFields
      */
     public function detailFields(Request $request)
     {
-        foreach ($this->fields($request) as $value) {
+        foreach ($this->getFields($request) as $value) {
             if($value->isShownOnDetail()) {
                 $items[] = $value;
             }
@@ -136,6 +155,27 @@ trait ResolvesFields
         }
 
         return $column->render();
+    }
+
+    /**
+     * 获取字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function getFields(Request $request)
+    {
+        foreach ($this->fields($request) as $value) {
+            if($value->component === 'tabPane') {
+                foreach ($value->body as $subValue) {
+                    $items[] = $subValue;
+                }
+            } else {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
     }
 
     /**

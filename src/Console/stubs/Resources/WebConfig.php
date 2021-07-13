@@ -125,7 +125,7 @@ class WebConfig extends Resource
      * @param Request $request
      * @return array
      */
-    public function beforeFormShowing(Request $request)
+    public function beforeCreating(Request $request)
     {
         $configs = $this->newModel()
         ->where('status', 1)

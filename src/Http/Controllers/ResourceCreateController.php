@@ -2,8 +2,6 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
-use QuarkCMS\Quark\Facades\Form;
-use QuarkCMS\Quark\Facades\Card;
 use QuarkCMS\QuarkAdmin\Http\Requests\ResourceCreateRequest;
 
 class ResourceCreateController extends Controller
@@ -16,29 +14,10 @@ class ResourceCreateController extends Controller
      */
     public function handle(ResourceCreateRequest $request)
     {
-        return $request->newResource()->setLayoutContent($this->buildComponent($request));
-    }
-    
-    /**
-     * 创建组件
-     *
-     * @param  ResourceCreateRequest  $request
-     * @return array
-     */
-    public function buildComponent($request)
-    {
-        // 表单
-        $form = Form::api($request->newResource()->creationApi($request))
-        ->style(['marginTop' => '30px'])
-        ->items($request->newResource()->creationFields($request))
-        ->actions($request->newResource()->formActions($request))
-        ->initialValues(
-            $request->newResource()->beforeCreating($request)
-        );
+        $data = $request->newResource()->beforeCreating($request);
 
-        return Card::title($request->newResource()->formTitle($request))
-        ->headerBordered()
-        ->extra($request->newResource()->formExtra($request))
-        ->body($form);
+        return $request->newResource()->setLayoutContent(
+            $request->newResource()->creationComponentRender($request,$data)
+        );
     }
 }

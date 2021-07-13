@@ -17,7 +17,7 @@ Route::post('admin/{resource}/save', 'ResourceUpdateController@handle');
 Route::get('admin/{resource}/detail', 'ResourceShowController@handle');
 
 // todo 这里暂时先这样
-Route::get('admin/{resource}/{uriKey}', 'ResourceFormController@handle');
+Route::get('admin/{resource}/{uriKey}', 'ResourceCreateController@handle');
 
 // 图片上传、下载
 Route::get('admin/picture/getLists', 'PictureController@getLists');
