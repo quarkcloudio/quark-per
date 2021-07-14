@@ -190,7 +190,7 @@ trait Layout
             $this->formTitle($request),
             $this->formExtra($request),
             $this->creationApi($request),
-            $this->creationFields($request),
+            $this->creationFieldsWithinComponents($request),
             $this->formActions($request),
             $data
         );
@@ -210,7 +210,7 @@ trait Layout
             $this->formTitle($request),
             $this->formExtra($request),
             $this->updateApi($request),
-            $this->updateFields($request),
+            $this->updateFieldsWithinComponents($request),
             $this->formActions($request),
             $data
         );
@@ -230,16 +230,11 @@ trait Layout
      */
     public function formComponentRender($request, $title, $extra, $api, $fields, $actions, $data)
     {
-        $form = Form::api($api)
-        ->style(['marginTop' => '30px'])
-        ->actions($actions)
-        ->initialValues($data)
-        ->body($fields);
-
-        return Card::title($title)
-        ->headerBordered()
-        ->extra($extra)
-        ->body($form);
+        if($fields[0]->component === 'tabPane') {
+            return $this->formWithinTabs($request, $title, $extra, $api, $fields, $actions, $data);
+        } else {
+            return $this->formWithinCard($request, $title, $extra, $api, $fields, $actions, $data);
+        }
     }
 
     /**
@@ -253,8 +248,8 @@ trait Layout
         $form = Form::api($api)
         ->style(['marginTop' => '30px'])
         ->actions($actions)
-        ->initialValues($data)
-        ->body($fields);
+        ->body($fields)
+        ->initialValues($data);
 
         return Card::title($title)
         ->headerBordered()
@@ -277,7 +272,7 @@ trait Layout
             'backgroundColor' => '#fff',
             'paddingBottom' => '20px'
         ])
-        ->initialValues($data)
-        ->body(Tabs::tabPanes($fields)->tabBarExtraContent($extra));
+        ->body(Tabs::tabPanes($fields)->tabBarExtraContent($extra))
+        ->initialValues($data);
     }
 }

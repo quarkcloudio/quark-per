@@ -51,13 +51,22 @@ trait ResolvesFields
     {
         foreach ($this->fields($request) as $value) {
             if($value->component === 'tabPane') {
+                $subItems = [];
                 foreach ($value->body as $subValue) {
-                    $items[] = $subValue;
+                    if($subValue->isShownOnCreation()) {
+                        $subItems[] = $subValue;
+                    }
                 }
-            } else {
+                $value->body = $subItems;
                 $items[] = $value;
+            } else {
+                if($value->isShownOnCreation()) {
+                    $items[] = $value;
+                }
             }
         }
+
+        return $items;
     }
 
     /**
@@ -75,6 +84,34 @@ trait ResolvesFields
         }
 
         return $items ?? [];
+    }
+
+    /**
+     * 包裹在组件内的编辑页字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function updateFieldsWithinComponents(Request $request)
+    {
+        foreach ($this->fields($request) as $value) {
+            if($value->component === 'tabPane') {
+                $subItems = [];
+                foreach ($value->body as $subValue) {
+                    if($subValue->isShownOnUpdate()) {
+                        $subItems[] = $subValue;
+                    }
+                }
+                $value->body = $subItems;
+                $items[] = $value;
+            } else {
+                if($value->isShownOnUpdate()) {
+                    $items[] = $value;
+                }
+            }
+        }
+
+        return $items;
     }
 
     /**

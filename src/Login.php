@@ -22,7 +22,7 @@ class Login
         ->title(config('admin.name','QuarkAdmin'))
         ->description(config('admin.description','信息丰富的世界里，唯一稀缺的就是人类的注意力'))
         ->redirect(config('admin.redirect','/index?api=admin/dashboard/index'))
-        ->captchaUrl(config('admin.captchaUrl','api/admin/captcha'))
+        ->captchaUrl(config('admin.captchaUrl','/api/admin/captcha'))
         ->links(config('admin.links',[]))
         ->copyright(config('admin.copyright'));
 

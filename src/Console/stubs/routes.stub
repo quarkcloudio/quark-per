@@ -7,6 +7,5 @@ Route::group([
     'middleware' => 'admin',
     'namespace' => 'App\\Admin\\Controllers'
 ], function (Router $router) {
-
-    $router->get('admin/dashboard/index', 'DashboardController@index')->name('api/admin/dashboard/index');
+    //
 });

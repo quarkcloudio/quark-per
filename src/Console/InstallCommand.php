@@ -78,37 +78,7 @@ class InstallCommand extends Command
         $this->makeDir('/Resources');
         $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
-        $this->createDashboardController();
-        $this->createDashboardResource();
         $this->createRoutesFile();
-    }
-
-    /**
-     * Create DashboardController.
-     *
-     * @return void
-     */
-    public function createDashboardController()
-    {
-        $controller = $this->directory.'/Controllers/DashboardController.php';
-        $contents = $this->getStub('DashboardController');
-
-        $this->laravel['files']->put($controller,$contents);
-        $this->line('<info>DashboardController file was created:</info> '.str_replace(base_path(), '', $controller));
-    }
-
-    /**
-     * Create DashboardResource.
-     *
-     * @return void
-     */
-    public function createDashboardResource()
-    {
-        $resource = $this->directory.'/Resources/DashboardResource.php';
-        $contents = $this->getStub('DashboardResource');
-
-        $this->laravel['files']->put($resource,$contents);
-        $this->line('<info>DashboardResource file was created:</info> '.str_replace(base_path(), '', $resource));
     }
 
     /**
@@ -177,7 +147,7 @@ class InstallCommand extends Command
 
             ['id' =>25,'name' => '系统配置','guard_name' => 'admin','icon' => 'icon-setting','type'=>'default','pid' => 0,'sort' => 0,'path' => '/system','show'  => 1,'status' => 1],
             ['id' =>26,'name' => '设置管理','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 25,'sort' => -1,'path' => '/system/config','show'  => 1,'status' => 1],
-            ['id' =>27,'name' => '网站设置','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/config/website','show'  => 1,'status' => 1],
+            ['id' =>27,'name' => '网站设置','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/webConfig/setting-form','show'  => 1,'status' => 1],
             ['id' =>28,'name' => '配置管理','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/config/index','show'  => 1,'status' => 1],
             ['id' =>32,'name' => '操作日志','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 25,'sort' => 0,'path' => 'admin/actionLog/index','show'  => 1,'status' => 1],
             
@@ -186,7 +156,7 @@ class InstallCommand extends Command
             ['id' =>35,'name' => '图片管理','guard_name' => 'admin','icon' => '','pid' => 33,'type'=>'engine','sort' => 0,'path' => 'admin/picture/index','show'  => 1,'status' => 1],
             
             ['id' =>36,'name' => '我的账号','guard_name' => 'admin','icon' => 'icon-user','type'=>'default','pid' => 0,'sort' => 0,'path' => '/account','show'  => 1,'status' => 1],
-            ['id' =>37,'name' => '个人设置','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 36,'sort' => 0,'path' => '/account/settings','show'  => 1,'status' => 1],
+            ['id' =>37,'name' => '个人设置','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 36,'sort' => 0,'path' => '/admin/account/setting-form','show'  => 1,'status' => 1],
         ]);
 
         // 网站配置
