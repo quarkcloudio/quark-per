@@ -30,7 +30,7 @@ class SyncPermission extends Action
 
         foreach($routes as $route) {
             // 只处理后台接口
-            if(strpos($route->uri,'api/admin') !== false) {
+            if(strpos($route->uri,'api/admin') !== false && strpos($route->uri,'-form') === false && strpos($route->uri,'/form') === false) {
                 if((strpos($route->uri,'{resource}') !== false) || (strpos($route->uri,'{dashboard}') !== false)) {
                     if(strpos($route->uri,'{resource}') !== false) {
                         $resourceUrls[] = $route->uri;

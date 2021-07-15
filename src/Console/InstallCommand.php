@@ -74,11 +74,59 @@ class InstallCommand extends Command
             return;
         }
 
-        $this->makeDir('/Controllers');
+        // 行为
+        $this->makeDir('/Actions');
+        $this->createFile('Actions');
+
+        // 仪表盘
+        $this->makeDir('/Dashboards');
+        $this->createFile('Dashboards');
+
+        // 物料
+        $this->makeDir('/Metrics');
+        $this->createFile('Metrics');
+
+        // 资源
         $this->makeDir('/Resources');
+        $this->createFile('Resources');
+
+        // 搜索控件
+        $this->makeDir('/Searches');
+        $this->createFile('Searches');
+
         $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
         $this->createRoutesFile();
+    }
+
+    /**
+     * 创建文件
+     *
+     * @return void
+     */
+    protected function createFile($name)
+    {
+        $sourcePath = __DIR__."/stubs/" . $name;
+        $targetPath = app_path('Admin/' . $name);
+
+        $dirs = get_folder_dirs($sourcePath);
+        $files = get_folder_files($sourcePath);
+
+        if(is_array($dirs)) {
+            foreach ($dirs as $value) {
+                $dirPath = $sourcePath.'/'.$value;
+                copy_dir_to_folder($dirPath, $targetPath);
+            }
+        }
+
+        if(is_array($files)) {
+            foreach ($files as $value) {
+                $filePath = $sourcePath.'/'.$value;
+                copy_file_to_folder($filePath, $targetPath);
+            }
+        }
+
+        $this->line('<info>' . $name . ' file was created</info>');
     }
 
     /**
