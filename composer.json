@@ -20,7 +20,7 @@
         "gregwar/captcha": "^1.0",
         "aliyuncs/oss-sdk-php": "^2.0",
         "guzzlehttp/guzzle": "^6.2|^7.0",
-        "quarkcms/quark": "^0.0.1"
+        "quarkcms/quark": "^1.0.0"
     },
     "autoload": {
         "psr-4": {
