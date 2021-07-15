@@ -4,26 +4,35 @@ namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use QuarkCMS\QuarkAdmin\Models\Admin;
-use Gregwar\Captcha\CaptchaBuilder;
-use Gregwar\Captcha\PhraseBuilder;
 use Illuminate\Support\Str;
+use QuarkCMS\QuarkAdmin\Login;
+use QuarkCMS\QuarkAdmin\Models\Admin;
 
-class LoginController extends QuarkController
+class LoginController extends Controller
 {
+    /**
+     * 登录展示
+     *
+     * @param  Login  $login
+     * @return array
+     */
+    public function show(Login $login)
+    {
+        return $login->resource();
+    }
+
     /**
      * 登录方法
      * @author  tangtanglove <dai_hang_love@126.com>
      */
-    public function login(Request $request)
+    public function login(Request $request, Login $login)
     {
         // 账号登录
         $username = $request->json('username');
         $password = $request->json('password');
         $captcha = $request->json('captcha');
 
-        $getCaptcha = cache('adminCaptcha');
-        if(empty($captcha) || (strtolower($captcha) != strtolower($getCaptcha))) {
+        if(config('admin.captchaUrl') !== false && captchaValidate($captcha) === false) {
             return error('验证码错误！');
         }
 
@@ -46,13 +55,12 @@ class LoginController extends QuarkController
             }
 
             // 更新登录信息
-            $data['last_login_ip'] = $request->ip();
-            $data['last_login_time'] = date('Y-m-d H:i:s');
-            Admin::where('id',$user->id)->update($data);
+            Admin::where('id',$user->id)->first()->updateLastLoginInfo();
 
             $result['id'] = $user->id;
             $result['username'] = $user->username;
             $result['nickname'] = $user->nickname;
+            $result['avatar'] = get_picture($user->avatar);
             $result['token'] = Str::random(950);
 
             // 将认证信息写入缓存，这里用hack方法做后台api登录认证
@@ -61,8 +69,10 @@ class LoginController extends QuarkController
             return success('登录成功！','',$result);
         } else {
 
-            // 清除验证码
-            cache(['adminCaptcha'=>null],60*10);
+            if(config('admin.captchaUrl') !== false) {
+                // 清除验证码
+                clearCaptcha();
+            }
 
             return error('用户名或密码错误！');
         }
@@ -74,46 +84,17 @@ class LoginController extends QuarkController
      */
     public function logout(Request $request)
     {
-        // 得到认证凭据
         $authorization = $request->header('Authorization');
-
-        // 分割出token
         $token = explode(' ',$authorization);
-
-        // 删除认证缓存
-        cache([$token[1] => null]);
-
-        // 同时退出登录
         $result = Auth::guard('admin')->logout();
 
         if($result !== false) {
+
+            cache([$token[1] => null]);
 
             return success('已退出！');
         } else {
             return error('错误！');
         }
-    }
-
-    /**
-     * 图形验证码
-     * @param  integer
-     * @return string
-     */
-    public function captcha()
-    {
-        $phrase = new PhraseBuilder;
-        // 设置验证码位数
-        $code = Str::random(4);
-        // 生成验证码图片的Builder对象，配置相应属性
-        $builder = new CaptchaBuilder($code, $phrase);
-        // 设置背景颜色
-        $builder->setBackgroundColor(244, 252, 255);
-        $builder->setMaxAngle(0);
-        $builder->setMaxBehindLines(0);
-        $builder->setMaxFrontLines(0);
-        // 可以设置图片宽高及字体
-        $builder->build(110, 38, null);
-        cache(['adminCaptcha' => $builder->getPhrase()],60*10);
-        return response($builder->output())->header('Content-type','image/jpeg');
     }
 }

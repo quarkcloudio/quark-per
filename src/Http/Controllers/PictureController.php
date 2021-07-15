@@ -9,94 +9,9 @@ use QuarkCMS\QuarkAdmin\Models\Picture;
 use QuarkCMS\QuarkAdmin\Models\PictureCategory;
 use OSS\OssClient;
 use OSS\Core\OssException;
-use QuarkCMS\QuarkAdmin\Table;
 
 class PictureController extends Controller
 {
-    public $title = '图片';
-
-    /**
-     * 列表页面
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    protected function table()
-    {
-        $table = new Table(new Picture);
-        $table->headerTitle($this->title.'列表');
-        
-        $table->column('id','序号');
-        $table->column('picture_id','图片')->image();
-        $table->column('name','名称');
-        $table->column('size','大小')->sorter();
-        $table->column('width','宽度');
-        $table->column('height','高度');
-        $table->column('ext','扩展名');
-        $table->column('created_at','上传时间');
-        $table->column('actions','操作')->width(180)->actions(function($action,$row) {
-
-            // 根据不同的条件定义不同的A标签形式行为
-            if($row['status'] === 1) {
-                $action->a('禁用')
-                ->withPopconfirm('确认要禁用数据吗？')
-                ->model()
-                ->where('id','{id}')
-                ->update(['status'=>0]);
-            } else {
-                $action->a('启用')
-                ->withPopconfirm('确认要启用数据吗？')
-                ->model()
-                ->where('id','{id}')
-                ->update(['status'=>1]);
-            }
-
-            // 下载文件
-            $action->a('下载')->link(backend_url('api/admin/picture/download?id='.$row['id'],true),'_blank');
-            $action->a('删除')
-            ->withPopconfirm('确认要删除吗？')
-            ->api('admin/picture/delete?id='.$row['id']);
-        });
-
-        // 批量操作
-        $table->batchActions(function($action) {
-            $action->a('批量删除')
-            ->withConfirm('确认要删除吗？','删除后数据将无法恢复，请谨慎操作！')
-            ->api('admin/picture/delete');
-
-            $action->a('批量禁用')
-            ->withPopconfirm('确认要禁用吗？')
-            ->model()
-            ->whereIn('id','{ids}')
-            ->update(['status'=>0]);
-
-            $action->a('批量启用')
-            ->withPopconfirm('确认要启用吗？')
-            ->model()
-            ->whereIn('id','{ids}')
-            ->update(['status'=>1]);
-        });
-
-        // 搜索
-        $table->search(function($search) {
-
-            $search->where('name', '搜索内容',function ($model) {
-                $model->where('name', 'like', "%{input}%");
-            })->placeholder('名称');
-
-            $search->equal('status', '所选状态')
-            ->select([''=>'全部', 1=>'正常', 0=>'已禁用'])
-            ->placeholder('选择状态')
-            ->width(110);
-
-            $search->between('created_at', '上传时间')->datetime();
-        });
-
-        $table->model()->orderBy('id','desc')->select('id as picture_id','pictures.*')->paginate(request('pageSize',10));
-
-        return $table;
-    }
-
     /**
      * 编辑器图片选择
      *
@@ -151,67 +66,6 @@ class PictureController extends Controller
         $picture['categorys'] = $categorys;
 
         return success('获取成功！','',$picture);
-    }
-
-    /**
-     * 删除图片
-     *
-     * @param  Request  $request
-     * @return Response
-     */
-    public function delete(Request $request)
-    {
-        $id = $request->input('id');
-
-        if(empty($id)) {
-            return error('参数错误！');
-        }
-
-        $query = Picture::query();
-
-        if(is_array($id)) {
-            $query->whereIn('id',$id);
-        } else {
-            $query->where('id',$id);
-        }
-
-        $pictures = $query->get();
-
-        foreach ($pictures as $key => $picture) {
-            // 阿里云存储
-            if(strpos($picture->path,'http') !== false) {
-                $accessKeyId = web_config('OSS_ACCESS_KEY_ID');
-                $accessKeySecret = web_config('OSS_ACCESS_KEY_SECRET');
-                $endpoint = web_config('OSS_ENDPOINT');
-                $bucket = web_config('OSS_BUCKET');
-
-                $ossClient = new OssClient($accessKeyId, $accessKeySecret, $endpoint);
-
-                $path = explode('/',$picture->path);
-                $count = count($path);
-                $object = $path[$count-2].'/'.$path[$count-1];
-                
-                $ossClient->deleteObject($bucket, $object);
-            } else {
-                Storage::delete(storage_path('app/').$picture->path);
-            }
-        }
-
-        $query1 = Picture::query();
-
-        if(is_array($id)) {
-            $query1->whereIn('id',$id);
-        } else {
-            $query1->where('id',$id);
-        }
-
-        $result = $query1->delete();
-
-        if ($result) {
-            return success('操作成功！');
-        } else {
-            return error('操作失败！');
-        }
     }
 
     /**

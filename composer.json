@@ -19,7 +19,8 @@
         "spatie/laravel-permission": "^3.0",
         "gregwar/captcha": "^1.0",
         "aliyuncs/oss-sdk-php": "^2.0",
-        "guzzlehttp/guzzle": "^6.2|^7.0"
+        "guzzlehttp/guzzle": "^6.2|^7.0",
+        "quarkcms/quark": "^0.0.1"
     },
     "autoload": {
         "psr-4": {
@@ -32,10 +33,10 @@
     "extra": {
         "laravel": {
             "providers": [
-                "QuarkCMS\\QuarkAdmin\\QuarkServiceProvider"
+                "QuarkCMS\\QuarkAdmin\\AdminServiceProvider"
             ],
             "aliases": {
-                "Quark": "QuarkCMS\\QuarkAdmin\\Facades\\Quark"
+                "QuarkAdmin": "QuarkCMS\\QuarkAdmin\\Facades\\Admin"
             }
         }
     },

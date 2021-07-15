@@ -29,7 +29,7 @@ class PublishCommand extends Command
     {
         // 发布资源
         $this->call('vendor:publish', [
-            '--provider' => "QuarkCMS\QuarkAdmin\QuarkServiceProvider"
+            '--provider' => "QuarkCMS\QuarkAdmin\AdminServiceProvider"
         ]);
     }
 }

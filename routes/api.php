@@ -2,88 +2,29 @@
 
 use Illuminate\Support\Facades\Route;
 
-// 默认登录入口
-Route::group([
-	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
-], function ($router) {
-	$router->get('admin/', 'QuarkController@index')->name('admin/');
-	$router->get('admin/index', 'QuarkController@index')->name('admin/index');
-});
+// 仪表盘
+Route::get('admin/dashboard/{dashboard}', 'DashboardController@show');
 
-// 不需要登录认证的路由
-Route::group([
-	'prefix' => 'api',
-	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
-], function ($router) {
-	$router->get('admin/quark/info', 'QuarkController@info')->name('api/admin/quark/info');
-	$router->get('admin/quark/test', 'QuarkController@test')->name('api/admin/quark/test');
+// 资源管理
+Route::get('admin/{resource}/index', 'ResourceIndexController@handle');
+Route::any('admin/{resource}/action/{uriKey}', 'ResourceActionController@handle');
+Route::any('admin/{resource}/editable', 'ResourceEditableController@handle');
+Route::get('admin/{resource}/create', 'ResourceCreateController@handle');
+Route::post('admin/{resource}/store', 'ResourceStoreController@handle');
+Route::get('admin/{resource}/edit', 'ResourceEditController@handle');
+Route::get('admin/{resource}/edit/values', 'ResourceEditController@values');
+Route::post('admin/{resource}/save', 'ResourceUpdateController@handle');
+Route::get('admin/{resource}/detail', 'ResourceShowController@handle');
 
-	$router->get('admin/captcha', 'LoginController@captcha')->name('api/admin/captcha');
-	$router->post('admin/login', 'LoginController@login')->name('api/admin/login');
-	$router->any('admin/logout', 'LoginController@logout')->name('api/admin/logout');
-});
+// 通用表单资源
+Route::get('admin/{resource}/{uriKey}-form', 'ResourceCreateController@handle');
+Route::get('admin/{resource}/{uriKey}/form', 'ResourceCreateController@handle');
 
-// 需要登录认证的路由
-Route::group([
-	'prefix' => 'api',
-	'middleware' => 'admin',
-	'namespace' => 'QuarkCMS\\QuarkAdmin\\Http\\Controllers'
-], function ($router) {
-	$router->get('admin/quark/layout', 'QuarkController@layout')->name('api/admin/quark/layout');
-	$router->get('admin/quark/menus', 'QuarkController@menus')->name('api/admin/quark/menus');
+// 图片上传、下载
+Route::get('admin/picture/getLists', 'PictureController@getLists');
+Route::post('admin/picture/upload', 'PictureController@upload');
+Route::get('admin/picture/download', 'PictureController@download');
 
-	$router->any('admin/account/info', 'AccountController@info')->name('api/admin/account/info');
-	$router->post('admin/account/profile', 'AccountController@profile')->name('api/admin/account/profile');
-	$router->post('admin/account/password', 'AccountController@password')->name('api/admin/account/password');
-
-	$router->get('admin/admin/index', 'AdminController@index')->name('api/admin/admin/index');
-	$router->get('admin/admin/create', 'AdminController@create')->name('api/admin/admin/create');
-	$router->post('admin/admin/store', 'AdminController@store')->name('api/admin/admin/store');
-	$router->get('admin/admin/edit', 'AdminController@edit')->name('api/admin/admin/edit');
-	$router->post('admin/admin/update', 'AdminController@update')->name('api/admin/admin/update');
-	$router->any('admin/admin/action', 'AdminController@action')->name('api/admin/admin/action');
-
-	$router->get('admin/permission/index', 'PermissionController@index')->name('api/admin/permission/index');
-	$router->get('admin/permission/sync', 'PermissionController@sync')->name('api/admin/permission/sync');
-	$router->any('admin/permission/action', 'PermissionController@action')->name('api/admin/permission/action');
-
-	$router->get('admin/role/index', 'RoleController@index')->name('api/admin/role/index');
-	$router->get('admin/role/create', 'RoleController@create')->name('api/admin/role/create');
-	$router->post('admin/role/store', 'RoleController@store')->name('api/admin/role/store');
-	$router->get('admin/role/edit', 'RoleController@edit')->name('api/admin/role/edit');
-	$router->post('admin/role/update', 'RoleController@update')->name('api/admin/role/update');
-	$router->any('admin/role/action', 'RoleController@action')->name('api/admin/role/action');
-
-	$router->any('admin/config/website', 'ConfigController@website')->name('api/admin/config/website');
-	$router->any('admin/config/saveWebsite', 'ConfigController@saveWebsite')->name('api/admin/config/saveWebsite');
-	$router->any('admin/config/index', 'ConfigController@index')->name('api/admin/config/index');
-	$router->get('admin/config/create', 'ConfigController@create')->name('api/admin/config/create');
-	$router->post('admin/config/store', 'ConfigController@store')->name('api/admin/config/store');
-	$router->get('admin/config/edit', 'ConfigController@edit')->name('api/admin/config/edit');
-	$router->post('admin/config/update', 'ConfigController@update')->name('api/admin/config/update');
-	$router->any('admin/config/action', 'ConfigController@action')->name('api/admin/config/action');
-
-	$router->get('admin/menu/index', 'MenuController@index')->name('api/admin/menu/index');
-	$router->get('admin/menu/create', 'MenuController@create')->name('api/admin/menu/create');
-	$router->post('admin/menu/store', 'MenuController@store')->name('api/admin/menu/store');
-	$router->get('admin/menu/edit', 'MenuController@edit')->name('api/admin/menu/edit');
-	$router->post('admin/menu/update', 'MenuController@update')->name('api/admin/menu/update');
-	$router->any('admin/menu/action', 'MenuController@action')->name('api/admin/menu/action');
-
-	$router->get('admin/actionLog/index', 'ActionLogController@index')->name('api/admin/actionLog/index');
-	$router->any('admin/actionLog/action', 'ActionLogController@action')->name('api/admin/actionLog/action');
-	$router->get('admin/actionLog/show', 'ActionLogController@show')->name('api/admin/actionLog/show');
-
-	$router->get('admin/picture/index', 'PictureController@index')->name('api/admin/picture/index');
-	$router->get('admin/picture/getLists', 'PictureController@getLists')->name('api/admin/picture/getLists');
-	$router->post('admin/picture/upload', 'PictureController@upload')->name('api/admin/picture/upload');
-	$router->get('admin/picture/download', 'PictureController@download')->name('api/admin/picture/download');
-	$router->any('admin/picture/action', 'PictureController@action')->name('api/admin/picture/action');
-	$router->any('admin/picture/delete', 'PictureController@delete')->name('api/admin/picture/delete');
-
-	$router->any('admin/file/index', 'FileController@index')->name('api/admin/file/index');
-	$router->post('admin/file/upload', 'FileController@upload')->name('api/admin/file/upload');
-	$router->get('admin/file/download', 'FileController@download')->name('api/admin/file/download');
-	$router->post('admin/file/action', 'FileController@action')->name('api/admin/file/action');
-	$router->any('admin/file/delete', 'FileController@delete')->name('api/admin/file/delete');
-});
+// 文件上传、下载
+Route::post('admin/file/upload', 'FileController@upload');
+Route::get('admin/file/download', 'FileController@download');

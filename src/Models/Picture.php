@@ -3,37 +3,25 @@
 namespace QuarkCMS\QuarkAdmin\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use DateTimeInterface;
 
 class Picture extends Model
 {
     /**
-     * 该模型是否被自动维护时间戳
-     *
-     * @var bool
-     */
-    public $timestamps = true;
-    
-    protected $casts = [
-        'created_at' => 'datetime:Y-m-d H:i:s',
-        'updated_at' => 'datetime:Y-m-d H:i:s',
-    ];
-
-    /**
-     * The attributes that are mass assignable.
+     * 属性黑名单
      *
      * @var array
      */
-    protected $fillable = [
-        'id',
-        'obj_type',
-        'obj_id',
-        'picture_category_id',
-        'ext',
-        'sort',
-        'name',
-        'size',
-        'path',
-        'md5',
-        'status'
-    ];
+    protected $guarded = [];
+
+    /**
+     * 为 array / JSON 序列化准备日期格式
+     *
+     * @param  \DateTimeInterface  $date
+     * @return string
+     */
+    protected function serializeDate(DateTimeInterface $date)
+    {
+        return $date->format('Y-m-d H:i:s');
+    }
 }

@@ -60,13 +60,13 @@ class InstallCommand extends Command
     }
 
     /**
-     * Initialize the admAin directory.
+     * Initialize the admin directory.
      *
      * @return void
      */
     protected function initAdminDirectory()
     {
-        $this->directory = app_path('Http/Controllers/Admin');
+        $this->directory = app_path('Admin');
 
         if (is_dir($this->directory)) {
             $this->line("<error>{$this->directory} directory already exists !</error> ");
@@ -74,41 +74,59 @@ class InstallCommand extends Command
             return;
         }
 
-        $this->makeDir('/');
+        // 行为
+        $this->makeDir('/Actions');
+        $this->createFile('Actions');
+
+        // 仪表盘
+        $this->makeDir('/Dashboards');
+        $this->createFile('Dashboards');
+
+        // 物料
+        $this->makeDir('/Metrics');
+        $this->createFile('Metrics');
+
+        // 资源
+        $this->makeDir('/Resources');
+        $this->createFile('Resources');
+
+        // 搜索控件
+        $this->makeDir('/Searches');
+        $this->createFile('Searches');
+
         $this->line('<info>Admin directory was created:</info> '.str_replace(base_path(), '', $this->directory));
 
-        $this->createDashboardController();
-        $this->createUpgradeController();
-        $this->createDemoController();
         $this->createRoutesFile();
     }
 
     /**
-     * Create DashboardController.
+     * 创建文件
      *
      * @return void
      */
-    public function createDashboardController()
+    protected function createFile($name)
     {
-        $controller = $this->directory.'/DashboardController.php';
-        $contents = $this->getStub('DashboardController');
+        $sourcePath = __DIR__."/stubs/" . $name;
+        $targetPath = app_path('Admin/' . $name);
 
-        $this->laravel['files']->put($controller,$contents);
-        $this->line('<info>DashboardController file was created:</info> '.str_replace(base_path(), '', $controller));
-    }
+        $dirs = get_folder_dirs($sourcePath);
+        $files = get_folder_files($sourcePath);
 
-    /**
-     * Create UpgradeController.
-     *
-     * @return void
-     */
-    public function createUpgradeController()
-    {
-        $controller = $this->directory.'/UpgradeController.php';
-        $contents = $this->getStub('UpgradeController');
+        if(is_array($dirs)) {
+            foreach ($dirs as $value) {
+                $dirPath = $sourcePath.'/'.$value;
+                copy_dir_to_folder($dirPath, $targetPath);
+            }
+        }
 
-        $this->laravel['files']->put($controller,$contents);
-        $this->line('<info>UpgradeController file was created:</info> '.str_replace(base_path(), '', $controller));
+        if(is_array($files)) {
+            foreach ($files as $value) {
+                $filePath = $sourcePath.'/'.$value;
+                copy_file_to_folder($filePath, $targetPath);
+            }
+        }
+
+        $this->line('<info>' . $name . ' file was created</info>');
     }
 
     /**
@@ -191,16 +209,12 @@ class InstallCommand extends Command
 
             ['id' =>25,'name' => '系统配置','guard_name' => 'admin','icon' => 'icon-setting','type'=>'default','pid' => 0,'sort' => 0,'path' => '/system','show'  => 1,'status' => 1],
             ['id' =>26,'name' => '设置管理','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 25,'sort' => -1,'path' => '/system/config','show'  => 1,'status' => 1],
-            ['id' =>27,'name' => '网站设置','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/config/website','show'  => 1,'status' => 1],
             ['id' =>28,'name' => '配置管理','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/config/index','show'  => 1,'status' => 1],
-            ['id' =>32,'name' => '操作日志','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 25,'sort' => 0,'path' => 'admin/actionLog/index','show'  => 1,'status' => 1],
-            
-            ['id' =>33,'name' => '附件空间','guard_name' => 'admin','icon' => 'icon-attachment','type'=>'default','pid' => 0,'sort' => 0,'path' => '/attachment','show'  => 1,'status' => 1],
             ['id' =>34,'name' => '文件管理','guard_name' => 'admin','icon' => '','pid' => 33,'type'=>'engine','sort' => 0,'path' => 'admin/file/index','show'  => 1,'status' => 1],
             ['id' =>35,'name' => '图片管理','guard_name' => 'admin','icon' => '','pid' => 33,'type'=>'engine','sort' => 0,'path' => 'admin/picture/index','show'  => 1,'status' => 1],
             
             ['id' =>36,'name' => '我的账号','guard_name' => 'admin','icon' => 'icon-user','type'=>'default','pid' => 0,'sort' => 0,'path' => '/account','show'  => 1,'status' => 1],
-            ['id' =>37,'name' => '个人设置','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 36,'sort' => 0,'path' => '/account/settings','show'  => 1,'status' => 1],
+            ['id' =>37,'name' => '个人设置','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 36,'sort' => 0,'path' => '/admin/account/setting-form','show'  => 1,'status' => 1],
         ]);
 
         // 网站配置

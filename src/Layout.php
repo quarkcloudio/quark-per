@@ -2,404 +2,277 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-class Layout extends Element
+use QuarkCMS\Quark\Facades\Layout as LayoutFacade;
+use QuarkCMS\Quark\Facades\Page;
+use QuarkCMS\Quark\Facades\PageContainer;
+use QuarkCMS\Quark\Facades\Table;
+use QuarkCMS\Quark\Facades\Form;
+use QuarkCMS\Quark\Facades\Card;
+use QuarkCMS\Quark\Facades\Tabs;
+use QuarkCMS\QuarkAdmin\Models\Menu;
+use QuarkCMS\QuarkAdmin\Models\Admin;
+use Illuminate\Support\Str;
+
+trait Layout
 {
     /**
-     * layout 的左上角 的 title
+     * 设置菜单
      *
-     * @var string
-     */
-    public $title;
-
-    /**
-     * layout 的左上角 logo 的 url
-     *
-     * @var string
-     */
-    public $logo;
-
-    /**
-     * layout 的加载态
-     *
-     * @var bool
-     */
-    public $loading = false;
-
-    /**
-     * layout 的内容区 style
-     *
-     * @var array
-     */
-    public $contentStyle = null;
-
-    /**
-     * layout 的头部行为
-     *
-     * @var string
-     */
-    public $headerActions = null;
-
-    /**
-     * layout 的布局模式, side：左侧导航，top：顶部导航，mix：混合布局
-     *
-     * @var string
-     */
-    public $layout = 'side';
-
-    /**
-     * layout 为mix布局时，顶部主题 dark | light
-     *
-     * @var string
-     */
-    public $headerTheme = 'dark';
-
-    /**
-     * layout 为mix布局时，是否自动分割菜单
-     * false：菜单显示在左侧
-     * true：自动分割，顶部为一级菜单，左侧为子菜单
-     *
-     * @var bool
-     */
-    public $splitMenus = false;
-
-    /**
-     * layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
-     *
-     * @var string
-     */
-    public $contentWidth = 'Fluid';
-
-    /**
-     * 导航菜单的主题，'light' | 'dark'
-     *
-     * @var string
-     */
-    public $navTheme = 'dark';
-
-    /**
-     * 主题色
-     *
-     * @var string
-     */
-    public $primaryColor = '#1890ff';
-
-    /**
-     * 是否固定 header 到顶部
-     *
-     * @var bool
-     */
-    public $fixedHeader = true;
-
-    /**
-     * 是否固定导航
-     *
-     * @var bool
-     */
-    public $fixSiderbar = false;
-
-    /**
-     * 使用 IconFont 的图标配置
-     *
-     * @var string
-     */
-    public $iconfontUrl = '';
-
-    /**
-     * 当前 layout 的语言设置，'zh-CN' | 'zh-TW' | 'en-US'
-     *
-     * @var string
-     */
-    public $locale = 'zh-CN';
-
-    /**
-     * 侧边菜单宽度
-     *
-     * @var number
-     */
-    public $siderWidth = 208;
-
-    /**
-     * 控制菜单的收起和展开
-     *
-     * @var bool
-     */
-    public $collapsed = false;
-
-    /**
-     * layout 的左上角 的 title
-     *
-     * @param  string  $title
+     * @param  array $menu
      * @return $this
      */
-    public function title($title)
+    protected function menu($menu = null)
     {
-        $this->title = $title;
+        if($menu === null) {
+            // 通过当前url倒推二级菜单和一级菜单
 
-        return $this;
-    }
+            // id等于1时默认为超级管理员
+            if(ADMINID == 1) {
 
-    /**
-     * layout 的左上角的 logo
-     *
-     * @param  string  $logo
-     * @return $this
-     */
-    public function logo($logo)
-    {
-        $this->logo = $logo;
+                // 查询列表
+                $data = Menu::where('status', 1)
+                ->where('guard_name', 'admin')
+                ->orderBy('sort', 'asc')
+                ->get()
+                ->toArray();
 
-        return $this;
-    }
+            } else {
+                // 获取当前用户的所有权限
+                $getPermissions = Admin::where('id',ADMINID)->first()->getPermissionsViaRoles();
 
-    /**
-     * layout 的加载态
-     *
-     * @param  bool  $loading
-     * @return $this
-     */
-    public function loading($loading = true)
-    {
-        $loading ? $this->loading = true : $this->loading = false;
+                foreach ($getPermissions as $key => $value) {
+                    $menuIds[] = $value->menu_id;
+                }
 
-        return $this;
-    }
+                // 三级查询列表
+                $lists = Menu::where('status', 1)
+                ->where('guard_name', 'admin')
+                ->where('pid','<>', 0)
+                ->whereIn('id',$menuIds)
+                ->orderBy('sort', 'asc')
+                ->get()
+                ->toArray();
 
-    /**
-     * layout 的头部行为
-     *
-     * @param  string  $headerActions
-     * @return $this
-     */
-    public function headerActions($headerActions)
-    {
-        $this->headerActions = $headerActions;
+                foreach ($lists as $key => $value) {
+                    if(!empty($value['pid'])) {
+                        $pids[] = $value['pid'];
+                    }
+                }
 
-        return $this;
-    }
+                // 二级菜单查询列表
+                $lists1 = Menu::where('status', 1)
+                ->where('guard_name', 'admin')
+                ->whereIn('id',$pids)
+                ->orderBy('sort', 'asc')
+                ->get()
+                ->toArray();
 
-    /**
-     * layout 的布局模式，side：右侧导航，top：顶部导航，mix：混合模式
-     *
-     * @param  string  $layout
-     * @return $this
-     */
-    public function layout($layout)
-    {
-        if(!in_array($layout,['side', 'top', 'mix'])) {
-            throw new \Exception("Argument must be in 'side', 'top', 'mix'!");
-        }
+                $pids1 = [];
 
-        if($layout == 'side') {
-            if($this->contentWidth === 'Fixed') {
-                throw new \Exception("If layout is side model,contentWidth can't set Fixed!");
+                foreach ($lists1 as $key1 => $value1) {
+                    if(!empty($value1['pid'])) {
+                        $pids1[] = $value1['pid'];
+                    }
+                }
+
+                // 一级菜单查询列表
+                $lists2 = Menu::where('status', 1)
+                ->where('guard_name', 'admin')
+                ->where('pid', 0)
+                ->whereIn('id',$pids1)
+                ->orderBy('sort', 'asc')
+                ->get()
+                ->toArray();
+
+                $data = array_merge($lists,$lists1,$lists2);
             }
-        }
 
-        $this->layout = $layout;
+            foreach ($data as $key => $value) {
 
-        return $this;
-    }
+                $data[$key]['key'] = Str::uuid();
 
-    /**
-     * layout为mix时，顶部主题 dark | light
-     *
-     * @param boolean $headerTheme
-     * @return $this
-     */
-    public function headerTheme($headerTheme)
-    {
-        if(!in_array($headerTheme, ['light', 'dark'])) {
-            throw new \Exception("Argument must be in 'light', 'dark'!");
-        }
+                $data[$key]['locale'] = 'menu'.str_replace("/",".",$value['path']);
+                if(!$value['show']) {
+                    $data[$key]['hideInMenu'] = true;
+                }
 
-        $this->headerTheme = $headerTheme;
+                if(empty($data[$key]['icon'])) {
+                    unset($data[$key]['icon']);
+                }
 
-        return $this;
-    }
+                if($value['type'] === 'engine') {
+                    $path = '/index?api='.$value['path'];
+                } else {
+                    $path = $value['path'];
+                }
 
-    /**
-     * layout 的内容模式,Fluid：定宽 1200px，Fixed：自适应
-     *
-     * @param  string  $contentWidth
-     * @return $this
-     */
-    public function contentWidth($contentWidth)
-    {
-        if(!in_array($contentWidth,['Fluid', 'Fixed'])) {
-            throw new \Exception("Argument must be in 'Fluid', 'Fixed'!");
-        }
-
-        if($this->layout === 'side') {
-            if($contentWidth === 'Fixed') {
-                throw new \Exception("If layout is side model,contentWidth can't set Fixed!");
+                $data[$key]['path'] = $path;
             }
+
+            $menuTrees = list_to_tree($data,'id','pid','children');
+        } else {
+            $menuTrees = $menu;
         }
 
-        $this->contentWidth = $contentWidth;
-
-        return $this;
+        return $menuTrees;
     }
 
     /**
-     * 导航的主题，'light' | 'dark'
+     * 设置布局内容
      *
-     * @param  string  $navTheme
-     * @return $this
-     */
-    public function navTheme($navTheme)
-    {
-        if(!in_array($navTheme,['light', 'dark'])) {
-            throw new \Exception("Argument must be in 'light', 'dark'!");
-        }
-
-        $this->navTheme = $navTheme;
-
-        return $this;
-    }
-
-    /**
-     * 后台主题色
-     *
-     * @param  string  $primaryColor
-     * @return $this
-     */
-    public function primaryColor($primaryColor)
-    {
-        if(strpos($primaryColor,'#') === false) {
-            throw new \Exception("Primary color format error!");
-        }
-
-        $this->primaryColor = $primaryColor;
-
-        return $this;
-    }
-
-    /**
-     * 是否固定 header 到顶部
-     *
-     * @param  bool  $fixedHeader
-     * @return $this
-     */
-    public function fixedHeader($fixedHeader = true)
-    {
-        $fixedHeader ? $this->fixedHeader = true : $this->fixedHeader = false;
-
-        return $this;
-    }
-
-    /**
-     * 是否固定导航
-     *
-     * @param  bool  $fixedHeader
-     * @return $this
-     */
-    public function fixSiderbar($fixSiderbar = true)
-    {
-        $fixSiderbar ? $this->fixSiderbar = true : $this->fixSiderbar = false;
-
-        return $this;
-    }
-
-    /**
-     * 使用 IconFont 的图标配置
-     *
-     * @param  string  $iconfontUrl
-     * @return $this
-     */
-    public function iconfontUrl($iconfontUrl)
-    {
-        $this->iconfontUrl = $iconfontUrl;
-
-        return $this;
-    }
-
-    /**
-     * 当前 layout 的语言设置，'zh-CN' | 'zh-TW' | 'en-US'
-     *
-     * @param  string  $locale
-     * @return $this
-     */
-    public function locale($locale)
-    {
-        if($locale != false) {
-            if(!in_array($locale,['zh-CN', 'zh-TW', 'en-US'])) {
-                throw new \Exception("Argument must be in 'zh-CN', 'zh-TW', 'en-US'!");
-            }
-        }
-
-        $this->locale = $locale;
-
-        return $this;
-    }
-
-    /**
-     * 侧边菜单宽度
-     *
-     * @param  string|number  $siderWidth
-     * @return $this
-     */
-    public function siderWidth($siderWidth)
-    {
-        $this->siderWidth = $siderWidth;
-
-        return $this;
-    }
-
-    /**
-     * 控制菜单的收起和展开
-     *
-     * @param  bool  $collapsed
-     * @return $this
-     */
-    public function collapsed($collapsed)
-    {
-        $collapsed ? $this->collapsed = true : $this->collapsed = false;
-
-        return $this;
-    }
-
-    /**
-     * 自动分割菜单
-     *
-     * @param  bool  $splitMenus
-     * @return $this
-     */
-    public function splitMenus($splitMenus)
-    {
-        $splitMenus ? $this->splitMenus = true : $this->splitMenus = false;
-
-        if($this->layout !== 'mix' && $splitMenus === true) {
-            throw new \Exception("If layout is side mix,can't set splitMenus!");
-        }
-
-        $this->splitMenus = $splitMenus;
-
-        return $this;
-    }
-
-    /**
-     * 组件json序列化
-     *
+     * @param  any $content
      * @return array
      */
-    public function jsonSerialize()
+    public function setLayoutContent($content)
     {
-        $this->key(__CLASS__.$this->title);
+        // 页面内容
+        $pageContainer = PageContainer::title($this->title())->body($content);
 
-        return array_merge([
-            'title' => $this->title,
-            'logo' => $this->logo,
-            'loading' => $this->loading,
-            'headerActions' => $this->headerActions,
-            'layout' => $this->layout,
-            'contentWidth' => $this->contentWidth,
-            'navTheme' => $this->navTheme,
-            'fixedHeader' => $this->fixedHeader,
-            'fixSiderbar' => $this->fixSiderbar,
-            'iconfontUrl' => $this->iconfontUrl,
-            'locale' => $this->locale,
-            'siderWidth' => $this->siderWidth,
-            'splitMenus' => $this->splitMenus
-        ], parent::jsonSerialize());
+        $layout = LayoutFacade::title(config('admin.name','QuarkAdmin'));
+
+        $layout->logo(config('admin.logo'));
+        $layout->headerActions(config('admin.layout.header_actions'));
+        $layout->layout(config('admin.layout.layout'));
+        $layout->splitMenus(config('admin.layout.split_menus'));
+        $layout->headerTheme(config('admin.layout.header_theme'));
+        $layout->contentWidth(config('admin.layout.content_width'));
+        $layout->navTheme(config('admin.layout.nav_theme'));
+        $layout->primaryColor(config('admin.layout.primary_color'));
+        $layout->fixedHeader(config('admin.layout.fixed_header'));
+        $layout->fixSiderbar(config('admin.layout.fix_siderbar'));
+        $layout->iconfontUrl(config('admin.layout.iconfont_url'));
+        $layout->locale(config('admin.layout.locale'));
+        $layout->siderWidth(config('admin.layout.sider_width'));
+        $layout->menu($this->menu());
+        $layout->body($pageContainer);
+
+        // 页面
+        return Page::style(['height' => '100vh'])->body($layout);
+    }
+
+    /**
+     * 渲染列表页组件
+     *
+     * @param  ResourceIndexRequest  $request
+     * @param  object  $data
+     * @return array
+     */
+    public function indexComponentRender($request, $data)
+    {
+        $resource = $request->resource();
+
+        $table = Table::key('table')
+        ->title($this->indexTitle($request))
+        ->toolBar($this->toolBar($request))
+        ->columns($this->columns($request))
+        ->batchActions($this->tableAlertActions($request))
+        ->searches($this->indexSearches($request));
+
+        return $resource::pagination() ? 
+                $table->pagination(
+                    $data->currentPage(),
+                    $data->perPage(),
+                    $data->total()
+                )->datasource($data->items()) : $table->datasource($data);
+    }
+
+    /**
+     * 渲染创建页组件
+     *
+     * @param  ResourceCreateRequest  $request
+     * @param  array  $data
+     * @return array
+     */
+    public function creationComponentRender($request, $data)
+    {
+        return $this->formComponentRender(
+            $request,
+            $this->formTitle($request),
+            $this->formExtra($request),
+            $this->creationApi($request),
+            $this->creationFieldsWithinComponents($request),
+            $this->formActions($request),
+            $data
+        );
+    }
+
+    /**
+     * 渲染编辑页组件
+     *
+     * @param  ResourceEditRequest  $request
+     * @param  array  $data
+     * @return array
+     */
+    public function updateComponentRender($request, $data)
+    {
+        return $this->formComponentRender(
+            $request,
+            $this->formTitle($request),
+            $this->formExtra($request),
+            $this->updateApi($request),
+            $this->updateFieldsWithinComponents($request),
+            $this->formActions($request),
+            $data
+        );
+    }
+
+    /**
+     * 渲染表单组件
+     *
+     * @param  mixed   $request
+     * @param  string  $title
+     * @param  mixed   $extra
+     * @param  string  $api
+     * @param  array   $fields
+     * @param  array   $actions
+     * @param  array   $data
+     * @return array
+     */
+    public function formComponentRender($request, $title, $extra, $api, $fields, $actions, $data)
+    {
+        if($fields[0]->component === 'tabPane') {
+            return $this->formWithinTabs($request, $title, $extra, $api, $fields, $actions, $data);
+        } else {
+            return $this->formWithinCard($request, $title, $extra, $api, $fields, $actions, $data);
+        }
+    }
+
+    /**
+     * 在卡片内的From组件
+     *
+     * @param  mixed  $request
+     * @return array
+     */
+    public function formWithinCard($request, $title, $extra, $api, $fields, $actions, $data)
+    {
+        $form = Form::api($api)
+        ->style(['marginTop' => '30px'])
+        ->actions($actions)
+        ->body($fields)
+        ->initialValues($data);
+
+        return Card::title($title)
+        ->headerBordered()
+        ->extra($extra)
+        ->body($form);
+    }
+
+    /**
+     * 在标签页内的From组件
+     *
+     * @param  mixed  $request
+     * @return array
+     */
+    public function formWithinTabs($request, $title, $extra, $api, $fields, $actions, $data)
+    {
+        return Form::api($api)
+        ->actions($actions)
+        ->style([
+            'marginTop' => '30px',
+            'backgroundColor' => '#fff',
+            'paddingBottom' => '20px'
+        ])
+        ->body(Tabs::tabPanes($fields)->tabBarExtraContent($extra))
+        ->initialValues($data);
     }
 }
