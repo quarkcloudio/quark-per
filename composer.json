@@ -40,6 +40,10 @@
             }
         }
     },
+    "scripts": {
+        "post-install-cmd": "QuarkCMS\\Quark\\Console\\InstallCommand::handle",
+        "post-update-cmd": "QuarkCMS\\Quark\\Console\\UpdateCommand::handle"
+    },
     "config": {
         "sort-packages": true
     }

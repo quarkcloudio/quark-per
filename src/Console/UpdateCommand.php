@@ -34,39 +34,7 @@ class UpdateCommand extends Command
      */
     public function handle()
     {
-        $this->publishAssets();
-
         $this->info('Update quarkadmin new version completed.');
-    }
-
-    /**
-     * 发布UI引擎资源
-     *
-     * @return void
-     */
-    public function publishAssets()
-    {
-        $adminResourceAssets = __DIR__.'/../../public';
-        $adminAssets = public_path('admin');
-
-        $dirs = get_folder_dirs($adminResourceAssets);
-        $files = get_folder_files($adminResourceAssets);
-
-        if(is_array($dirs)) {
-            foreach ($dirs as $key => $value) {
-                $dirPath = $adminResourceAssets.'/'.$value;
-                copy_dir_to_folder($dirPath, $adminAssets);
-            }
-        }
-
-        if(is_array($files)) {
-            foreach ($files as $key => $value) {
-                $filePath = $adminResourceAssets.'/'.$value;
-                copy_file_to_folder($filePath, $adminAssets);
-            }
-        }
-
-        $this->info('Update UI engine successed!');
     }
 
     /**
