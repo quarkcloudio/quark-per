@@ -34,6 +34,8 @@ class UpdateCommand extends Command
      */
     public function handle()
     {
+        $this->publishResources();
+
         $this->info('Update quarkadmin new version completed.');
     }
 
@@ -72,9 +74,29 @@ class UpdateCommand extends Command
      */
     public function publishResources()
     {
-        $resourcesPath = __DIR__.'/../../resources';
-        $basePath = base_path();
-        copy_dir_to_folder($resourcesPath, $basePath);
+        $resourcesPath = __DIR__.'/../../../quark/public';
+        $basePath = base_path('public\admin');
+
+        if(!realpath($basePath)) {
+            mkdir($basePath);
+        }
+
+        $dirs = get_folder_dirs($resourcesPath);
+        $files = get_folder_files($resourcesPath);
+        
+        if(is_array($dirs)) {
+            foreach ($dirs as $key => $value) {
+                $dirPath = $resourcesPath.'/'.$value;
+                copy_dir_to_folder($dirPath, $basePath);
+            }
+        }
+        
+        if(is_array($files)) {
+            foreach ($files as $key => $value) {
+                $filePath = $resourcesPath.'/'.$value;
+                copy_file_to_folder($filePath, $basePath);
+            }
+        }
 
         $this->info('Update resources successed!');
     }
