@@ -616,55 +616,55 @@ if(!function_exists('get_file_mime')) {
             return mime_content_type($fileName);
         }
     }
+}
 
-    /**
-    * 图形验证码
-    * @author tangtanglove <dai_hang_love@126.com>
-    */
-    if(!function_exists('captcha')) {
-        function captcha($length=4, $width=110, $heigth=38)
-        {
-            $phrase = new PhraseBuilder;
-            // 设置验证码位数
-            $code = Str::random($length);
-            // 生成验证码图片的Builder对象，配置相应属性
-            $builder = new CaptchaBuilder($code, $phrase);
-            // 设置背景颜色
-            $builder->setBackgroundColor(244, 252, 255);
-            $builder->setMaxAngle(0);
-            $builder->setMaxBehindLines(0);
-            $builder->setMaxFrontLines(0);
-            // 可以设置图片宽高及字体
-            $builder->build($width, $heigth, null);
-            cache(['adminCaptcha' => $builder->getPhrase()],60*10);
-            return response($builder->output())->header('Content-type','image/jpeg');
-        }
+/**
+* 图形验证码
+* @author tangtanglove <dai_hang_love@126.com>
+*/
+if(!function_exists('captcha')) {
+    function captcha($length=4, $width=110, $heigth=38)
+    {
+        $phrase = new PhraseBuilder;
+        // 设置验证码位数
+        $code = Str::random($length);
+        // 生成验证码图片的Builder对象，配置相应属性
+        $builder = new CaptchaBuilder($code, $phrase);
+        // 设置背景颜色
+        $builder->setBackgroundColor(244, 252, 255);
+        $builder->setMaxAngle(0);
+        $builder->setMaxBehindLines(0);
+        $builder->setMaxFrontLines(0);
+        // 可以设置图片宽高及字体
+        $builder->build($width, $heigth, null);
+        cache(['adminCaptcha' => $builder->getPhrase()],60*10);
+        return response($builder->output())->header('Content-type','image/jpeg');
     }
+}
 
-    /**
-    * 图形验证码验证
-    * @author tangtanglove <dai_hang_love@126.com>
-    */
-    if(!function_exists('captchaValidate')) {
-        function captchaValidate($code)
-        {
-            if(empty($code) || (strtolower($code) != strtolower(cache('adminCaptcha')))) {
-                return false;
-            }
-
-            return true;
+/**
+* 图形验证码验证
+* @author tangtanglove <dai_hang_love@126.com>
+*/
+if(!function_exists('captcha_validate')) {
+    function captcha_validate($code)
+    {
+        if(empty($code) || (strtolower($code) != strtolower(cache('adminCaptcha')))) {
+            return false;
         }
+
+        return true;
     }
+}
 
-    /**
-    * 清除图形验证码
-    * @author tangtanglove <dai_hang_love@126.com>
-    */
-    if(!function_exists('clearCaptcha')) {
-        function clearCaptcha()
-        {
-            // 清除验证码
-            cache(['adminCaptcha' => null], 60*10);
-        }
+/**
+* 清除图形验证码
+* @author tangtanglove <dai_hang_love@126.com>
+*/
+if(!function_exists('clear_captcha')) {
+    function clear_captcha()
+    {
+        // 清除验证码
+        cache(['adminCaptcha' => null], 60*10);
     }
 }

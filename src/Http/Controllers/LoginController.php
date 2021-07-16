@@ -32,7 +32,7 @@ class LoginController extends Controller
         $password = $request->json('password');
         $captcha = $request->json('captcha');
 
-        if(config('admin.captchaUrl') !== false && captchaValidate($captcha) === false) {
+        if(config('admin.captchaUrl') !== false && captcha_validate($captcha) === false) {
             return error('验证码错误！');
         }
 
@@ -71,7 +71,7 @@ class LoginController extends Controller
 
             if(config('admin.captchaUrl') !== false) {
                 // 清除验证码
-                clearCaptcha();
+                clear_captcha();
             }
 
             return error('用户名或密码错误！');
