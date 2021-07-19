@@ -24,12 +24,12 @@
     <title>loading</title>
     <link rel="icon" href="/admin/favicon.ico" type="image/x-icon" />
     <script src="/admin/tinymce/tinymce.min.js"></script>
-    <link rel="stylesheet" href="/admin/umi.3a47363d.css" />
+    <link rel="stylesheet" href="/admin/umi.c2fb8d08.css" />
     <script>
       window.routerBase = "/";
     </script>
     <script>
-      //! umi version: 3.4.8
+      //! umi version: 3.5.13
     </script>
   </head>
   <body>
@@ -49,26 +49,28 @@
           background-size: 100% auto;
         }
         .page-loading-warp {
-          display: flex;
-          align-items: center;
-          justify-content: center;
           padding: 98px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
         .ant-spin {
-          position: absolute;
-          display: none;
           -webkit-box-sizing: border-box;
           box-sizing: border-box;
           margin: 0;
           padding: 0;
           color: rgba(0, 0, 0, 0.65);
-          color: #1890ff;
           font-size: 14px;
           font-variant: tabular-nums;
           line-height: 1.5;
+          list-style: none;
+          -webkit-font-feature-settings: "tnum";
+          font-feature-settings: "tnum";
+          position: absolute;
+          display: none;
+          color: #1890ff;
           text-align: center;
           vertical-align: middle;
-          list-style: none;
           opacity: 0;
           -webkit-transition: -webkit-transform 0.3s
             cubic-bezier(0.78, 0.14, 0.15, 0.86);
@@ -77,8 +79,6 @@
           transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
           transition: transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86),
             -webkit-transform 0.3s cubic-bezier(0.78, 0.14, 0.15, 0.86);
-          -webkit-font-feature-settings: "tnum";
-          font-feature-settings: "tnum";
         }
 
         .ant-spin-spinning {
@@ -90,9 +90,9 @@
         .ant-spin-dot {
           position: relative;
           display: inline-block;
+          font-size: 20px;
           width: 20px;
           height: 20px;
-          font-size: 20px;
         }
 
         .ant-spin-dot-item {
@@ -148,9 +148,9 @@
         }
 
         .ant-spin-lg .ant-spin-dot {
+          font-size: 32px;
           width: 32px;
           height: 32px;
-          font-size: 32px;
         }
 
         .ant-spin-lg .ant-spin-dot i {
@@ -223,6 +223,6 @@
       </div>
     </div>
 
-    <script src="/admin/umi.b88602b4.js"></script>
+    <script src="/admin/umi.61f42f95.js"></script>
   </body>
 </html>
