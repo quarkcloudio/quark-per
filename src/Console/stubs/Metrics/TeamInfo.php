@@ -4,8 +4,7 @@ namespace App\Admin\Metrics;
 
 use Illuminate\Http\Request;
 use QuarkCMS\QuarkAdmin\Metrics\Descriptions;
-use QuarkAdmin;
-use DB;
+use QuarkCMS\Quark\Facades\DescriptionField;
 
 class TeamInfo extends Descriptions
 {
@@ -42,44 +41,25 @@ class TeamInfo extends Descriptions
     protected function data()
     {
         return [
-            [
-                'type' => "text",
-                'label' => "作者",
-                'value' => "tangtanglove"
-            ],
-            [
-                'type' => "text",
-                'label' => "联系方式",
-                'value' => "dai_hang_love@126.com"
-            ],
-            [
-                'type' => "link",
-                'label' => "官方网址",
-                'value' => "www.quarkcms.com",
-                'href' => "https://www.quarkcms.com",
-                'target' => '_blank'
-            ],
-            [
-                'type' => "link",
-                'label' => "文档地址",
-                'value' => "查看文档",
-                'href' => "https://www.quarkcms.com",
-                'target' => '_blank'
-            ],
-            [
-                'type' => "link",
-                'label' => "BUG反馈",
-                'value' => "提交BUG",
-                'href' => "https://github.com/quarkcms/quark-admin/issues",
-                'target' => '_blank'
-            ],
-            [
-                'type' => "link",
-                'label' => "代码仓储",
-                'value' => "Github",
-                'href' => "https://github.com/quarkcms/quark-admin",
-                'target' => '_blank'
-            ]
+            DescriptionField::text('作者')->value('tangtanglove'),
+
+            DescriptionField::text('联系方式')->value('dai_hang_love@126.com'),
+
+            DescriptionField::text('官方网址')->value(
+                "<a href='https://www.quarkcms.com' target='_blank'>www.quarkcms.com</a>"
+            ),
+
+            DescriptionField::text('文档地址')->value(
+                "<a href='https://www.quarkcms.com' target='_blank'>查看文档</a>"
+            ),
+
+            DescriptionField::text('BUG反馈')->value(
+                "<a href='https://github.com/quarkcms/quark-admin/issues' target='_blank'>提交BUG</a>"
+            ),
+            
+            DescriptionField::text('代码仓储')->value(
+                "<a href='https://github.com/quarkcms/quark-admin' target='_blank'>Github</a>"
+            )
         ];
     }
 }

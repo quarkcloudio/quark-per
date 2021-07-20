@@ -243,12 +243,12 @@ abstract class Resource extends JsonResource
         $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
         if(in_array(end($uri), ['index'])) {
-            return Str::replaceLast('/index', '/edit/values?id={id}', 
+            return Str::replaceLast('/index', '/edit/values?id=${id}', 
                 Str::replaceFirst('api/','',\request()->path())
             );
         }
 
-        return Str::replaceLast('/edit', '/edit/values?id={id}', 
+        return Str::replaceLast('/edit', '/edit/values?id=${id}', 
             Str::replaceFirst('api/','',\request()->path())
         );
     }

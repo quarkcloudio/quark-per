@@ -11,7 +11,7 @@ class ChangeStatus extends Action
      *
      * @var string
      */
-    public $name = "<% data.status==1 ? '禁用' : '启用' %>";
+    public $name = "<%= (status==1 ? '禁用' : '启用') %>";
 
     /**
      * 设置按钮类型,primary | ghost | dashed | link | text | default
@@ -36,7 +36,7 @@ class ChangeStatus extends Action
     public function __construct()
     {
         // 当行为在表格行展示时，支持js表达式
-        $this->withConfirm("确定要<% data.status==1 ? '禁用' : '启用' %>数据吗？", null, 'pop');
+        $this->withConfirm("确定要<%= (status==1 ? '禁用' : '启用') %>数据吗？", null, 'pop');
     }
 
     /**

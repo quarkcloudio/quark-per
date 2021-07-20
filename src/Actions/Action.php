@@ -163,9 +163,9 @@ abstract class Action
 
         foreach ($params as $key => $value) {
             if(is_string($key)) {
-                $paramsUri = $paramsUri.$key.'={'.$value.'}&';
+                $paramsUri = $paramsUri.$key.'=${'.$value.'}&';
             } else {
-                $paramsUri = $paramsUri.$value.'={'.$value.'}&';
+                $paramsUri = $paramsUri.$value.'=${'.$value.'}&';
             }
         }
 

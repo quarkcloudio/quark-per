@@ -40,7 +40,7 @@ class EditLink extends Link
      */
     public function href()
     {
-        return '#/index?api=' . Str::replaceLast('/index', '/edit&id={id}', 
+        return '#/index?api=' . Str::replaceLast('/index', '/edit&id=${id}', 
             Str::replaceFirst('api/','',\request()->path())
         );
     }
