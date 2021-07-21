@@ -218,7 +218,7 @@ class InstallCommand extends Command
             ['id' =>35,'name' => '图片管理','guard_name' => 'admin','icon' => '','pid' => 33,'type'=>'engine','sort' => 0,'path' => 'admin/picture/index','show'  => 1,'status' => 1],
             
             ['id' =>36,'name' => '我的账号','guard_name' => 'admin','icon' => 'icon-user','type'=>'default','pid' => 0,'sort' => 0,'path' => '/account','show'  => 1,'status' => 1],
-            ['id' =>37,'name' => '个人设置','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 36,'sort' => 0,'path' => '/admin/account/setting-form','show'  => 1,'status' => 1],
+            ['id' =>37,'name' => '个人设置','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 36,'sort' => 0,'path' => 'admin/account/setting-form','show'  => 1,'status' => 1],
         ]);
 
         // 网站配置
