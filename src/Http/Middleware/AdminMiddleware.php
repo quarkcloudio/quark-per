@@ -4,7 +4,6 @@ namespace QuarkCMS\QuarkAdmin\Http\Middleware;
 
 use Closure;
 use QuarkCMS\QuarkAdmin\Models\Admin;
-use Illuminate\Support\Facades\Route;
 use QuarkCMS\QuarkAdmin\Exceptions\AuthenticationException;
 
 class AdminMiddleware
