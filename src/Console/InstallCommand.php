@@ -209,8 +209,6 @@ class InstallCommand extends Command
 
             ['id' =>25,'name' => '系统配置','guard_name' => 'admin','icon' => 'icon-setting','type'=>'default','pid' => 0,'sort' => 0,'path' => '/system','show'  => 1,'status' => 1],
             ['id' =>26,'name' => '设置管理','guard_name' => 'admin','icon' => '','type'=>'default','pid' => 25,'sort' => -1,'path' => '/system/config','show'  => 1,'status' => 1],
-            ['id' =>28,'name' => '配置管理','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/config/index','show'  => 1,'status' => 1],
-            
             ['id' =>27,'name' => '网站设置','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/webConfig/setting-form','show'  => 1,'status' => 1],
             ['id' =>28,'name' => '配置管理','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 26,'sort' => 0,'path' => 'admin/config/index','show'  => 1,'status' => 1],
 
