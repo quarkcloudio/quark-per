@@ -81,7 +81,7 @@ class SyncPermission extends Action
      */
     protected function getResourcePermissions($resourceUrls)
     {
-        $resourcesPath = app_path('Admin\Resources');
+        $resourcesPath = app_path('Admin/Resources');
         $resources = get_folder_files($resourcesPath);
         $permissions = [];
 
@@ -112,7 +112,7 @@ class SyncPermission extends Action
      */
     protected function getDashboardPermissions($dashboardUrls)
     {
-        $dashboardsPath = app_path('Admin\Dashboards');
+        $dashboardsPath = app_path('Admin/Dashboards');
         $dashboards = get_folder_files($dashboardsPath);
 
         foreach ($dashboards as $key => $value) {
