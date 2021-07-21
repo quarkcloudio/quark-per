@@ -77,6 +77,10 @@ class Config extends Resource
             ->updateRules(["unique:configs,name,{id}"],['unique'=>'名称已经存在']),
             
             Field::text('group_name','分组名称')
+            ->rules(
+                ['required'],
+                ['required' => '分组名称必须填写']
+            )
             ->onlyOnForms(),
 
             Field::textArea('remark','备注')
