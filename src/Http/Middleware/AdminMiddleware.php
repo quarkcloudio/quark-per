@@ -53,7 +53,7 @@ class AdminMiddleware
             $getPermissions = Admin::where('id',$admin['id'])->first()->getPermissionsViaRoles();
             $hasPermission = false;
             foreach ($getPermissions as $key => $value) {
-                if ($value->name == Route::currentRouteName()) {
+                if ($value->name == \request()->path()) {
                     $hasPermission = true;
                 }
             }
