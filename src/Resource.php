@@ -376,6 +376,6 @@ abstract class Resource extends JsonResource
             }
         }
 
-        return $this->resource;
+        return $this->resource->toArray();
     }
 }
