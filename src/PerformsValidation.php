@@ -47,9 +47,16 @@ trait PerformsValidation
 
             // when中的变量
             if(!empty($value->when)) {
-                foreach ($value->when as $when) {
-                    foreach ($when['items'] as $whenItem) {
-                        $whenItemResult = static::getRulesForCreation($request, $whenItem);
+                foreach ($value->when['items'] as $when) {
+                    $body = $when['body'];
+                    if(is_array($body)) {
+                        foreach ($when['body'] as $whenItem) {
+                            $whenItemResult = static::getRulesForCreation($request, $whenItem);
+                            $rules = array_merge($rules, $whenItemResult['rules']);
+                            $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
+                        }
+                    } elseif(is_object($body)) {
+                        $whenItemResult = static::getRulesForCreation($request, $when['body']);
                         $rules = array_merge($rules, $whenItemResult['rules']);
                         $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
                     }
@@ -134,9 +141,16 @@ trait PerformsValidation
 
             // when中的变量
             if(!empty($value->when)) {
-                foreach ($value->when as $when) {
-                    foreach ($when['items'] as $whenItem) {
-                        $whenItemResult = static::getRulesForUpdate($request, $whenItem);
+                foreach ($value->when['items'] as $when) {
+                    $body = $when['body'];
+                    if(is_array($body)) {
+                        foreach ($when['body'] as $whenItem) {
+                            $whenItemResult = static::getRulesForUpdate($request, $whenItem);
+                            $rules = array_merge($rules, $whenItemResult['rules']);
+                            $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
+                        }
+                    } elseif(is_object($body)) {
+                        $whenItemResult = static::getRulesForUpdate($request, $when['body']);
                         $rules = array_merge($rules, $whenItemResult['rules']);
                         $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
                     }
