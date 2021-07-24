@@ -182,6 +182,10 @@ trait ResolvesFields
                 $column = $column->valueType('select')->valueEnum($field->getValueEnum());
                 break;
 
+            case 'imageField':
+                $column = $column->valueType('image');
+                break;
+
             default:
                 $column = $column->valueType($field->component);
                 break;
@@ -206,13 +210,46 @@ trait ResolvesFields
             if($value->component === 'tabPane') {
                 foreach ($value->body as $subValue) {
                     $items[] = $subValue;
+                    $whenFields = $this->getWhenFields($subValue);
+                    if($whenFields) {
+                        $items = array_merge($items, $whenFields);
+                    }
                 }
             } else {
                 $items[] = $value;
+                $whenFields = $this->getWhenFields($value);
+                if($whenFields) {
+                    $items = array_merge($items, $whenFields);
+                }
             }
         }
 
         return $items ?? [];
+    }
+
+    /**
+     * 获取When组件中的字段
+     *
+     * @param  object  $item
+     * @return array
+     */
+    public function getWhenFields($item)
+    {
+        // when中的变量
+        $items = [];
+
+        if(!empty($item->when)) {
+            foreach ($item->when['items'] as $when) {
+                $body = $when['body'];
+                if(is_array($body)) {
+                    $items = array_merge($items, $body);
+                } elseif(is_object($body)) {
+                    $items[] = $body;
+                }
+            }
+        }
+
+        return $items;
     }
 
     /**
