@@ -66,6 +66,8 @@ class AdminServiceProvider extends ServiceProvider
         }
         
         $this->registerApiRoutes();
+
+        $this->registerAdminRoutes();
     }
 
     /**
@@ -110,5 +112,21 @@ class AdminServiceProvider extends ServiceProvider
             'prefix' => 'api',
             'middleware' => 'admin',
         ];
+    }
+
+    /**
+     * Define the "admin" routes for the application.
+     *
+     * These routes all receive session state, CSRF protection, etc.
+     *
+     * @return void
+     */
+    protected function registerAdminRoutes()
+    {
+        if(file_exists(base_path().'/routes/admin.php')) {
+            Route::prefix('api')
+            ->middleware('api')
+            ->group(base_path().'/routes/admin.php');
+        }
     }
 }
