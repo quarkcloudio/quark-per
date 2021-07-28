@@ -70,7 +70,7 @@ php artisan quarkadmin:update
 
 ## 演示站点
 
-网址：[http://admin.quarkcms.com/admin/index](http://admin.quarkcms.com/admin/index)
+网址：[http://admin.quarkcms.com/admin/](http://admin.quarkcms.com/admin/)
 
 用户名：administrator 密码：123456
 
