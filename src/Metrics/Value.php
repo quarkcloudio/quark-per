@@ -42,7 +42,7 @@ abstract class Value extends Metric
      */
     protected function aggregate($request, $model, $function, $column = null, $dateColumn = null)
     {
-        $query = $model instanceof Builder ? $model : (new $model)->newQuery();
+        $query = gettype($model) === 'object' ? $model : (new $model)->newQuery();
 
         $column = $column ?? $query->getModel()->getQualifiedKeyName();
 
