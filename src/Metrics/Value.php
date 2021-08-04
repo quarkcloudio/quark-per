@@ -38,7 +38,7 @@ abstract class Value extends Metric
      * @param  string  $function
      * @param  \Illuminate\Database\Query\Expression|string|null  $column
      * @param  string|null  $dateColumn
-     * @return \Laravel\Nova\Metrics\ValueResult
+     * @return \QuarkCMS\QuarkAdmin\Metrics\ValueResult
      */
     protected function aggregate($request, $model, $function, $column = null, $dateColumn = null)
     {
