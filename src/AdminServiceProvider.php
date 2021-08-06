@@ -15,6 +15,7 @@ class AdminServiceProvider extends ServiceProvider
         Console\InstallCommand::class,
         Console\PublishCommand::class,
         Console\UpdateCommand::class,
+        Console\ResourceCommand::class,
     ];
 
     /**
