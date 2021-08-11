@@ -18,7 +18,7 @@ class ResourceEditController extends Controller
             $request,
             $request->newResourceWith($request->fillData())->toArray($request)
         );
-
+        
         return $request->newResource()->setLayoutContent(
             $request->newResource()->updateComponentRender($request,$data)
         );
