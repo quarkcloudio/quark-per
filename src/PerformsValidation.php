@@ -34,7 +34,7 @@ trait PerformsValidation
      */
     public static function rulesForCreation(Request $request, $resource)
     {
-        $fields = $resource->creationFields($request);
+        $fields = $resource->creationFieldsWithoutWhen($request);
         $rules = [];
         $ruleMessages = [];
 
@@ -48,17 +48,19 @@ trait PerformsValidation
             // when中的变量
             if(!empty($value->when)) {
                 foreach ($value->when['items'] as $when) {
-                    $body = $when['body'];
-                    if(is_array($body)) {
-                        foreach ($when['body'] as $whenItem) {
-                            $whenItemResult = static::getRulesForCreation($request, $whenItem);
+                    if(static::needValidateWhenRules($request, $when)) {
+                        $body = $when['body'];
+                        if(is_array($body)) {
+                            foreach ($when['body'] as $whenItem) {
+                                $whenItemResult = static::getRulesForCreation($request, $whenItem);
+                                $rules = array_merge($rules, $whenItemResult['rules']);
+                                $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
+                            }
+                        } elseif(is_object($body)) {
+                            $whenItemResult = static::getRulesForCreation($request, $when['body']);
                             $rules = array_merge($rules, $whenItemResult['rules']);
                             $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
                         }
-                    } elseif(is_object($body)) {
-                        $whenItemResult = static::getRulesForCreation($request, $when['body']);
-                        $rules = array_merge($rules, $whenItemResult['rules']);
-                        $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
                     }
                 }
             }
@@ -66,6 +68,55 @@ trait PerformsValidation
 
         $result['rules'] = $rules;
         $result['messages'] = $ruleMessages;
+
+        return $result;
+    }
+
+    /**
+     * 判断是否需要验证When组件里的规则
+     *
+     * @param  Request  $request
+     * @param  object  $when
+     * @return array
+     */
+    protected static function needValidateWhenRules(Request $request, $when)
+    {
+        $conditionName = $when['condition_name'];
+        $conditionOption = $when['condition_option'];
+        $conditionOperator = $when['condition_operator'];
+
+        $value = $request->input($conditionName);
+
+        if(empty($value)) {
+            return false;
+        }
+
+        switch ($conditionOperator) {
+            case '=':
+                $result = ($value == $conditionOption);
+              break;
+            case '>':
+                $result = ($value > $conditionOption);
+              break;
+            case '<':
+                $result = ($value < $conditionOption);
+              break;
+            case '<=':
+                $result = ($value <= $conditionOption);
+              break;
+            case '>=':
+                $result = ($value >= $conditionOption);
+              break;
+            case 'has':
+                $result = (strpos($value, $conditionOption) !== false);
+              break;
+            case 'in':
+                $result = (in_array($value, $conditionOption));
+              break;
+            default:
+                $result = ($value == $conditionOption);
+              break;
+        }
 
         return $result;
     }
@@ -128,7 +179,7 @@ trait PerformsValidation
      */
     public static function rulesForUpdate(Request $request, $resource)
     {
-        $fields = $resource->updateFields($request);
+        $fields = $resource->updateFieldsWithoutWhen($request);
         $rules = [];
         $ruleMessages = [];
 
@@ -142,17 +193,19 @@ trait PerformsValidation
             // when中的变量
             if(!empty($value->when)) {
                 foreach ($value->when['items'] as $when) {
-                    $body = $when['body'];
-                    if(is_array($body)) {
-                        foreach ($when['body'] as $whenItem) {
-                            $whenItemResult = static::getRulesForUpdate($request, $whenItem);
+                    if(static::needValidateWhenRules($request, $when)) {
+                        $body = $when['body'];
+                        if(is_array($body)) {
+                            foreach ($when['body'] as $whenItem) {
+                                $whenItemResult = static::getRulesForUpdate($request, $whenItem);
+                                $rules = array_merge($rules, $whenItemResult['rules']);
+                                $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
+                            }
+                        } elseif(is_object($body)) {
+                            $whenItemResult = static::getRulesForUpdate($request, $when['body']);
                             $rules = array_merge($rules, $whenItemResult['rules']);
                             $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
                         }
-                    } elseif(is_object($body)) {
-                        $whenItemResult = static::getRulesForUpdate($request, $when['body']);
-                        $rules = array_merge($rules, $whenItemResult['rules']);
-                        $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
                     }
                 }
             }

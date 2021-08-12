@@ -42,6 +42,23 @@ trait ResolvesFields
     }
 
     /**
+     * 不包含When组件内字段的创建页字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function creationFieldsWithoutWhen(Request $request)
+    {
+        foreach ($this->getFieldsWithoutWhen($request) as $value) {
+            if($value->isShownOnCreation()) {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
+    }
+
+    /**
      * 包裹在组件内的创建页字段
      *
      * @param  Request  $request
@@ -78,6 +95,23 @@ trait ResolvesFields
     public function updateFields(Request $request)
     {
         foreach ($this->getFields($request) as $value) {
+            if($value->isShownOnUpdate()) {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
+    }
+
+    /**
+     * 不包含When组件内字段的编辑页字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function updateFieldsWithoutWhen(Request $request)
+    {
+        foreach ($this->getFieldsWithoutWhen($request) as $value) {
             if($value->isShownOnUpdate()) {
                 $items[] = $value;
             }
@@ -224,6 +258,26 @@ trait ResolvesFields
             }
         }
 
+        return $items ?? [];
+    }
+
+    /**
+     * 获取不包含When组件的字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function getFieldsWithoutWhen(Request $request)
+    {
+        foreach ($this->fields($request) as $value) {
+            if($value->component === 'tabPane') {
+                foreach ($value->body as $subValue) {
+                    $items[] = $subValue;
+                }
+            } else {
+                $items[] = $value;
+            }
+        }
         return $items ?? [];
     }
 
