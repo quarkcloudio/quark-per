@@ -27,9 +27,15 @@ class ResourceUpdateRequest extends QuarkRequest
             }
         }
 
+        $submitData = $this->newResource()->beforeSaving($this, $this->all()); // 保存前回调
+
+        if(isset($submitData['msg'])) {
+            return $submitData;
+        }
+
         $data = $this->getSubmitData(
             $this->newResource()->updateFields($this),
-            $this->newResource()->beforeSaving($this, $this->all()) // 保存前回调
+            $submitData
         );
 
         $updateResult = $this->model()->where('id', $this->id)->update($data);

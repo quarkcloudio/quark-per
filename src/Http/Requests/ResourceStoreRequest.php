@@ -27,9 +27,15 @@ class ResourceStoreRequest extends QuarkRequest
             }
         }
 
+        $submitData = $this->newResource()->beforeSaving($this, $this->all()); // 保存前回调
+
+        if(isset($submitData['msg'])) {
+            return $submitData;
+        }
+
         $data = $this->getSubmitData(
             $this->newResource()->creationFields($this),
-            $this->newResource()->beforeSaving($this, $this->all()) // 保存前回调
+            $submitData
         );
 
         $model = $this->model()->create($data);
