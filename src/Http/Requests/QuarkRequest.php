@@ -27,6 +27,19 @@ class QuarkRequest extends FormRequest
     {
         $resource = 'App\\Admin\\Resources\\'.ucfirst(request()->route('resource'));
 
+        if(class_exists('Nwidart\\Modules\\Facades\\Module')) {
+            $modules = \Nwidart\Modules\Facades\Module::allEnabled();
+
+            foreach ($modules as $module) {
+                $moduleName = $module->getName();
+                $moduleResource = 'Modules\\'.$moduleName.'\\Admin\\Resources\\'.ucfirst(request()->route('resource'));
+
+                if(class_exists($moduleResource)) {
+                    $resource = $moduleResource;
+                }
+            }
+        }
+
         if(!class_exists($resource)) {
             throw new \Exception("Class { $resource } does not exist.");
         }
