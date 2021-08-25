@@ -201,7 +201,7 @@ class InstallCommand extends Command
             ['id' =>1,'name' => '控制台','guard_name' => 'admin','icon' => 'icon-home','type'=>'default','pid' => 0,'sort' => -2,'path' => '/dashboard','show'  => 1,'status' => 1],
             ['id' =>2,'name' => '主页','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 1,'sort' => 0,'path' => 'admin/dashboard/index','show'  => 1,'status' => 1],
 
-            ['id' =>13,'name' => '管理员','guard_name' => 'admin','icon' => 'icon-admin','type'=>'default','pid' => 0,'sort' => 0,'path' => '/admin','show'  => 1,'status' => 1],
+            ['id' =>13,'name' => '管理员','guard_name' => 'admin','icon' => 'icon-admin','type'=>'default','pid' => 0,'sort' => -1,'path' => '/admin','show'  => 1,'status' => 1],
             ['id' =>14,'name' => '管理员列表','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 13,'sort' => 0,'path' => 'admin/admin/index','show'  => 1,'status' => 1],
             ['id' =>15,'name' => '菜单列表','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 25,'sort' => 0,'path' => 'admin/menu/index','show'  => 1,'status' => 1],
             ['id' =>16,'name' => '权限列表','guard_name' => 'admin','icon' => '','type'=>'engine','pid' => 13,'sort' => 0,'path' => 'admin/permission/index','show'  => 1,'status' => 1],
