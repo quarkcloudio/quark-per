@@ -108,7 +108,11 @@ trait PerformsValidation
                 $result = ($value >= $conditionOption);
               break;
             case 'has':
-                $result = (strpos($value, $conditionOption) !== false);
+                if(is_array($value)) {
+                    $result = (strpos(json_encode($value), chr($conditionOption)) !== false);
+                } else {
+                    $result = (strpos($value, chr($conditionOption)) !== false);
+                }
               break;
             case 'in':
                 $result = (in_array($value, $conditionOption));
