@@ -31,6 +31,20 @@ abstract class Value extends Metric
     }
 
     /**
+     * Return a value result showing the growth of an sum aggregate over time.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Database\Eloquent\Builder|string  $model
+     * @param  \Illuminate\Database\Query\Expression|string|null  $column
+     * @param  string|null  $dateColumn
+     * @return \Laravel\Nova\Metrics\ValueResult
+     */
+    public function sum($request, $model, $column = null, $dateColumn = null)
+    {
+        return $this->aggregate($request, $model, 'sum', $column, $dateColumn);
+    }
+
+    /**
      * Return a value result showing the growth of a model over a given time frame.
      *
      * @param  \Illuminate\Http\Request  $request
