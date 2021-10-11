@@ -51,8 +51,6 @@ class Role extends Resource
      */
     public function fields(Request $request)
     {
-        $id = $request->get('id');
-
         // 查询列表
         $menus = Menu::tree();
 
