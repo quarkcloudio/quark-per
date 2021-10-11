@@ -49,4 +49,28 @@ class Menu extends Model
 
         return $list;
     }
+
+    /**
+     * 获取菜单的tree
+     *
+     * @param  void
+     * @return object
+     */
+    public static function tree()
+    {
+        // 查询列表
+        $menus = static::query()->where('status',1)
+        ->where('guard_name','admin')
+        ->select('name as title','id as key','pid')
+        ->get()
+        ->toArray();
+
+        foreach ($menus as $key => $menu) {
+            $menus[$key]['key'] = strval($menu['key']);
+        }
+
+        $menus = list_to_tree($menus,'key','pid','children',0);
+
+        return $menus;
+    }
 }
