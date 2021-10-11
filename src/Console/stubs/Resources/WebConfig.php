@@ -103,7 +103,7 @@ class WebConfig extends Resource
 
                         $fields[] = Field::image($config['name'],$config['title'])
                         ->extra($config['remark'])
-                        ->button('上传'.$config['name']);
+                        ->button('上传'.$config['title']);
                         break;
 
                     default:
