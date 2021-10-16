@@ -29,6 +29,6 @@ class Input extends Search
      */
     public function apply(Request $request, $query, $value)
     {
-        return $query->where($this->column, $value);
+        return $query->where($this->column, 'like', '%'.$value.'%');
     }
 }
