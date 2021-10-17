@@ -164,7 +164,17 @@ if(!function_exists('action_log')) {
 */
 if(!function_exists('get_picture')) {
     function get_picture($id,$key=0,$field='path') {
-        // 获取文件url，用于外部访问
+
+        // 获取文件url，用于外部访问，当存储为json格式时
+        if(count(explode('{',$id))>1) {
+            $pictureJson = json_decode($id, true);
+            if(isset($pictureJson['id'])) {
+                $id = $pictureJson['id'];
+            } else {
+                return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';
+            }
+        }
+
         if(count(explode('[',$id))>1) {
             $ids = json_decode($id, true);
             if(isset($ids[$key])) {
