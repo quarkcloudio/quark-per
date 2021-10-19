@@ -65,10 +65,10 @@ class AdminServiceProvider extends ServiceProvider
             $this->publishes([__DIR__.'/../resources/lang' => resource_path('lang')], 'quark-admin-resources-lang');
             $this->publishes([__DIR__.'/../resources/views' => resource_path('views/admin')], 'quark-admin-resources-views');
         }
-        
-        $this->registerApiRoutes();
 
         $this->registerAdminRoutes();
+        
+        $this->registerApiRoutes();
     }
 
     /**
