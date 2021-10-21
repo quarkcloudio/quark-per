@@ -165,7 +165,7 @@ trait Layout
         ->title($this->indexTitle($request))
         ->toolBar($this->toolBar($request))
         ->columns($this->columns($request))
-        ->batchActions($this->tableAlertActions($request))
+        ->batchActions($this->indexTableAlertActions($request))
         ->searches($this->indexSearches($request));
 
         return $resource::pagination() ? 
@@ -188,7 +188,7 @@ trait Layout
         return $this->formComponentRender(
             $request,
             $this->formTitle($request),
-            $this->formExtra($request),
+            $this->formExtraActions($request),
             $this->creationApi($request),
             $this->creationFieldsWithinComponents($request),
             $this->formActions($request),
@@ -208,7 +208,7 @@ trait Layout
         return $this->formComponentRender(
             $request,
             $this->formTitle($request),
-            $this->formExtra($request),
+            $this->formExtraActions($request),
             $this->updateApi($request),
             $this->updateFieldsWithinComponents($request),
             $this->formActions($request),
@@ -274,5 +274,53 @@ trait Layout
         ])
         ->body(Tabs::tabPanes($fields)->tabBarExtraContent($extra))
         ->initialValues($data);
+    }
+
+    /**
+     * 渲染详情页组件
+     *
+     * @param  ResourceEditRequest  $request
+     * @param  array  $data
+     * @return array
+     */
+    public function detailComponentRender($request, $data)
+    {
+        $title = $this->detailTitle($request);
+        $extra = $this->detailExtraActions($request);
+        $fields = $this->detailFieldsWithinComponents($request, $data);
+        $actions = $this->detailActions($request);
+
+        if(is_array($fields)) {
+            if($fields[0]->component === 'tabPane') {
+                return $this->detailWithinTabs($request, $title, $extra, $fields, $actions, $data);
+            }
+        }
+
+        return $this->detailWithinCard($request, $title, $extra, $fields, $actions, $data);
+    }
+
+    /**
+     * 在卡片内的详情页组件
+     *
+     * @param  mixed  $request
+     * @return array
+     */
+    public function detailWithinCard($request, $title, $extra, $fields, $actions, $data)
+    {
+        return Card::title($title)
+        ->headerBordered()
+        ->extra($extra)
+        ->body($fields);
+    }
+
+    /**
+     * 在标签页内的详情页组件
+     *
+     * @param  mixed  $request
+     * @return array
+     */
+    public function detailWithinTabs($request, $title, $extra, $fields, $actions, $data)
+    {
+        return Tabs::tabPanes($fields)->tabBarExtraContent($extra);
     }
 }

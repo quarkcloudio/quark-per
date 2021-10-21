@@ -107,7 +107,11 @@ class Account extends Resource
     public function actions(Request $request)
     {
         return [
-            new \App\Admin\Actions\ChangeAccount
+            new \App\Admin\Actions\ChangeAccount,
+            new \App\Admin\Actions\FormSubmit,
+            new \App\Admin\Actions\FormReset,
+            new \App\Admin\Actions\FormBack,
+            new \App\Admin\Actions\FormExtraBack
         ];
     }
 }

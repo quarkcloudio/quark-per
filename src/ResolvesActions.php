@@ -31,10 +31,10 @@ trait ResolvesActions
      * @param  Request  $request
      * @return array
      */
-    public function tableRowActions(Request $request)
+    public function indexTableRowActions(Request $request)
     {
         foreach ($this->actions($request) as $key => $value) {
-            if($value->shownOnTableRow()) {
+            if($value->shownOnIndexTableRow()) {
                 $actions[] = $this->buildAction($value);
             }
         }
@@ -48,10 +48,78 @@ trait ResolvesActions
      * @param  Request  $request
      * @return array
      */
-    public function tableAlertActions(Request $request)
+    public function indexTableAlertActions(Request $request)
     {
         foreach ($this->actions($request) as $key => $value) {
-            if($value->shownOnTableAlert()) {
+            if($value->shownOnIndexTableAlert()) {
+                $actions[] = $this->buildAction($value);
+            }
+        }
+
+        return $actions ?? [];
+    }
+
+    /**
+     * 表单页行为
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function formActions(Request $request)
+    {
+        foreach ($this->actions($request) as $key => $value) {
+            if($value->shownOnForm()) {
+                $actions[] = $this->buildAction($value);
+            }
+        }
+
+        return $actions ?? [];
+    }
+
+    /**
+     * 表单页右上角自定义区域行为
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function formExtraActions(Request $request)
+    {
+        foreach ($this->actions($request) as $key => $value) {
+            if($value->shownOnFormExtra()) {
+                $actions[] = $this->buildAction($value);
+            }
+        }
+
+        return $actions ?? [];
+    }
+
+    /**
+     * 详情页行为
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function detailActions(Request $request)
+    {
+        foreach ($this->actions($request) as $key => $value) {
+            if($value->shownOnDetail()) {
+                $actions[] = $this->buildAction($value);
+            }
+        }
+
+        return $actions ?? [];
+    }
+
+    /**
+     * 详情页右上角自定义区域行为
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function detailExtraActions(Request $request)
+    {
+        foreach ($this->actions($request) as $key => $value) {
+            if($value->shownOnDetailExtra()) {
                 $actions[] = $this->buildAction($value);
             }
         }

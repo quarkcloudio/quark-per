@@ -88,9 +88,13 @@ class Role extends Resource
     {
         return [
             (new \App\Admin\Actions\CreateLink($this->title()))->onlyOnIndex(),
-            (new \App\Admin\Actions\Delete('批量删除'))->onlyOnTableAlert(),
-            (new \App\Admin\Actions\EditLink('编辑'))->onlyOnTableRow(),
-            (new \App\Admin\Actions\Delete('删除'))->onlyOnTableRow(),
+            (new \App\Admin\Actions\Delete('批量删除'))->onlyOnIndexTableAlert(),
+            (new \App\Admin\Actions\EditLink('编辑'))->onlyOnIndexTableRow(),
+            (new \App\Admin\Actions\Delete('删除'))->onlyOnIndexTableRow(),
+            new \App\Admin\Actions\FormSubmit,
+            new \App\Admin\Actions\FormReset,
+            new \App\Admin\Actions\FormBack,
+            new \App\Admin\Actions\FormExtraBack
         ];
     }
 

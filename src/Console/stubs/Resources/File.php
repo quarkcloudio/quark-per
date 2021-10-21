@@ -79,8 +79,8 @@ class File extends Resource
     public function actions(Request $request)
     {
         return [
-            (new \App\Admin\Actions\Delete('批量删除'))->onlyOnTableAlert(),
-            (new \App\Admin\Actions\Delete('删除'))->onlyOnTableRow(),
+            (new \App\Admin\Actions\Delete('批量删除'))->onlyOnIndexTableAlert(),
+            (new \App\Admin\Actions\Delete('删除'))->onlyOnIndexTableRow(),
         ];
     }
 }

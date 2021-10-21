@@ -25,6 +25,18 @@ trait PerformsQueries
     }
 
     /**
+     * 创建详情页查询
+     *
+     * @param  Request  $request
+     * @param  Builder  $query
+     * @return Builder
+     */
+    public static function buildDetailQuery(Request $request, $query)
+    {
+        return static::detailQuery($request, static::initializeQuery($request, $query));
+    }
+
+    /**
      * 初始化查询
      *
      * @param  Request  $request

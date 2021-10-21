@@ -4,6 +4,8 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Column;
+use QuarkCMS\Quark\Facades\Descriptions;
+use QuarkCMS\Quark\Facades\DescriptionField;
 
 trait ResolvesFields
 {
@@ -166,6 +168,50 @@ trait ResolvesFields
     }
 
     /**
+     * 包裹在组件内的详情页字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function detailFieldsWithinComponents(Request $request, $data = [])
+    {
+        foreach ($this->fields($request) as $value) {
+            if($value->component === 'tabPane') {
+                $subItems = [];
+                foreach ($value->body as $subValue) {
+                    if($subValue->isShownOnDetail()) {
+                        $subItems[] = $this->buildTableColumn($subValue);
+                    }
+
+                    $descriptions = Descriptions::style(['padding' => '24px'])
+                    ->title(false)
+                    ->column(self::$detailColumn)
+                    ->columns($subItems)
+                    ->dataSource($data)
+                    ->actions($this->detailActions($request));
+                }
+                $value->body = $descriptions;
+                $items[] = $value;
+            } else {
+                if($value->isShownOnDetail()) {
+                    $items[] = $this->buildTableColumn($value);
+                }
+            }
+        }
+
+        if($items[0]['component'] !== 'tabPane') {
+            $items = Descriptions::style(['padding' => '24px'])
+            ->title(false)
+            ->column(self::$detailColumn)
+            ->columns($items)
+            ->dataSource($data)
+            ->actions($this->detailActions($request));
+        }
+
+        return $items;
+    }
+
+    /**
      * 列表页表格列
      *
      * @param  Request  $request
@@ -177,12 +223,12 @@ trait ResolvesFields
             $columns[] = $this->buildTableColumn($value);
         }
 
-        $tableRowActions = $this->tableRowActions($request);
+        $indexTableRowActions = $this->indexTableRowActions($request);
 
-        if(!empty($tableRowActions)) {
+        if(!empty($indexTableRowActions)) {
             $columns[] = Column::make('actions','操作')
             ->valueType('option')
-            ->actions($tableRowActions)
+            ->actions($indexTableRowActions)
             ->render();
         }
 

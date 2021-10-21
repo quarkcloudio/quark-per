@@ -3,24 +3,38 @@
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
 use Illuminate\Http\Request;
+use QuarkCMS\QuarkAdmin\Http\Requests\ResourceDetailRequest;
 
 class ResourceShowController extends Controller
 {
     /**
-     * Creation the resources for administration.
+     * 编辑页
      *
-     * @param  string  $resource
-     * @param  Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param  ResourceDetailRequest  $request
+     * @return array
      */
-    public function handle($resource, Request $request)
+    public function handle(ResourceDetailRequest $request)
     {
-        $getCalledClass = 'App\\Admin\\Resources\\'.ucfirst($resource);
-        if(!class_exists($getCalledClass)) {
-            throw new \Exception("Class {$getCalledClass} does not exist.");
-        }
-        $calledClass = new $getCalledClass();
+        $data = $request->newResource()->beforeDetailShowing(
+            $request,
+            $request->newResourceWith($request->fillData())->toArray($request)
+        );
+        
+        return $request->newResource()->setLayoutContent(
+            $request->newResource()->detailComponentRender($request,$data)
+        );
+    }
 
-        return $calledClass->create($request);
+    /**
+     * 获取表单初始化数据
+     *
+     * @param  ResourceDetailRequest  $request
+     * @return array
+     */
+    public function values(ResourceDetailRequest $request)
+    {
+        $data = $request->newResourceWith($request->fillData())->toArray($request);
+
+        return success('获取成功','',$request->newResource()->beforeDetailShowing($request, $data));
     }
 }

@@ -50,6 +50,13 @@ abstract class Resource extends JsonResource
     public static $perPage = false;
 
     /**
+     * 详情页列数
+     *
+     * @var int
+     */
+    public static $detailColumn = 2;
+
+    /**
      * 初始化
      *
      * @var mixed
@@ -271,29 +278,14 @@ abstract class Resource extends JsonResource
     }
 
     /**
-     * 右上角自定义区域
+     * 详情页标题
      *
      * @param  Request $request
      * @return array
      */
-    public function formExtra(Request $request)
+    public function detailTitle(Request $request)
     {
-        return Action::make('返回上一页')->type('link')->actionType('back');
-    }
-
-    /**
-     * 获取表单按钮
-     *
-     * @param  Request $request
-     * @return array
-     */
-    public function formActions(Request $request)
-    {
-        return [
-            Action::make('重置')->actionType('reset'),
-            Action::make("提交")->type('primary')->actionType('submit'),
-            Action::make('返回上一页')->actionType('back')
-        ];
+        return $this->title() . '详情';
     }
 
     /**
@@ -306,6 +298,18 @@ abstract class Resource extends JsonResource
     public function beforeIndexShowing(Request $request, $list)
     {
         return $list;
+    }
+
+    /**
+     * 详情页页面显示前回调
+     *
+     * @param Request $request
+     * @param array $data
+     * @return array
+     */
+    public function beforeDetailShowing(Request $request, $data)
+    {
+        return $data;
     }
 
     /**

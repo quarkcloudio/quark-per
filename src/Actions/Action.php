@@ -87,6 +87,13 @@ abstract class Action
     public $onlyOnIndex = false;
 
     /**
+     * 只在表单页展示
+     *
+     * @var bool
+     */
+    public $onlyOnForm = false;
+
+    /**
      * 只在详情页展示
      *
      * @var bool
@@ -98,28 +105,49 @@ abstract class Action
      *
      * @var bool
      */
-    public $showOnIndex = true;
+    public $showOnIndex = false;
+
+    /**
+     * 在列表页表格行内展示
+     *
+     * @var bool
+     */
+    public $showOnIndexTableRow = false;
+
+    /**
+     * 在列表页表格多选弹出层展示
+     *
+     * @var bool
+     */
+    public $showOnIndexTableAlert = false;
+
+    /**
+     * 在表单页展示
+     *
+     * @var bool
+     */
+    public $showOnForm = false;
+
+    /**
+     * 在表单页右上角自定义区域展示
+     *
+     * @var bool
+     */
+    public $showOnFormExtra = false;
 
     /**
      * 在详情页展示
      *
      * @var bool
      */
-    public $showOnDetail = true;
+    public $showOnDetail = false;
 
     /**
-     * 在表格行内展示
+     * 在详情页右上角自定义区域展示
      *
      * @var bool
      */
-    public $showOnTableRow = false;
-
-    /**
-     * 在表格多选弹出层展示
-     *
-     * @var bool
-     */
-    public $showOnTableAlert = false;
+    public $showOnDetailExtra = false;
 
     /**
      * 行为key
@@ -276,8 +304,12 @@ abstract class Action
         $this->onlyOnIndex = $value;
         $this->showOnIndex = $value;
         $this->showOnDetail = ! $value;
-        $this->showOnTableRow = ! $value;
-        $this->showOnTableAlert = ! $value;
+        $this->showOnIndexTableRow = ! $value;
+        $this->showOnIndexTableAlert = ! $value;
+        $this->showOnForm = ! $value;
+        $this->showOnFormExtra = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnDetailExtra = ! $value;
 
         return $this;
     }
@@ -290,9 +322,91 @@ abstract class Action
     public function exceptOnIndex()
     {
         $this->showOnDetail = true;
-        $this->showOnTableRow = true;
-        $this->showOnTableAlert = true;
+        $this->showOnIndexTableRow = true;
+        $this->showOnIndexTableAlert = true;
+        $this->showOnForm = true;
+        $this->showOnFormExtra = true;
+        $this->showOnDetail = true;
+        $this->showOnDetailExtra = true;
         $this->showOnIndex = false;
+
+        return $this;
+    }
+
+    /**
+     * 只在表单页展示
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function onlyOnForm($value = true)
+    {
+        $this->showOnForm = $value;
+        $this->showOnIndexTableAlert = ! $value;
+        $this->showOnIndex = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnIndexTableRow = ! $value;
+        $this->showOnFormExtra = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnDetailExtra = ! $value;
+
+        return $this;
+    }
+
+    /**
+     * 除了表单页外展示
+     *
+     * @return $this
+     */
+    public function exceptOnForm()
+    {
+        $this->showOnIndexTableAlert = true;
+        $this->showOnIndex = true;
+        $this->showOnDetail = true;
+        $this->showOnIndexTableRow = true;
+        $this->showOnForm = false;
+        $this->showOnFormExtra = true;
+        $this->showOnDetail = true;
+        $this->showOnDetailExtra = true;
+
+        return $this;
+    }
+
+    /**
+     * 只在表单页右上角自定义区域展示
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function onlyOnFormExtra($value = true)
+    {
+        $this->showOnForm = ! $value;
+        $this->showOnIndexTableAlert = ! $value;
+        $this->showOnIndex = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnIndexTableRow = ! $value;
+        $this->showOnFormExtra = $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnDetailExtra = ! $value;
+
+        return $this;
+    }
+
+    /**
+     * 除了表单页右上角自定义区域外展示
+     *
+     * @return $this
+     */
+    public function exceptOnFormExtra()
+    {
+        $this->showOnIndexTableAlert = true;
+        $this->showOnIndex = true;
+        $this->showOnDetail = true;
+        $this->showOnIndexTableRow = true;
+        $this->showOnForm = true;
+        $this->showOnFormExtra = false;
+        $this->showOnDetail = true;
+        $this->showOnDetailExtra = true;
 
         return $this;
     }
@@ -308,8 +422,11 @@ abstract class Action
         $this->onlyOnDetail = $value;
         $this->showOnDetail = $value;
         $this->showOnIndex = ! $value;
-        $this->showOnTableRow = ! $value;
-        $this->showOnTableAlert = ! $value;
+        $this->showOnIndexTableRow = ! $value;
+        $this->showOnIndexTableAlert = ! $value;
+        $this->showOnForm = ! $value;
+        $this->showOnFormExtra = ! $value;
+        $this->showOnDetailExtra = ! $value;
 
         return $this;
     }
@@ -323,8 +440,50 @@ abstract class Action
     {
         $this->showOnIndex = true;
         $this->showOnDetail = false;
-        $this->showOnTableRow = true;
-        $this->showOnTableAlert = true;
+        $this->showOnIndexTableRow = true;
+        $this->showOnIndexTableAlert = true;
+        $this->showOnForm = true;
+        $this->showOnFormExtra = true;
+        $this->showOnDetailExtra = true;
+
+        return $this;
+    }
+
+    /**
+     * 只在详情页右上角自定义区域展示
+     *
+     * @param  bool  $value
+     * @return $this
+     */
+    public function onlyOnDetailExtra($value = true)
+    {
+        $this->showOnForm = ! $value;
+        $this->showOnIndexTableAlert = ! $value;
+        $this->showOnIndex = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnIndexTableRow = ! $value;
+        $this->showOnFormExtra = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnDetailExtra = $value;
+
+        return $this;
+    }
+
+    /**
+     * 除了详情页右上角自定义区域外展示
+     *
+     * @return $this
+     */
+    public function exceptOnDetailExtra()
+    {
+        $this->showOnIndexTableAlert = true;
+        $this->showOnIndex = true;
+        $this->showOnDetail = true;
+        $this->showOnIndexTableRow = true;
+        $this->showOnForm = true;
+        $this->showOnFormExtra = true;
+        $this->showOnDetail = true;
+        $this->showOnDetailExtra = false;
 
         return $this;
     }
@@ -335,12 +494,16 @@ abstract class Action
      * @param  bool  $value
      * @return $this
      */
-    public function onlyOnTableRow($value = true)
+    public function onlyOnIndexTableRow($value = true)
     {
-        $this->showOnTableRow = $value;
+        $this->showOnIndexTableRow = $value;
         $this->showOnIndex = ! $value;
         $this->showOnDetail = ! $value;
-        $this->showOnTableAlert = ! $value;
+        $this->showOnIndexTableAlert = ! $value;
+        $this->showOnForm = ! $value;
+        $this->showOnFormExtra = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnDetailExtra = ! $value;
 
         return $this;
     }
@@ -350,12 +513,16 @@ abstract class Action
      *
      * @return $this
      */
-    public function exceptOnTableRow()
+    public function exceptOnIndexTableRow()
     {
-        $this->showOnTableRow = false;
+        $this->showOnIndexTableRow = false;
         $this->showOnIndex = true;
         $this->showOnDetail = true;
-        $this->showOnTableAlert = true;
+        $this->showOnIndexTableAlert = true;
+        $this->showOnForm = true;
+        $this->showOnFormExtra = true;
+        $this->showOnDetail = true;
+        $this->showOnDetailExtra = true;
 
         return $this;
     }
@@ -366,12 +533,16 @@ abstract class Action
      * @param  bool  $value
      * @return $this
      */
-    public function onlyOnTableAlert($value = true)
+    public function onlyOnIndexTableAlert($value = true)
     {
-        $this->showOnTableAlert = $value;
+        $this->showOnIndexTableAlert = $value;
         $this->showOnIndex = ! $value;
         $this->showOnDetail = ! $value;
-        $this->showOnTableRow = ! $value;
+        $this->showOnIndexTableRow = ! $value;
+        $this->showOnForm = ! $value;
+        $this->showOnFormExtra = ! $value;
+        $this->showOnDetail = ! $value;
+        $this->showOnDetailExtra = ! $value;
 
         return $this;
     }
@@ -381,12 +552,16 @@ abstract class Action
      *
      * @return $this
      */
-    public function exceptOnTableAlert()
+    public function exceptOnIndexTableAlert()
     {
-        $this->showOnTableAlert = false;
+        $this->showOnIndexTableAlert = false;
         $this->showOnIndex = true;
         $this->showOnDetail = true;
-        $this->showOnTableRow = true;
+        $this->showOnIndexTableRow = true;
+        $this->showOnForm = true;
+        $this->showOnFormExtra = true;
+        $this->showOnDetail = true;
+        $this->showOnDetailExtra = true;
 
         return $this;
     }
@@ -404,6 +579,30 @@ abstract class Action
     }
 
     /**
+     * 在表单页展示
+     *
+     * @return $this
+     */
+    public function showOnForm()
+    {
+        $this->showOnForm = true;
+
+        return $this;
+    }
+
+    /**
+     * 在表单页右上角自定义区域展示
+     *
+     * @return $this
+     */
+    public function showOnFormExtra()
+    {
+        $this->showOnFormExtra = true;
+
+        return $this;
+    }
+
+    /**
      * 在详情页展示
      *
      * @return $this
@@ -416,13 +615,25 @@ abstract class Action
     }
 
     /**
+     * 在详情页右上角自定义区域展示
+     *
+     * @return $this
+     */
+    public function showOnDetailExtra()
+    {
+        $this->showOnDetailExtra = true;
+
+        return $this;
+    }
+
+    /**
      * 在表格行内展示
      *
      * @return $this
      */
-    public function showOnTableRow()
+    public function showOnIndexTableRow()
     {
-        $this->showOnTableRow = true;
+        $this->showOnIndexTableRow = true;
 
         return $this;
     }
@@ -432,9 +643,9 @@ abstract class Action
      *
      * @return $this
      */
-    public function showOnTableAlert()
+    public function showOnIndexTableAlert()
     {
-        $this->showOnTableAlert = true;
+        $this->showOnIndexTableAlert = true;
 
         return $this;
     }
@@ -454,7 +665,33 @@ abstract class Action
             return false;
         }
 
+        if ($this->onlyOnForm) {
+            return false;
+        }
+
         return $this->showOnIndex;
+    }
+
+    /**
+     * 判断是否在表单页展示
+     *
+     * @return bool
+     */
+    public function shownOnForm()
+    {
+        if ($this->onlyOnForm == true) {
+            return true;
+        }
+
+        if ($this->onlyOnDetail) {
+            return false;
+        }
+
+        if ($this->onlyOnIndex) {
+            return false;
+        }
+
+        return $this->showOnForm;
     }
 
     /**
@@ -472,6 +709,10 @@ abstract class Action
             return false;
         }
 
+        if ($this->onlyOnForm) {
+            return false;
+        }
+
         return $this->showOnDetail;
     }
 
@@ -480,9 +721,9 @@ abstract class Action
      *
      * @return bool
      */
-    public function shownOnTableRow()
+    public function shownOnIndexTableRow()
     {
-        return $this->showOnTableRow;
+        return $this->showOnIndexTableRow;
     }
 
     /**
@@ -490,8 +731,28 @@ abstract class Action
      *
      * @return bool
      */
-    public function shownOnTableAlert()
+    public function shownOnIndexTableAlert()
     {
-        return $this->showOnTableAlert;
+        return $this->showOnIndexTableAlert;
+    }
+
+    /**
+     * 判断是否在表单页右上角自定义区域展示
+     *
+     * @return bool
+     */
+    public function shownOnFormExtra()
+    {
+        return $this->showOnFormExtra;
+    }
+
+    /**
+     * 判断是否在详情页右上角自定义区域展示
+     *
+     * @return bool
+     */
+    public function shownOnDetailExtra()
+    {
+        return $this->showOnDetailExtra;
     }
 }
