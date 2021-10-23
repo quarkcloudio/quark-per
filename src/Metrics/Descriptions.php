@@ -17,6 +17,6 @@ abstract class Descriptions extends Metric
      */
     public function result($value)
     {
-        return DescriptionsComponent::title($this->title)->items($value);
+        return DescriptionsComponent::title($this->title)->items($value)->style(['padding' => '24px']);
     }
 }

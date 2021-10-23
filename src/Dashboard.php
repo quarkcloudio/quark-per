@@ -55,15 +55,10 @@ abstract class Dashboard
 
         foreach ($cards as $key => $card) {
             $colNum = $colNum + $card->col;
-            if(method_exists($card,'metas')) {
-                $cardItem = Card::style(['paddingTop' => '6px','paddingBottom' => '12px'])->body(
-                    $card->calculate(request())
-                );
-            } else {
-                $cardItem = Card::style(['padding' => '24px'])->body(
-                    $card->calculate(request())
-                );
-            }
+
+            $cardItem = Card::body(
+                $card->calculate(request())
+            );
 
             $cols[] = Col::span($card->col)->body($cardItem);
             if($colNum%24 === 0) {

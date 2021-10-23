@@ -175,21 +175,25 @@ trait ResolvesFields
      */
     public function detailFieldsWithinComponents(Request $request, $data = [])
     {
+        $componentType = 'description';
+
         foreach ($this->fields($request) as $value) {
             if($value->component === 'tabPane') {
+                $componentType = 'tabPane';
                 $subItems = [];
                 foreach ($value->body as $subValue) {
                     if($subValue->isShownOnDetail()) {
                         $subItems[] = $this->buildTableColumn($subValue);
                     }
-
-                    $descriptions = Descriptions::style(['padding' => '24px'])
-                    ->title(false)
-                    ->column(self::$detailColumn)
-                    ->columns($subItems)
-                    ->dataSource($data)
-                    ->actions($this->detailActions($request));
                 }
+
+                $descriptions = Descriptions::style(['padding' => '24px'])
+                ->title(false)
+                ->column(self::$detailColumn)
+                ->columns($subItems)
+                ->dataSource($data)
+                ->actions($this->detailActions($request));
+
                 $value->body = $descriptions;
                 $items[] = $value;
             } else {
@@ -199,7 +203,7 @@ trait ResolvesFields
             }
         }
 
-        if($items[0]['component'] !== 'tabPane') {
+        if($componentType === 'description') {
             $items = Descriptions::style(['padding' => '24px'])
             ->title(false)
             ->column(self::$detailColumn)

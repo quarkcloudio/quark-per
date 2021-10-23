@@ -40,6 +40,7 @@ abstract class Lists extends Metric
         return ListsComponent::title($this->title)
         ->toolBar($this->toolBar())
         ->metas($this->metas())
-        ->datasource($value);
+        ->datasource($value)
+        ->style(['paddingTop' => '6px','paddingBottom' => '12px']);
     }
 }

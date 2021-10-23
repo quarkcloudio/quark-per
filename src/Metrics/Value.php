@@ -45,6 +45,19 @@ abstract class Value extends Metric
     }
 
     /**
+     * Set the precision level used when rounding the value.
+     *
+     * @param  int  $precision
+     * @return $this
+     */
+    public function precision($precision = 0)
+    {
+        $this->precision = $precision;
+
+        return $this;
+    }
+
+    /**
      * Return a value result showing the growth of a model over a given time frame.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -73,6 +86,6 @@ abstract class Value extends Metric
      */
     public function result($value)
     {
-        return Statistic::title($this->title)->value($value);
+        return Statistic::title($this->title)->value($value)->style(['padding'=>'24px']);
     }
 }
