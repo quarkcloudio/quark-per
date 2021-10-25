@@ -475,7 +475,7 @@ abstract class Trend extends Metric
      */
     protected function aggregate($request, $model, $unit, $function, $column, $dateColumn = null)
     {
-        $query = $model instanceof Builder ? $model : (new $model)->newQuery();
+        $query = gettype($model) === 'object' ? $model : (new $model)->newQuery();
 
         $wrappedColumn = $column instanceof Expression
                 ? (string) $column
@@ -512,11 +512,6 @@ abstract class Trend extends Metric
      */
     public function result($value)
     {
-        $chart = Chart::line()
-        ->xField('date_result')
-        ->yField('aggregate')
-        ->data($value);
-
-        return StatisticCard::title($this->title)->chart($chart);
+        return StatisticCard::title($this->title)->chart($value);
     }
 }
