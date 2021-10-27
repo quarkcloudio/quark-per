@@ -17,6 +17,13 @@ abstract class Action
     public $name = null;
 
     /**
+     * 执行成功后刷新的组件
+     *
+     * @var string
+     */
+    public $reload = false;
+
+    /**
      * 【必填】这是 action 最核心的配置，来指定该 action 的作用类型，支持：ajax、link、url、drawer、modal、confirm、cancel、prev、next、copy、close。
      *
      * @var string
@@ -167,6 +174,16 @@ abstract class Action
     public function name()
     {
         return $this->name;
+    }
+
+    /**
+     * 执行成功后刷新的组件
+     *
+     * @return string
+     */
+    public function reload()
+    {
+        return $this->reload;
     }
 
     /**

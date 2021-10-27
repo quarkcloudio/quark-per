@@ -24,6 +24,13 @@ class EditModal extends Modal
     public $size = 'small';
 
     /**
+     * 执行成功后刷新的组件
+     *
+     * @var string
+     */
+    public $reload = 'table';
+
+    /**
      * 初始化
      *
      * @param  string  $name

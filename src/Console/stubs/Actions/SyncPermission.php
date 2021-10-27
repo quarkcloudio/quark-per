@@ -17,6 +17,13 @@ class SyncPermission extends Action
     public $name = '同步权限';
 
     /**
+     * 执行成功后刷新的组件
+     *
+     * @var string
+     */
+    public $reload = 'table';
+
+    /**
      * 执行行为
      *
      * @param  Fields  $fields

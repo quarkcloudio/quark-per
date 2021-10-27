@@ -136,7 +136,7 @@ trait ResolvesActions
     protected function buildAction($item)
     {
         $builder = Action::make($item->name())
-        ->reload('table')
+        ->reload($item->reload())
         ->api($item->api())
         ->actionType($item->actionType())
         ->type($item->type())
