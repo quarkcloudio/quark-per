@@ -224,23 +224,23 @@ class InstallCommand extends Command
 
         // 网站配置
         DB::table('configs')->insert([
-            ['id' => 1,'title' => '网站名称','type' => 'text','name' => 'WEB_SITE_NAME','group_name' => '基本','value' => 'QuarkCMS','remark' => '','status' => 1],
-            ['id' => 2,'title' => '关键字','type' => 'text','name' => 'WEB_SITE_KEYWORDS','group_name' => '基本','value' => 'QuarkCMS','remark' => '','status' => 1],
-            ['id' => 3,'title' => '描述','type' => 'textarea','name' => 'WEB_SITE_DESCRIPTION','group_name' => '基本','value' => 'QuarkCMS','remark' => '','status' => 1],
-            ['id' => 4,'title' => 'Logo','type' => 'picture','name' => 'WEB_SITE_LOGO','group_name' => '基本','value' => '','remark' => '','status' => 1],
-            ['id' => 5,'title' => '统计代码','type' => 'textarea','name' => 'WEB_SITE_SCRIPT','group_name' => '基本','value' => '','remark' => '','status' => 1],
-            ['id' => 6,'title' => '网站版权','type' => 'text','name' => 'WEB_SITE_COPYRIGHT','group_name' => '基本','value' => '© Company 2018','remark' => '','status' => 1],
-            ['id' => 7,'title' => '开启SSL','type' => 'switch','name' => 'SSL_OPEN','group_name' => '基本','value' => '0','remark' => '','status' => 1],
-            ['id' => 8,'title' => '开启网站','type' => 'switch','name' => 'WEB_SITE_OPEN','group_name' => '基本','value' => '1','remark' => '','status' => 1],
+            ['title' => '网站名称','type' => 'text','name' => 'WEB_SITE_NAME','group_name' => '基本','value' => 'QuarkCMS','remark' => '','status' => 1],
+            ['title' => '关键字','type' => 'text','name' => 'WEB_SITE_KEYWORDS','group_name' => '基本','value' => 'QuarkCMS','remark' => '','status' => 1],
+            ['title' => '描述','type' => 'textarea','name' => 'WEB_SITE_DESCRIPTION','group_name' => '基本','value' => 'QuarkCMS','remark' => '','status' => 1],
+            ['title' => 'Logo','type' => 'picture','name' => 'WEB_SITE_LOGO','group_name' => '基本','value' => '','remark' => '','status' => 1],
+            ['title' => '统计代码','type' => 'textarea','name' => 'WEB_SITE_SCRIPT','group_name' => '基本','value' => '','remark' => '','status' => 1],
+            ['title' => '网站版权','type' => 'text','name' => 'WEB_SITE_COPYRIGHT','group_name' => '基本','value' => '© Company 2018','remark' => '','status' => 1],
+            ['title' => '开启SSL','type' => 'switch','name' => 'SSL_OPEN','group_name' => '基本','value' => '0','remark' => '','status' => 1],
+            ['title' => '开启网站','type' => 'switch','name' => 'WEB_SITE_OPEN','group_name' => '基本','value' => '1','remark' => '','status' => 1],
 
-            ['id' => 17,'title' => 'KeyID','type' => 'text','name' => 'OSS_ACCESS_KEY_ID','group_name' => '阿里云存储','value' => '','remark' => '你的AccessKeyID','status' => 1],
-            ['id' => 18,'title' => 'KeySecret','type' => 'text','name' => 'OSS_ACCESS_KEY_SECRET','group_name' => '阿里云存储','value' => '','remark' => '你的AccessKeySecret','status' => 1],
-            ['id' => 19,'title' => 'EndPoint','type' => 'text','name' => 'OSS_ENDPOINT','group_name' => '阿里云存储','value' => '','remark' => '地域节点','status' => 1],
-            ['id' => 20,'title' => 'Bucket域名','type' => 'text','name' => 'OSS_BUCKET','group_name' => '阿里云存储','value' => '','remark' => '','status' => 1],
-            ['id' => 21,'title' => '自定义域名','type' => 'text','name' => 'OSS_MYDOMAIN','group_name' => '阿里云存储','value' => '','remark' => '例如：oss.web.com','status' => 1],
-            ['id' => 22,'title' => '开启云存储','type' => 'switch','name' => 'OSS_OPEN','group_name' => '阿里云存储','value' => '0','remark' => '','status' => 1],
+            ['title' => 'KeyID','type' => 'text','name' => 'OSS_ACCESS_KEY_ID','group_name' => '阿里云存储','value' => '','remark' => '你的AccessKeyID','status' => 1],
+            ['title' => 'KeySecret','type' => 'text','name' => 'OSS_ACCESS_KEY_SECRET','group_name' => '阿里云存储','value' => '','remark' => '你的AccessKeySecret','status' => 1],
+            ['title' => 'EndPoint','type' => 'text','name' => 'OSS_ENDPOINT','group_name' => '阿里云存储','value' => '','remark' => '地域节点','status' => 1],
+            ['title' => 'Bucket域名','type' => 'text','name' => 'OSS_BUCKET','group_name' => '阿里云存储','value' => '','remark' => '','status' => 1],
+            ['title' => '自定义域名','type' => 'text','name' => 'OSS_MYDOMAIN','group_name' => '阿里云存储','value' => '','remark' => '例如：oss.web.com','status' => 1],
+            ['title' => '开启云存储','type' => 'switch','name' => 'OSS_OPEN','group_name' => '阿里云存储','value' => '0','remark' => '','status' => 1],
 
-            ['id' => 50,'title' => '开发者模式','type' => 'switch','name' => 'APP_DEBUG','group_name' => '基本','value' => '1','remark' => '','status' => 1],
+            ['title' => '开发者模式','type' => 'switch','name' => 'APP_DEBUG','group_name' => '基本','value' => '1','remark' => '','status' => 1],
         ]);
     }
 }
