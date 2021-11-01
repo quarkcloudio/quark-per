@@ -204,7 +204,7 @@ abstract class Action
     public function api()
     {
         $params = $this->apiParams();
-        $paramsUri = '';
+        $paramsUri = null;
 
         foreach ($params as $key => $value) {
             if(is_string($key)) {
@@ -214,7 +214,9 @@ abstract class Action
             }
         }
 
-        return Str::beforeLast(Str::replaceFirst('api/','',\request()->path()), '/') . '/action/' . $this->uriKey() . '?' . $paramsUri;
+        $api = Str::beforeLast(Str::replaceFirst('api/','',\request()->path()), '/') . '/action/' . $this->uriKey();
+
+        return $paramsUri ? $api . '?' . $paramsUri : $api;
     }
 
     /**
