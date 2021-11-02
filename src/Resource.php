@@ -50,6 +50,13 @@ abstract class Resource extends JsonResource
     public static $perPage = false;
 
     /**
+     * 是否有导出功能
+     *
+     * @var bool
+     */
+    public static $withExport = false;
+
+    /**
      * 详情页列数
      *
      * @var int
@@ -165,6 +172,18 @@ abstract class Resource extends JsonResource
         $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
         return in_array(end($uri), ['detail']);
+    }
+
+    /**
+     * 判断当前页面是否为导出页面
+     *
+     * @return bool
+     */
+    public function isExport()
+    {
+        $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
+
+        return in_array(end($uri), ['export']);
     }
 
     /**
@@ -369,7 +388,7 @@ abstract class Resource extends JsonResource
     {
         foreach ($this->getFields($request) as $value) {
             if(!empty($value->name)) {
-                $this->resource->{$value->name} = ($value->callback && ($this->isIndex() || $this->isDetail())) ? call_user_func($value->callback) : $this->{ $value->name };
+                $this->resource->{$value->name} = ($value->callback && ($this->isIndex() || $this->isDetail() || $this->isExport())) ? call_user_func($value->callback) : $this->{ $value->name };
             
                 // 关联属性
                 if (Str::contains($value->name, '.')) {

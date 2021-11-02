@@ -7,6 +7,7 @@ Route::get('admin/dashboard/{dashboard}', 'DashboardController@show');
 
 // 资源管理
 Route::get('admin/{resource}/index', 'ResourceIndexController@handle');
+Route::get('admin/{resource}/export', 'ResourceExportController@handle');
 Route::any('admin/{resource}/action/{uriKey}', 'ResourceActionController@handle');
 Route::any('admin/{resource}/editable', 'ResourceEditableController@handle');
 Route::get('admin/{resource}/create', 'ResourceCreateController@handle');

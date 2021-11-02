@@ -16,6 +16,11 @@ trait ResolvesSearches
     public function indexSearches(Request $request)
     {
         $search = Search::make();
+
+        // 搜索栏是否携带导出功能
+        if($request->resource()::$withExport) {
+            $search = $search->showExportButton()->exportApi('admin/'.request()->route('resource').'/export');
+        }
         
         foreach ($this->searches($request) as $key => $value) {
             $item = $search->item($value->column, $value->name)->operator($value->operator);

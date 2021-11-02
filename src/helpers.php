@@ -1,5 +1,7 @@
 <?php
 
+use QuarkCMS\QuarkAdmin\Excels\Export;
+use QuarkCMS\QuarkAdmin\Excels\Import;
 use QuarkCMS\QuarkAdmin\Models\ActionLog;
 use QuarkCMS\QuarkAdmin\Models\Picture;
 use QuarkCMS\QuarkAdmin\Models\File;
@@ -676,5 +678,83 @@ if(!function_exists('clear_captcha')) {
     {
         // 清除验证码
         cache(['adminCaptcha' => null], 60*10);
+    }
+}
+
+/**
+ * 导出Excel
+ * @author tangtanglove <dai_hang_love@126.com>
+ */
+if(!function_exists('export')) {
+    function export($fileName,$titles,$lists,$columnFormats = [])
+    {
+        $getTitles = [];
+        $getLists  = [];
+
+        if (!(count($titles) == count($titles, 1))) { // 标题为二维数组
+            foreach ($titles as $key => $value) {
+                $getTitles[] = $value['title'];
+                $fileds[] = $value['filed'];
+            }
+
+            foreach ($lists as $key1 => $value1) {
+                foreach ($fileds as $key2 => $value2) {
+                    $rows[$value2] = $value1[$value2];
+                }
+                $getLists[$key1] = $rows;
+            }
+        } else {
+            $getTitles = $titles;
+            $getLists  = $lists;
+        }
+
+        $export = new Export($getLists,$getTitles,$columnFormats);
+
+        return \Excel::download($export,$fileName.'_'.date('YmdHis').'.xlsx');
+    }
+}
+
+/**
+ * 导入Excel
+ * @author tangtanglove <dai_hang_love@126.com>
+ */
+if(!function_exists('import')) {
+    function import($fileId)
+    {
+        $file = File::where('id',$fileId)->first();
+
+        $importData = \Excel::toArray(new Import, storage_path('app/').$file['path']);
+
+        $results = $importData[0];
+
+        return $results;
+    }
+}
+
+/**
+ * 获取字符下一个字符
+ * @author tangtanglove <dai_hang_love@126.com>
+ */
+if(!function_exists('next_char')) {
+    function next_char(&$a)
+    {
+        $strList = preg_split("//u", $a, -1, PREG_SPLIT_NO_EMPTY);
+        if ($strList[count($strList) - 1] == 'Z') {
+            $str = '';
+            foreach ($strList as $key => $value) {
+                if ($key != count($strList) - 1)
+                    $str .= $value;
+            }
+            if ($str == '') {
+                $str = chr(ord('A') - 1);
+            }
+            $str = $this->chrNext($str) . 'A';
+        } else {
+            $strList[count($strList) - 1] = chr(ord($strList[count($strList) - 1]) + 1);
+            $str = implode('', $strList);
+        }
+
+        $a = $str;
+        return $a;
     }
 }
