@@ -60,7 +60,7 @@ class ResourceExportController extends Controller
                         break;
     
                     case 'switchField':
-                        $exportData[$dataKey][$fieldValue->name] = $this->getOptionValue($fieldValue->options,$dataValue[$fieldValue->name]);
+                        $exportData[$dataKey][$fieldValue->name] = $this->getSwitchValue($fieldValue->options,$dataValue[$fieldValue->name]);
                         break;
     
                     default:
@@ -106,5 +106,18 @@ class ResourceExportController extends Controller
         }
 
         return $result;
+    }
+
+    /**
+     * 获取开关组件值
+     *
+     * @param  array  $options
+     * @param  string|number|bool  $value
+     * 
+     * @return string
+     */
+    protected function getSwitchValue($options, $value)
+    {
+        return $options[$value ? 'on' : 'off'];
     }
 }
