@@ -2,6 +2,7 @@
 
 namespace QuarkCMS\QuarkAdmin\Excels;
 
+use Illuminate\Contracts\Queue\ShouldQueue;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Maatwebsite\Excel\Concerns\FromArray;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -11,7 +12,7 @@ use Maatwebsite\Excel\Concerns\WithEvents;
 use Maatwebsite\Excel\Concerns\WithStrictNullComparison;
 use Maatwebsite\Excel\Events\AfterSheet;
 
-class Export implements WithEvents,WithStrictNullComparison,FromArray,WithHeadings,ShouldAutoSize,WithColumnFormatting
+class Export implements WithEvents, WithStrictNullComparison, FromArray, WithHeadings, WithColumnFormatting, ShouldAutoSize, ShouldQueue
 {
     protected $lists,$headings,$columnFormats;
 
@@ -33,19 +34,20 @@ class Export implements WithEvents,WithStrictNullComparison,FromArray,WithHeadin
      */
     public function registerEvents(): array
     {
-        $titleNum = count($this->headings);
-
-        $endSheet = 'A';
-
-        for ($i=1; $i < $titleNum; $i++) { 
-            next_char($endSheet);
-        }
+        $headings = $this->headings;
 
         return [
-            AfterSheet::class => function (AfterSheet $event) use ($endSheet) {
+            AfterSheet::class => function (AfterSheet $event) use ($headings) {
 
-                //设置列宽
-                $event->sheet->getDelegate()->getColumnDimension('A')->setWidth(50);
+                $titleNum = count($this->headings);
+                $endSheet = 'A';
+                for ($i=1; $i < $titleNum; $i++) {
+                    //设置列宽
+                    // $titleLength = mb_strlen($this->headings[$i-1]);
+                    // $event->sheet->getDelegate()->getColumnDimension($endSheet)->setWidth($titleLength*5);
+                    
+                    next_char($endSheet);
+                }
 
                 //设置区域单元格水平居中
                 $event->sheet->getDelegate()->getStyle('A1:'.$endSheet.'1')->getAlignment()->setHorizontal('center');
@@ -62,7 +64,7 @@ class Export implements WithEvents,WithStrictNullComparison,FromArray,WithHeadin
                         ]
                     ],
                     'fill' => [
-                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, //线性填充，类似渐变
+                        'fillType' => \PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID, //填充背景
                         'startColor' => [
                             'rgb' => '54AE54' //初始颜色
                         ],
