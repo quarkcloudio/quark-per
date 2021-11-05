@@ -163,8 +163,9 @@ trait Layout
 
         $table = Table::key('table')
         ->title($this->indexTitle($request))
-        ->toolBar($this->toolBar($request))
-        ->columns($this->columns($request))
+        ->tableExtraRender($this->indexExtraRender($request))
+        ->toolBar($this->indexToolBar($request))
+        ->columns($this->indexColumns($request))
         ->batchActions($this->indexTableAlertActions($request))
         ->searches($this->indexSearches($request));
 

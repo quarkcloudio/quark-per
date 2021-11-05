@@ -221,7 +221,7 @@ trait ResolvesFields
      * @param  Request  $request
      * @return array
      */
-    public function columns(Request $request)
+    public function indexColumns(Request $request)
     {
         foreach ($this->indexFields($request) as $value) {
             $columns[] = $this->buildTableColumn($value);

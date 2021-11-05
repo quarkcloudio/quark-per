@@ -116,12 +116,23 @@ abstract class Resource extends JsonResource
     }
 
     /**
-     * 工具栏
+     * 列表页表格主体
      *
      * @param  Request $request
      * @return array
      */
-    public function toolBar($request)
+    public function indexExtraRender($request)
+    {
+        return null;
+    }
+
+    /**
+     * 列表页工具栏
+     *
+     * @param  Request $request
+     * @return array
+     */
+    public function indexToolBar($request)
     {
         return ToolBar::make($this->title() . '列表')->actions($this->indexActions($request));
     }
