@@ -9,11 +9,11 @@ class ResourceExportRequest extends QuarkRequest
      *
      * @return array|object
      */
-    public function indexQuery()
+    public function exportQuery()
     {
         $resource = $this->resource();
         
-        return $resource::buildIndexQuery(
+        return $resource::buildExportQuery(
             $this,
             $this->model(),
             $this->newResource()->searches($this),

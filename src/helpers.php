@@ -19,6 +19,7 @@ use Gregwar\Captcha\PhraseBuilder;
 if(!function_exists('error')) {
     function error($msg,$url = '')
     {
+        $result['component'] = 'message';
         $result['msg'] = $msg;
         $result['url'] = $url;
         $result['status'] = 'error';
@@ -33,6 +34,7 @@ if(!function_exists('error')) {
 if(!function_exists('success')) {
     function success($msg,$url ='',$data = '',$status = 'success')
     {
+        $result['component'] = 'message';
         $result['msg'] = $msg;
         $result['url'] = $url;
         $result['data'] = $data;

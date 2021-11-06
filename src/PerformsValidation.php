@@ -12,13 +12,15 @@ trait PerformsValidation
      *
      * @param  Request  $request
      * @param  object  $resource
+     * @param  array  $data
+     * 
      * @return Validator
      */
-    public static function validatorForCreation(Request $request, $resource)
+    public static function validatorForCreation(Request $request, $resource, $data=false)
     {
         $ruleData = static::rulesForCreation($request, $resource);
 
-        return Validator::make($request->all(), $ruleData['rules'], $ruleData['messages'])
+        return Validator::make($data ? $data : $request->all(), $ruleData['rules'], $ruleData['messages'])
                 ->after(function ($validator) use ($request) {
                     static::afterValidation($request, $validator);
                     static::afterCreationValidation($request, $validator);
@@ -161,13 +163,15 @@ trait PerformsValidation
      *
      * @param  Request  $request
      * @param  object  $resource
+     * @param  array  $data
+     * 
      * @return Validator
      */
-    public static function validatorForUpdate(Request $request, $resource)
+    public static function validatorForUpdate(Request $request, $resource, $data=false)
     {
         $ruleData = static::rulesForUpdate($request, $resource);
 
-        return Validator::make($request->all(), $ruleData['rules'], $ruleData['messages'])
+        return Validator::make($data ? $data : $request->all(), $ruleData['rules'], $ruleData['messages'])
                 ->after(function ($validator) use ($request) {
                     static::afterValidation($request, $validator);
                     static::afterUpdateValidation($request, $validator);

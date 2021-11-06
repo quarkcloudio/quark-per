@@ -57,6 +57,13 @@ abstract class Resource extends JsonResource
     public static $withExport = false;
 
     /**
+     * 列表页轮询
+     *
+     * @var null|number
+     */
+    public static $indexPolling = null;
+
+    /**
      * 详情页列数
      *
      * @var int
@@ -387,6 +394,30 @@ abstract class Resource extends JsonResource
     public function afterSaved(Request $request, $model)
     {
         return $model;
+    }
+
+    /**
+     * 数据导出前回调
+     * 
+     * @param Request $request
+     * @param mixed $list
+     * @return mixed
+     */
+    public function beforeExporting(Request $request, $list)
+    {
+        return $list;
+    }
+
+    /**
+     * 数据导入前回调
+     * 
+     * @param Request $request
+     * @param mixed $list
+     * @return mixed
+     */
+    public function beforeImporting(Request $request, $list)
+    {
+        return $list;
     }
 
     /**

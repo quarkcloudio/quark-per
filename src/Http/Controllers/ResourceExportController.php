@@ -15,13 +15,13 @@ class ResourceExportController extends Controller
     public function handle(ResourceExportRequest $request)
     {
         // 列表页展示前回调
-        $resource = $request->newResource()->beforeIndexShowing(
+        $resource = $request->newResource()->beforeExporting(
             $request,
-            $request->newResource()::collection($request->indexQuery())
+            $request->newResource()::collection($request->exportQuery())
         );
 
         $data = $resource->toArray($request);
-        $fields = $request->newResource()->indexFields($request);
+        $fields = $request->newResource()->exportFields($request);
 
         $exportData = [];
         $exportTitles = [];

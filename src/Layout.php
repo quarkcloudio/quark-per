@@ -162,6 +162,7 @@ trait Layout
         $resource = $request->resource();
 
         $table = Table::key('table')
+        ->polling($resource::$indexPolling)
         ->title($this->indexTitle($request))
         ->tableExtraRender($this->indexExtraRender($request))
         ->toolBar($this->indexToolBar($request))

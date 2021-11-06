@@ -37,6 +37,24 @@ trait PerformsQueries
     }
 
     /**
+     * 创建导出查询
+     *
+     * @param  Request  $request
+     * @param  Builder  $query
+     * @return Builder
+     */
+    public static function buildExportQuery(Request $request, $query, $search = [] , $filters = [])
+    {
+        return static::applyFilters($request, static::applySearch(
+                $request,
+                static::exportQuery($request, static::initializeQuery($request, $query)),
+                $search
+            ),
+            $filters
+        );
+    }
+
+    /**
      * 初始化查询
      *
      * @param  Request  $request
@@ -110,6 +128,18 @@ trait PerformsQueries
      * @return Builder
      */
     public static function detailQuery(Request $request, $query)
+    {
+        return $query;
+    }
+
+    /**
+     * 导出查询
+     *
+     * @param  Request  $request
+     * @param  Builder  $query
+     * @return Builder
+     */
+    public static function exportQuery(Request $request, $query)
     {
         return $query;
     }

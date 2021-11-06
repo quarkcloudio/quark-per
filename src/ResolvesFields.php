@@ -283,6 +283,40 @@ trait ResolvesFields
     }
 
     /**
+     * 导出字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function exportFields(Request $request)
+    {
+        foreach ($this->getFields($request) as $value) {
+            if($value->isShownOnExport()) {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
+    }
+
+    /**
+     * 导入字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function importFields(Request $request)
+    {
+        foreach ($this->getFields($request) as $value) {
+            if($value->isShownOnImport()) {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
+    }
+
+    /**
      * 获取字段
      *
      * @param  Request  $request
