@@ -49,7 +49,7 @@ class ResourceImportController extends Controller
     {
         $failedFileId = $request->input('failedFileId');
         
-        $failed = cache($failedFileId);
+        $failed = cache('failedFileId'.$failedFileId);
 
         if(empty($failed)) {
             return error('数据已过期！');

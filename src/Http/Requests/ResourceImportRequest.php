@@ -2,6 +2,9 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Requests;
 
+use QuarkCMS\Quark\Facades\Tpl;
+use QuarkCMS\Quark\Facades\Space;
+
 class ResourceImportRequest extends QuarkRequest
 {
     /**
@@ -12,6 +15,10 @@ class ResourceImportRequest extends QuarkRequest
     public function handleRequest()
     {
         $fileId = $this->input('fileId');
+
+        if (is_array($fileId)) {
+            $fileId = $fileId[0]['id'];
+        }
 
         if(empty($fileId)) {
             return error('参数错误！');
@@ -26,7 +33,7 @@ class ResourceImportRequest extends QuarkRequest
         // 去除表格头部
         unset($importData[0]);
 
-        $lists = $this->newResource()->beforeImporting($importData); // 导入前回调
+        $lists = $this->newResource()->beforeImporting($this,$importData); // 导入前回调
         $importResult = true;
         $importTotalNum = count($lists);
         $importSuccessedNum = 0;
@@ -38,8 +45,6 @@ class ResourceImportRequest extends QuarkRequest
             $formValues = $this->transformFormValues($item);
 
             $validator = $resource::validatorForCreation($this, $this->newResource(), $formValues);
-
-            $ruleData = static::rulesForCreation($request, $resource);
     
             if ($validator->fails()) {
                 $errorMsg = null;
@@ -86,11 +91,7 @@ class ResourceImportRequest extends QuarkRequest
         }
 
         if($importResult) {
-            return success('导入成功！','',[
-                'totalNum' => $importTotalNum,
-                'successedNum' => $importSuccessedNum,
-                'failedNum' => $importFailedNum
-            ]);
+            return success('导入成功！');
         } else {
             cache([
                 'failedFileId'.$fileId => [
@@ -99,12 +100,15 @@ class ResourceImportRequest extends QuarkRequest
                 ]
             ], 300);
 
-            return success('导入失败！','',[
-                'totalNum' => $importTotalNum,
-                'successedNum' => $importSuccessedNum,
-                'failedNum' => $importFailedNum,
-                'failedFileId' => 'failedFileId'.$fileId
-            ]);
+            return Space::body(
+                [
+                    Tpl::body('导入总量: '.$importTotalNum),
+                    Tpl::body('成功数量: '.$importSuccessedNum),
+                    Tpl::body('失败数量: <span style="color:#ff4d4f">'.$importFailedNum.'</span> <a href="api/admin/'.request()->route('resource').'/import/downloadFailed?failedFileId='.$fileId.'&token='.get_admin_token().'" target="_blank">下载失败数据</a>')
+                ]
+            )
+            ->size('small')
+            ->style(['marginLeft'=>'50px','marginBottom'=>'20px']);
         }
     }
 
@@ -120,7 +124,7 @@ class ResourceImportRequest extends QuarkRequest
 
         foreach ($importFields as $key => $value) {
             if(isset($data[$key])) {
-                $result[$value->name] = $value;
+                $result[$value->name] = $data[$key];
             }
         }
 

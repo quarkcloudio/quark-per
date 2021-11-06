@@ -8,7 +8,7 @@ Route::get('admin/dashboard/{dashboard}', 'DashboardController@show');
 // 资源管理
 Route::get('admin/{resource}/index', 'ResourceIndexController@handle');
 Route::get('admin/{resource}/export', 'ResourceExportController@handle');
-Route::get('admin/{resource}/import', 'ResourceImportController@handle');
+Route::any('admin/{resource}/import', 'ResourceImportController@handle');
 Route::get('admin/{resource}/import/template', 'ResourceImportController@template');
 Route::any('admin/{resource}/import/downloadFailed', 'ResourceImportController@downloadFailed');
 Route::any('admin/{resource}/action/{uriKey}', 'ResourceActionController@handle');
