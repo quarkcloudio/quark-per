@@ -50,6 +50,13 @@ abstract class Resource extends JsonResource
     public static $perPage = false;
 
     /**
+     * 是否有导入功能
+     *
+     * @var bool
+     */
+    public static $withImport = false;
+
+    /**
      * 是否有导出功能
      *
      * @var bool

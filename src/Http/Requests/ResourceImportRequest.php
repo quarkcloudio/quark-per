@@ -93,6 +93,8 @@ class ResourceImportRequest extends QuarkRequest
         if($importResult) {
             return success('导入成功！');
         } else {
+            $importHead[] = '错误信息';
+
             cache([
                 'failedFileId'.$fileId => [
                     'failedHead' => $importHead,
@@ -195,8 +197,8 @@ class ResourceImportRequest extends QuarkRequest
     {
         $result = null;
 
-        if(count(explode(',',$label))>1) {
-            $labels = explode(',',$label);
+        if(count(explode(',',$label))>1 || count(explode('，',$label))>1) {
+            $labels = explode(',',$label) ? explode(',',$label) : explode('，',$label);
             foreach ($options as $key => $option) {
                 if(in_array($option['label'],$labels)) {
                     $result[] = $option['value'];

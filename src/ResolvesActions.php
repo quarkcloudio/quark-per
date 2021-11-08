@@ -16,13 +16,20 @@ trait ResolvesActions
      */
     public function indexActions(Request $request)
     {
+        $actions = [];
+
         foreach ($this->actions($request) as $key => $value) {
             if($value->shownOnIndex()) {
                 $actions[] = $this->buildAction($value);
             }
         }
 
-        return Space::body($actions ?? []);
+        // 是否携带导入行为
+        if($request->resource()::$withImport) {
+            $actions[] = $this->buildAction(new \App\Admin\Actions\Import);
+        }
+
+        return Space::body($actions);
     }
 
     /**

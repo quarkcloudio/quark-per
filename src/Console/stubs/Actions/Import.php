@@ -61,10 +61,9 @@ class Import extends Modal
             ->size('middle')
             ->style(['marginBottom'=>'20px']),
 
-            Field::file('fileId','上传文件')
+            Field::file('fileId','导入文件')
             ->limitNum(1)
             ->extra('请上传xls格式的文件')
-            ->button('上传文件')
         ];
     }
 
