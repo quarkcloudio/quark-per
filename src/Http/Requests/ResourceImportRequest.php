@@ -44,7 +44,7 @@ class ResourceImportRequest extends QuarkRequest
 
             $formValues = $this->transformFormValues($item);
 
-            $validator = $resource::validatorForCreation($this, $this->newResource(), $formValues);
+            $validator = $resource::validatorForImport($this, $this->newResource(), $formValues);
     
             if ($validator->fails()) {
                 $errorMsg = null;

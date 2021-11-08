@@ -317,6 +317,23 @@ trait ResolvesFields
     }
 
     /**
+     * 不包含When组件内字段的导入字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function importFieldsWithoutWhen(Request $request)
+    {
+        foreach ($this->getFieldsWithoutWhen($request) as $value) {
+            if($value->isShownOnImport()) {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
+    }
+
+    /**
      * 获取字段
      *
      * @param  Request  $request

@@ -68,10 +68,6 @@ class ResourceImportController extends Controller
     {
         $remark = null;
 
-        $rules = $field->rules;
-        $creationRules = $field->creationRules;
-        $ruleMessage = $this->getFieldRuleMessage(array_merge($rules, $creationRules));
-
         switch ($field->component) {
             case 'inputNumberField':
                 $remark = '数字格式';
@@ -96,15 +92,15 @@ class ResourceImportController extends Controller
                 break;
 
             case 'checkboxField':
-                $remark = '可多选：' . $this->getFieldOptionLabels($field->options) . '；多值请用“,”分割';
+                $remark = '可多选项：' . $this->getFieldOptionLabels($field->options) . '；多值请用“,”分割';
                 break;
 
             case 'radioField':
-                $remark = '可选：' . $this->getFieldOptionLabels($field->options);
+                $remark = '可选项：' . $this->getFieldOptionLabels($field->options);
                 break;
 
             case 'switchField':
-                $remark = '可选：' . $this->getSwitchLabels($field->options);
+                $remark = '可选项：' . $this->getSwitchLabels($field->options);
                 break;
 
             case 'dateField':
@@ -120,7 +116,13 @@ class ResourceImportController extends Controller
                 break;
         }
 
-        $remark = $remark . $ruleMessage;
+        $rules = $field->rules;
+        $creationRules = $field->creationRules;
+        $ruleMessage = $this->getFieldRuleMessage(array_merge($rules, $creationRules));
+
+        if ($ruleMessage) {
+            $remark = $remark .' 条件：'. $ruleMessage;
+        }
 
         if ($remark) {
             $remark = '（' . $remark . '）';
@@ -156,12 +158,12 @@ class ResourceImportController extends Controller
 
                 case 'min':
                     // 最小字符串数
-                    $message[] = '须大于'.$arr[1].'个字符';
+                    $message[] = '大于'.$arr[1].'个字符';
                     break;
 
                 case 'max':
                     // 最大字符串数
-                    $message[] = '须小于'.$arr[1].'个字符';
+                    $message[] = '小于'.$arr[1].'个字符';
                     break;
 
                 case 'email':
@@ -203,9 +205,9 @@ class ResourceImportController extends Controller
 
                     break;
             }
-
-            return implode('/',$message);
         }
+
+        return implode('/',$message);
     }
 
     /**
@@ -222,7 +224,7 @@ class ResourceImportController extends Controller
             $result[] = $option['label'];
         }
 
-        return implode(',',$result);
+        return implode('，',$result);
     }
 
     /**
@@ -233,6 +235,6 @@ class ResourceImportController extends Controller
      */
     protected function getSwitchLabels($options)
     {
-        return $options['on'] . ',' . $options['off'];
+        return $options['on'] . '，' . $options['off'];
     }
 }

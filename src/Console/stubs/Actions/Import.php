@@ -63,7 +63,10 @@ class Import extends Modal
 
             Field::file('fileId','导入文件')
             ->limitNum(1)
-            ->extra('请上传xls格式的文件')
+            ->limitType([
+                'application/vnd.ms-excel',
+            ])
+            ->help('请上传xls格式的文件')
         ];
     }
 

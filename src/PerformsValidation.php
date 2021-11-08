@@ -174,7 +174,7 @@ trait PerformsValidation
         return Validator::make($data ? $data : $request->all(), $ruleData['rules'], $ruleData['messages'])
                 ->after(function ($validator) use ($request) {
                     static::afterValidation($request, $validator);
-                    static::afterUpdateValidation($request, $validator);
+                    static::afterImportValidation($request, $validator);
                 });
     }
 
@@ -257,6 +257,73 @@ trait PerformsValidation
     }
 
     /**
+     * 导入请求的验证器
+     *
+     * @param  Request  $request
+     * @param  object  $resource
+     * @param  array  $data
+     * 
+     * @return Validator
+     */
+    public static function validatorForImport(Request $request, $resource, $data=false)
+    {
+        $ruleData = static::rulesForImport($request, $resource);
+
+        return Validator::make($data ? $data : $request->all(), $ruleData['rules'], $ruleData['messages'])
+                ->after(function ($validator) use ($request) {
+                    static::afterValidation($request, $validator);
+                    static::afterImportValidation($request, $validator);
+                });
+    }
+
+    /**
+     * 创建请求的验证规则
+     *
+     * @param  Request  $request
+     * @param  object  $resource
+     * @return array
+     */
+    public static function rulesForImport(Request $request, $resource)
+    {
+        $fields = $resource->importFieldsWithoutWhen($request);
+        $rules = [];
+        $ruleMessages = [];
+
+        foreach ($fields as $value) {
+
+            $getResult = static::getRulesForCreation($request, $value);
+
+            $rules = array_merge($rules, $getResult['rules']);
+            $ruleMessages = array_merge($ruleMessages, $getResult['messages']);
+
+            // when中的变量
+            if(!empty($value->when)) {
+                foreach ($value->when['items'] as $when) {
+                    if(static::needValidateWhenRules($request, $when)) {
+                        $body = $when['body'];
+                        if(is_array($body)) {
+                            foreach ($when['body'] as $whenItem) {
+                                $whenItemResult = static::getRulesForCreation($request, $whenItem);
+                                $rules = array_merge($rules, $whenItemResult['rules']);
+                                $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
+                            }
+                        } elseif(is_object($body)) {
+                            $whenItemResult = static::getRulesForCreation($request, $when['body']);
+                            $rules = array_merge($rules, $whenItemResult['rules']);
+                            $ruleMessages = array_merge($ruleMessages, $whenItemResult['messages']);
+                        }
+                    }
+                }
+            }
+        }
+
+        $result['rules'] = $rules;
+        $result['messages'] = $ruleMessages;
+
+        return $result;
+    }
+
+    /**
      * 格式化规则
      *
      * @param  Request  $request
@@ -306,6 +373,18 @@ trait PerformsValidation
      * @return void
      */
     protected static function afterUpdateValidation(Request $request, $validator)
+    {
+        //
+    }
+
+    /**
+     * 创建请求验证完成后回调
+     *
+     * @param  Request  $request
+     * @param  Validator  $validator
+     * @return void
+     */
+    protected static function afterImportValidation(Request $request, $validator)
     {
         //
     }
