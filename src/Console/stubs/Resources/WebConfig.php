@@ -52,6 +52,7 @@ class WebConfig extends Resource
             $configs = $this->newModel()
             ->where('status', 1)
             ->where('group_name',$groupName)
+            ->orderBy('sort','asc')
             ->get()
             ->toArray();
             
@@ -148,10 +149,10 @@ class WebConfig extends Resource
     {
         return [
             new \App\Admin\Actions\ChangeWebConfig,
-            new \App\Admin\Actions\FormSubmit,
-            new \App\Admin\Actions\FormReset,
-            new \App\Admin\Actions\FormBack,
-            new \App\Admin\Actions\FormExtraBack
+            (new \App\Admin\Actions\FormSubmit),
+            (new \App\Admin\Actions\FormReset),
+            (new \App\Admin\Actions\FormBack),
+            (new \App\Admin\Actions\FormExtraBack)
         ];
     }
 }

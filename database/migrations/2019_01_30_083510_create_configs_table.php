@@ -18,6 +18,7 @@ class CreateConfigsTable extends Migration
             $table->string('title');
             $table->string('type');
             $table->string('name');
+            $table->integer('sort')->default(0)->nullable();
             $table->string('group_name');
             $table->longText('value')->nullable();
             $table->longText('remark')->nullable();

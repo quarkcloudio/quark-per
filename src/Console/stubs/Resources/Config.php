@@ -59,6 +59,12 @@ class Config extends Resource
                 ['required' => '标题必须填写']
             ),
 
+            Field::text('name','名称')
+            ->editable()
+            ->rules(['required','max:255'],['required'=>'名称必须填写','max'=>'名称不能超过255个字符'])
+            ->creationRules(["unique:configs"],['unique'=>'名称已经存在'])
+            ->updateRules(["unique:configs,name,{id}"],['unique'=>'名称已经存在']),
+
             Field::select('type','表单类型')
             ->options([
                 'text'=>'输入框',
@@ -69,18 +75,13 @@ class Config extends Resource
             ])
             ->default('text')
             ->onlyOnForms(),
-
-            Field::text('name','名称')
-            ->editable()
-            ->rules(['required','max:255'],['required'=>'名称必须填写','max'=>'名称不能超过255个字符'])
-            ->creationRules(["unique:configs"],['unique'=>'名称已经存在'])
-            ->updateRules(["unique:configs,name,{id}"],['unique'=>'名称已经存在']),
             
+            Field::text('sort','排序')
+            ->default(0)
+            ->editable()
+            ->help('值越小越靠前'),
+
             Field::text('group_name','分组名称')
-            ->rules(
-                ['required'],
-                ['required' => '分组名称必须填写']
-            )
             ->onlyOnForms(),
 
             Field::textArea('remark','备注')
@@ -125,10 +126,10 @@ class Config extends Resource
             (new \App\Admin\Actions\ChangeStatus)->onlyOnIndexTableRow(),
             (new \App\Admin\Actions\EditModal('编辑'))->onlyOnIndexTableRow(),
             (new \App\Admin\Actions\Delete('删除'))->onlyOnIndexTableRow(),
-            new \App\Admin\Actions\FormSubmit,
-            new \App\Admin\Actions\FormReset,
-            new \App\Admin\Actions\FormBack,
-            new \App\Admin\Actions\FormExtraBack
+            (new \App\Admin\Actions\FormSubmit),
+            (new \App\Admin\Actions\FormReset),
+            (new \App\Admin\Actions\FormBack),
+            (new \App\Admin\Actions\FormExtraBack)
         ];
     }
 }
