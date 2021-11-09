@@ -28,6 +28,13 @@ class FormSubmit extends Action
     public $actionType = 'submit';
 
     /**
+     * 是否具有loading，当action 的作用类型为ajax,submit时有效
+     *
+     * @var bool
+     */
+    public $withLoading = true;
+
+    /**
      * 初始化
      *
      * @param  string  $name

@@ -59,6 +59,13 @@ abstract class Action
     public $size = 'default';
 
     /**
+     * 是否具有loading，当action 的作用类型为ajax,submit时有效
+     *
+     * @var bool
+     */
+    public $withLoading = false;
+
+    /**
      * 行为表单字段
      *
      * @var array|object
@@ -257,6 +264,16 @@ abstract class Action
     public function size()
     {
         return $this->size;
+    }
+
+    /**
+     * 是否具有loading，当action 的作用类型为ajax,submit时有效
+     *
+     * @return bool
+     */
+    public function withLoading()
+    {
+        return $this->withLoading;
     }
 
     /**

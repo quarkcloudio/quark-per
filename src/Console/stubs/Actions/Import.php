@@ -81,6 +81,7 @@ class Import extends Modal
             Action::make('取消')->actionType('cancel'),
 
             Action::make("提交")
+            ->withLoading()
             ->reload('table')
             ->type('primary')
             ->actionType('submit')

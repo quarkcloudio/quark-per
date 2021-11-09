@@ -24,6 +24,13 @@ class SyncPermission extends Action
     public $reload = 'table';
 
     /**
+     * 是否具有loading，当action 的作用类型为ajax,submit时有效
+     *
+     * @var bool
+     */
+    public $withLoading = true;
+
+    /**
      * 执行行为
      *
      * @param  Fields  $fields
