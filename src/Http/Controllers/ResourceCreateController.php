@@ -16,7 +16,9 @@ class ResourceCreateController extends Controller
     {
         $data = $request->newResource()->beforeCreating($request);
 
-        return $request->newResource()->setLayoutContent(
+        return $request->newResource()
+        ->render(
+            $request,
             $request->newResource()->creationComponentRender($request,$data)
         );
     }

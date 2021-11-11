@@ -22,6 +22,6 @@ class ResourceIndexController extends Controller
 
         $component = $request->newResource()->indexComponentRender($request, $data);
 
-        return $request->newResource()->setLayoutContent($component);
+        return $request->newResource()->render($request, $component);
     }
 }

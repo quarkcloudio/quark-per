@@ -29,6 +29,13 @@ abstract class Resource extends JsonResource
     public static $title = null;
 
     /**
+     * 页面子标题
+     *
+     * @var string
+     */
+    public static $subTitle = null;
+
+    /**
      * 模型
      *
      * @var string
@@ -95,6 +102,16 @@ abstract class Resource extends JsonResource
     public function title()
     {
         return static::$title;
+    }
+
+    /**
+     * 页面子标题
+     *
+     * @return string
+     */
+    public function subTitle()
+    {
+        return static::$subTitle;
     }
 
     /**

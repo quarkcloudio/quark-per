@@ -9,6 +9,8 @@ use QuarkCMS\Quark\Facades\Table;
 use QuarkCMS\Quark\Facades\Form;
 use QuarkCMS\Quark\Facades\Card;
 use QuarkCMS\Quark\Facades\Tabs;
+use QuarkCMS\Quark\Facades\Row;
+use QuarkCMS\Quark\Facades\Col;
 use QuarkCMS\QuarkAdmin\Models\Menu;
 use QuarkCMS\QuarkAdmin\Models\Admin;
 use Illuminate\Support\Str;
@@ -118,16 +120,31 @@ trait Layout
     }
 
     /**
-     * 设置布局内容
+     * 渲染页面组件
      *
+     * @param  any $request
      * @param  any $content
      * @return array
      */
-    public function setLayoutContent($content)
+    public function pageComponentRender($request, $content)
     {
-        // 页面内容
-        $pageContainer = PageContainer::title($this->title())->body($content);
+        $pageContainer = $this->pageContainerComponentRender($request, $content);
 
+        $layout = $this->layoutComponentRender($request, $pageContainer);
+
+        // 页面
+        return Page::style(['height' => '100vh'])->body($layout);
+    }
+
+    /**
+     * 渲染页面布局组件
+     *
+     * @param  any  $request
+     * @param  object  $content
+     * @return array
+     */
+    public function layoutComponentRender($request, $content)
+    {
         $layout = LayoutFacade::title(config('admin.name','QuarkAdmin'));
 
         $layout->logo(config('admin.logo'));
@@ -144,10 +161,25 @@ trait Layout
         $layout->locale(config('admin.layout.locale'));
         $layout->siderWidth(config('admin.layout.sider_width'));
         $layout->menu($this->menu());
-        $layout->body($pageContainer);
+        $layout->body($content);
 
-        // 页面
-        return Page::style(['height' => '100vh'])->body($layout);
+        return $layout;
+    }
+
+    /**
+     * 渲染页面容器组件
+     *
+     * @param  any  $request
+     * @param  object  $content
+     * @return array
+     */
+    public function pageContainerComponentRender($request, $content)
+    {
+        // 页面内容
+        return PageContainer::header(
+            PageContainer::pageHeader($this->title(),$this->subTitle())
+        )
+        ->body($content);
     }
 
     /**
@@ -324,5 +356,59 @@ trait Layout
     public function detailWithinTabs($request, $title, $extra, $fields, $actions, $data)
     {
         return Tabs::tabPanes($fields)->tabBarExtraContent($extra);
+    }
+
+    /**
+     * 渲染仪表盘页组件
+     *
+     * @param  DashboardRequest  $request
+     * @return array
+     */
+    public function dashboardComponentRender($request)
+    {
+        $cards = $this->cards();
+        
+        $colNum = 0;
+        $rows = $cols = [];
+
+        foreach ($cards as $key => $card) {
+            $colNum = $colNum + $card->col;
+
+            $cardItem = Card::body(
+                $card->calculate($request)
+            );
+
+            $cols[] = Col::span($card->col)->body($cardItem);
+            if($colNum%24 === 0) {
+                $row = Row::gutter(8);
+                if($key !== 1) {
+                    $row = $row->style(['marginTop' => '20px']);
+                }
+                $rows[] = $row->body($cols);
+                $cols = [];
+            }
+        }
+
+        if($cols) {
+            $row = Row::gutter(8);
+            if($colNum > 24) {
+                $row = $row->style(['marginTop' => '20px']);
+            }
+            $rows[] = $row->body($cols);
+        }
+
+        return $rows;
+    }
+
+    /**
+     * 渲染组件
+     *
+     * @param  any $request
+     * @param  any $content
+     * @return array
+     */
+    public function render($request, $content)
+    {
+        return $this->pageComponentRender($request, $content);
     }
 }

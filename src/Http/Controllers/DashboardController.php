@@ -2,24 +2,21 @@
 
 namespace QuarkCMS\QuarkAdmin\Http\Controllers;
 
+use QuarkCMS\QuarkAdmin\Http\Requests\DashboardRequest;
+
 class DashboardController extends Controller
 {
     /**
      * 仪表盘展示
      *
-     * @param  string $dashboard
+     * @param  DashboardRequest  $request
      * @return array
      */
-    public function show($dashboard)
+    public function handle(DashboardRequest $request)
     {
-        $getCalledClass = 'App\\Admin\\Dashboards\\'.ucfirst($dashboard);
-
-        if(!class_exists($getCalledClass)) {
-            throw new \Exception("Class {$getCalledClass} does not exist.");
-        }
-
-        $calledClass = new $getCalledClass();
-
-        return $calledClass->resource();
+        return $request->newResource()->render(
+            $request,
+            $request->newResource()->dashboardComponentRender($request)
+        );
     }
 }

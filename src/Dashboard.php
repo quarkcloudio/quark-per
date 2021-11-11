@@ -2,10 +2,6 @@
 
 namespace QuarkCMS\QuarkAdmin;
 
-use QuarkCMS\Quark\Facades\Card;
-use QuarkCMS\Quark\Facades\Row;
-use QuarkCMS\Quark\Facades\Col;
-
 /**
  * Class Dashboard.
  */
@@ -21,6 +17,13 @@ abstract class Dashboard
     public $title = null;
 
     /**
+     * 页面子标题
+     *
+     * @var string
+     */
+    public $subTitle = null;
+
+    /**
      * 获取页面标题
      *
      * @return string
@@ -31,6 +34,16 @@ abstract class Dashboard
     }
 
     /**
+     * 获取页面子标题
+     *
+     * @return string
+     */
+    public function subTitle()
+    {
+        return $this->subTitle;
+    }
+
+    /**
      * 卡片列表
      *
      * @return array
@@ -38,47 +51,5 @@ abstract class Dashboard
     public function cards()
     {
         return [];
-    }
-
-    /**
-     * 资源对象
-     *
-     * @param  void
-     * @return array
-     */
-    public function resource()
-    {
-        $cards = $this->cards();
-        
-        $colNum = 0;
-        $rows = $cols = [];
-
-        foreach ($cards as $key => $card) {
-            $colNum = $colNum + $card->col;
-
-            $cardItem = Card::body(
-                $card->calculate(request())
-            );
-
-            $cols[] = Col::span($card->col)->body($cardItem);
-            if($colNum%24 === 0) {
-                $row = Row::gutter(8);
-                if($key !== 1) {
-                    $row = $row->style(['marginTop' => '20px']);
-                }
-                $rows[] = $row->body($cols);
-                $cols = [];
-            }
-        }
-
-        if($cols) {
-            $row = Row::gutter(8);
-            if($colNum > 24) {
-                $row = $row->style(['marginTop' => '20px']);
-            }
-            $rows[] = $row->body($cols);
-        }
-
-        return $this->setLayoutContent($rows);
     }
 }
