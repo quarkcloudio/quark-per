@@ -165,7 +165,7 @@ abstract class Resource extends JsonResource
      */
     public function indexToolBar($request)
     {
-        return ToolBar::make($this->title() . '列表')->actions($this->indexActions($request));
+        return ToolBar::make($this->indexTitle($request))->actions($this->indexActions($request));
     }
 
     /**
