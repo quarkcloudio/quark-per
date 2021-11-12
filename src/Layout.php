@@ -3,6 +3,7 @@
 namespace QuarkCMS\QuarkAdmin;
 
 use QuarkCMS\Quark\Facades\Layout as LayoutFacade;
+use QuarkCMS\Quark\Facades\Footer;
 use QuarkCMS\Quark\Facades\Page;
 use QuarkCMS\Quark\Facades\PageContainer;
 use QuarkCMS\Quark\Facades\Table;
@@ -162,6 +163,7 @@ trait Layout
         $layout->siderWidth(config('admin.layout.sider_width'));
         $layout->menu($this->menu());
         $layout->body($content);
+        $layout->footer(Footer::make(config('admin.copyright'), config('admin.links',[])));
 
         return $layout;
     }
