@@ -37,7 +37,7 @@ class ActionLog extends Resource
      */
     public static function indexQuery(Request $request, $query)
     {
-        return $query->orderBy('id','desc')->where('type','ADMIN');
+        return $query->where('type','ADMIN');
     }
 
     /**

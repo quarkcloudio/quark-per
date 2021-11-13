@@ -33,17 +33,6 @@ class Role extends Resource
     public static $perPage = 10;
 
     /**
-     * 定义排序
-     *
-     * @param  Request  $request
-     * @return object
-     */
-    public static function indexQuery(Request $request, $query)
-    {
-        return $query->orderBy('id','desc');
-    }
-
-    /**
      * 字段
      *
      * @param  Request  $request

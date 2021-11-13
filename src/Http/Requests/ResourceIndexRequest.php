@@ -16,7 +16,9 @@ class ResourceIndexRequest extends QuarkRequest
                 $this,
                 $this->model(),
                 $this->newResource()->searches($this),
-                $this->newResource()->filters($this)
+                $this->newResource()->filters($this),
+                $this->columnFilters(),
+                $this->orderings()
             );
 
         if($resource::pagination()) {
@@ -26,5 +28,29 @@ class ResourceIndexRequest extends QuarkRequest
         }
 
         return $result;
+    }
+
+    /**
+     * Get the column filters for the request.
+     *
+     * @return array
+     */
+    public function columnFilters()
+    {
+        return ! empty($this->filter) && is_array($this->filter)
+                        ? $this->filter
+                        : [];
+    }
+
+    /**
+     * Get the orderings for the request.
+     *
+     * @return array
+     */
+    public function orderings()
+    {
+        return ! empty($this->sorter) && is_array($this->sorter)
+                        ? $this->sorter
+                        : [];
     }
 }

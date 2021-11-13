@@ -13,15 +13,23 @@ trait PerformsQueries
      * @param  Builder  $query
      * @return Builder
      */
-    public static function buildIndexQuery(Request $request, $query, $search = [] , $filters = [])
+    public static function buildIndexQuery(Request $request, $query, $search = [] , $filters = [], $columnFilters = [], $orderings = [])
     {
-        return static::applyFilters($request, static::applySearch(
-                $request,
-                static::indexQuery($request, static::initializeQuery($request, $query)),
-                $search
-            ),
-            $filters
-        );
+        return static::applyOrderings(
+            static::applyColumnFilters(
+                static::applyFilters(
+                    $request,
+                    static::applySearch(
+                        $request,
+                        static::indexQuery(
+                            $request,
+                            static::initializeQuery($request, $query)
+                        ),
+                    $search),
+                    $filters
+                ),
+            $columnFilters),
+        $orderings);
     }
 
     /**
@@ -43,15 +51,23 @@ trait PerformsQueries
      * @param  Builder  $query
      * @return Builder
      */
-    public static function buildExportQuery(Request $request, $query, $search = [] , $filters = [])
+    public static function buildExportQuery(Request $request, $query, $search = [] , $filters = [], $columnFilters = [], $orderings = [])
     {
-        return static::applyFilters($request, static::applySearch(
-                $request,
-                static::exportQuery($request, static::initializeQuery($request, $query)),
-                $search
-            ),
-            $filters
-        );
+        return static::applyOrderings(
+            static::applyColumnFilters(
+                static::applyFilters(
+                    $request,
+                    static::applySearch(
+                        $request,
+                        static::exportQuery(
+                            $request,
+                            static::initializeQuery($request, $query)
+                        ),
+                    $search),
+                    $filters
+                ),
+            $columnFilters),
+        $orderings);
     }
 
     /**
@@ -84,6 +100,29 @@ trait PerformsQueries
     }
 
     /**
+     * 执行表格列上过滤器查询
+     *
+     * @param  Request  $request
+     * @param  Builder  $query
+     * @param  array  $filters
+     * @return Builder
+     */
+    protected static function applyColumnFilters($query, $filters)
+    {
+        $filters = array_filter($filters);
+
+        if (empty($filters)) {
+            return $query;
+        }
+
+        foreach ($filters as $column => $direction) {
+            $query = $query->whereIn($column, $direction);
+        }
+
+        return $query;
+    }
+
+    /**
      * 执行过滤器查询
      *
      * @param  Request  $request
@@ -93,6 +132,30 @@ trait PerformsQueries
      */
     protected static function applyFilters(Request $request, $query, $filters)
     {
+        return $query;
+    }
+
+    /**
+     * 执行排序查询
+     *
+     * @param  Builder  $query
+     * @param  array  $orderings
+     * @return Builder
+     */
+    protected static function applyOrderings($query, $orderings)
+    {
+        $orderings = array_filter($orderings);
+
+        if (empty($orderings)) {
+            return empty($query->getQuery()->orders) ? $query->latest($query->getModel()->getQualifiedKeyName())
+                        : $query;
+        }
+
+        foreach ($orderings as $column => $direction) {
+            $direction = ($direction === 'descend') ? 'desc' : 'asc';
+            $query = $query->orderBy($column, $direction);
+        }
+
         return $query;
     }
 
