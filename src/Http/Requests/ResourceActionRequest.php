@@ -18,6 +18,14 @@ class ResourceActionRequest extends QuarkRequest
         }
 
         foreach ($this->newResource()->actions($this) as $value) {
+            if($value->actionType() === 'dropdown') {
+                foreach ($value->getActions() as $key => $value) {
+                    if($this->route('uriKey') === $value->uriKey()) {
+                        return $value->handle($this, $model);
+                    }
+                }
+            }
+
             if($this->route('uriKey') === $value->uriKey()) {
                 return $value->handle($this, $model);
             }

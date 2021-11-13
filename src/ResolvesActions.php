@@ -4,6 +4,7 @@ namespace QuarkCMS\QuarkAdmin;
 
 use Illuminate\Http\Request;
 use QuarkCMS\Quark\Facades\Action;
+use QuarkCMS\Quark\Facades\Dropdown;
 use QuarkCMS\Quark\Facades\Space;
 
 trait ResolvesActions
@@ -142,6 +143,22 @@ trait ResolvesActions
      */
     protected function buildAction($item)
     {
+        if($item->actionType() === 'dropdown') {
+            $builder = Dropdown::make($item->name(), $item->overlay())
+            ->overlayStyle($item->overlayStyle())
+            ->placement($item->placement())
+            ->trigger($item->trigger())
+            ->arrow($item->arrow())
+            ->type($item->type())
+            ->size($item->size());
+
+            if($item->icon()) {
+                $builder->icon($item->icon());
+            }
+
+            return $builder;
+        }
+
         $builder = Action::make($item->name())
         ->withLoading($item->withLoading())
         ->reload($item->reload())
