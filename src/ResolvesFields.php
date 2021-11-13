@@ -183,7 +183,7 @@ trait ResolvesFields
                 $subItems = [];
                 foreach ($value->body as $subValue) {
                     if($subValue->isShownOnDetail()) {
-                        $subItems[] = $this->buildTableColumn($subValue);
+                        $subItems[] = $subValue->transformToColumn();
                     }
                 }
 
@@ -198,7 +198,7 @@ trait ResolvesFields
                 $items[] = $value;
             } else {
                 if($value->isShownOnDetail()) {
-                    $items[] = $this->buildTableColumn($value);
+                    $items[] = $value->transformToColumn();
                 }
             }
         }
@@ -224,7 +224,7 @@ trait ResolvesFields
     public function indexColumns(Request $request)
     {
         foreach ($this->indexFields($request) as $value) {
-            $columns[] = $this->buildTableColumn($value);
+            $columns[] = $value->transformToColumn();
         }
 
         $indexTableRowActions = $this->indexTableRowActions($request);
@@ -233,53 +233,11 @@ trait ResolvesFields
             $columns[] = Column::make('actions','操作')
             ->valueType('option')
             ->actions($indexTableRowActions)
+            ->fixed('right')
             ->render();
         }
 
         return $columns ?? [];
-    }
-
-    /**
-     * 创建表格的列
-     *
-     * @param  object  $field
-     * @return array
-     */
-    protected function buildTableColumn($field)
-    {
-        $column = Column::make($field->name, $field->label);
-
-        switch ($field->component) {
-            case 'textField':
-                $column = $column->valueType('text');
-                break;
-
-            case 'selectField':
-                $column = $column->valueType('select')->valueEnum($field->getValueEnum());
-                break;
-
-            case 'radioField':
-                $column = $column->valueType('radio')->valueEnum($field->getValueEnum());
-                break;
-
-            case 'switchField':
-                $column = $column->valueType('select')->valueEnum($field->getValueEnum());
-                break;
-
-            case 'imageField':
-                $column = $column->valueType('image');
-                break;
-
-            default:
-                $column = $column->valueType($field->component);
-                break;
-        }
-
-        if ($field->editable) {
-            $column = $column->editable($field->component, $field->options ?? []);
-        }
-
-        return $column->render();
     }
 
     /**
