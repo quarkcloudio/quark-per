@@ -167,7 +167,7 @@ if(!function_exists('action_log')) {
 * @author tangtanglove <dai_hang_love@126.com>
 */
 if(!function_exists('get_picture')) {
-    function get_picture($id,$key=0,$field='path') {
+    function get_picture($id, $key=0, $field='path') {
 
         // 获取文件url，用于外部访问，当存储为json格式时
         if(count(explode('{',$id))>1) {
@@ -265,7 +265,7 @@ if(!function_exists('get_picture')) {
 * @author tangtanglove <dai_hang_love@126.com>
 */
 if(!function_exists('get_file')) {
-    function get_file($id,$key,$field='path') {
+    function get_file($id, $key=0, $field='path') {
 
         if(count(explode('{',$id))>1) {
             $fileJson = json_decode($id, true);
