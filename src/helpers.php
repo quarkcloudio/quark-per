@@ -174,6 +174,8 @@ if(!function_exists('get_picture')) {
             $pictureJson = json_decode($id, true);
             if(isset($pictureJson['id'])) {
                 $id = $pictureJson['id'];
+            } elseif(isset($pictureJson[$key]['id'])) {
+                $id = $pictureJson[$key]['id'];
             } else {
                 return '//'.$_SERVER['HTTP_HOST'].'/admin/default.png';
             }
@@ -263,8 +265,54 @@ if(!function_exists('get_picture')) {
 * @author tangtanglove <dai_hang_love@126.com>
 */
 if(!function_exists('get_file')) {
-    function get_file($id,$field='path') {
+    function get_file($id,$key,$field='path') {
+
+        if(count(explode('{',$id))>1) {
+            $fileJson = json_decode($id, true);
+            if(isset($fileJson['id'])) {
+                $id = $fileJson['id'];
+            } elseif(isset($fileJson[$key]['id'])) {
+                $id = $fileJson[$key]['id'];
+            } else {
+                return null;
+            }
+        }
+
+        if(count(explode('[',$id))>1) {
+            $ids = json_decode($id, true);
+            if(isset($ids[$key])) {
+    
+                if($field == 'path') {
+                    $field = 'url';
+                }
+    
+                if(isset($ids[$key][$field])) {
+                    return $ids[$key][$field];
+                } else {
+                    if(isset($ids[$key])) {
+                        return get_file($ids[$key]);
+                    }
+                    return null;
+                }
+            } else {
+                return null;
+            }
+        }
+
+        // 本身为地址，直接返回
+        if(strpos($id,'http') !== false) {
+            return $id;
+        } else if(strpos($id,'public') !== false) {
+            // 存在http，本身为地址
+            $baseUrl = 'http://';
+            if(web_config('SSL_OPEN') == 1) {
+                $baseUrl = 'https://';
+            }
+            return $baseUrl.$_SERVER['HTTP_HOST'].Storage::url($id);
+        }
+
         $file = File::where('id',$id)->first();
+        
         if(!empty($file)) {
             $file = $file->toArray();
             if($field == 'path') {
