@@ -798,7 +798,7 @@ if(!function_exists('next_char')) {
             if ($str == '') {
                 $str = chr(ord('A') - 1);
             }
-            $str = $this->chrNext($str) . 'A';
+            $str = next_char($str) . 'A';
         } else {
             $strList[count($strList) - 1] = chr(ord($strList[count($strList) - 1]) + 1);
             $str = implode('', $strList);
