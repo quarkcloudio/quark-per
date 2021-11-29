@@ -66,16 +66,6 @@ class WebConfig extends Resource
                         break;
 
                     case 'file':
-                        $files = null;
-                        if($config['value']) {
-                            $file['id'] = $config['value'];
-                            $file['uid'] = $config['value'];
-                            $file['name'] = get_file($config['value'],'name');
-                            $file['size'] = get_file($config['value'],'size');
-                            $file['url'] = get_file($config['value'],'path');
-                            $files[] = $file;
-                        }
-
                         $fields[] = Field::file($config['name'],$config['title'])
                         ->extra($config['remark'])
                         ->button('上传'.$config['title']);
@@ -83,6 +73,7 @@ class WebConfig extends Resource
 
                     case 'textarea':
                         $fields[] = Field::textArea($config['name'],$config['title'])
+                        ->width('600px')
                         ->extra($config['remark']);
                         break;
 
@@ -94,14 +85,6 @@ class WebConfig extends Resource
                         break;
 
                     case 'picture':
-                        $image = null;
-                        if($config['value']) {
-                            $image['id'] = $config['value'];
-                            $image['name'] = get_picture($config['value'],0,'name');
-                            $image['size'] = get_picture($config['value'],0,'size');
-                            $image['url'] = get_picture($config['value'],0,'path');
-                        }
-
                         $fields[] = Field::image($config['name'],$config['title'])
                         ->extra($config['remark'])
                         ->button('上传'.$config['title']);
@@ -134,6 +117,30 @@ class WebConfig extends Resource
 
         foreach ($configs as $value) {
             $data[$value->name] = $value->value;
+
+            if ($value->type === 'picture') {
+                $image = null;
+                if($value->value) {
+                    $image['id'] = $value['value'];
+                    $image['name'] = get_picture($value['value'],0,'name');
+                    $image['size'] = get_picture($value['value'],0,'size');
+                    $image['url'] = get_picture($value['value'],0,'path');
+                }
+                $data[$value->name] = $image;
+            }
+
+            if ($value->type === 'file') {
+                $files = null;
+                if($value->value) {
+                    $file['id'] = $value['value'];
+                    $file['uid'] = $value['value'];
+                    $file['name'] = get_file($value['value'],'name');
+                    $file['size'] = get_file($value['value'],'size');
+                    $file['url'] = get_file($value['value'],'path');
+                    $files[] = $file;
+                }
+                $data[$value->name] = $files;
+            }
         }
 
         return $data ?? [];
