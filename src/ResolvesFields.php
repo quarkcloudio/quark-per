@@ -299,25 +299,7 @@ trait ResolvesFields
      */
     public function getFields(Request $request)
     {
-        foreach ($this->fields($request) as $value) {
-            if($value->component === 'tabPane') {
-                foreach ($value->body as $subValue) {
-                    $items[] = $subValue;
-                    $whenFields = $this->getWhenFields($subValue);
-                    if($whenFields) {
-                        $items = array_merge($items, $whenFields);
-                    }
-                }
-            } else {
-                $items[] = $value;
-                $whenFields = $this->getWhenFields($value);
-                if($whenFields) {
-                    $items = array_merge($items, $whenFields);
-                }
-            }
-        }
-
-        return $items ?? [];
+        return $this->findFields($this->fields($request));
     }
 
     /**
@@ -328,16 +310,40 @@ trait ResolvesFields
      */
     public function getFieldsWithoutWhen(Request $request)
     {
-        foreach ($this->fields($request) as $value) {
-            if($value->component === 'tabPane') {
-                foreach ($value->body as $subValue) {
-                    $items[] = $subValue;
-                }
+        return $this->findFields($this->fields($request), false);
+    }
+
+    /**
+     * 查找字段
+     *
+     * @param  array  $fields
+     * @param  bool  $when
+     * @return array
+     */
+    public function findFields($fields,$when = true)
+    {
+        $items = [];
+
+        foreach ($fields as $value) {
+            if(isset($value->body)) {
+                $getItems = $this->findFields($value->body);
+                $items = array_merge($items, $getItems);
             } else {
-                $items[] = $value;
+                if (strpos($value->component,'Field') !== false) { 
+                    $items[] = $value;
+
+                    // 是否获取when组件中的字段
+                    if ($when) {
+                        $whenFields = $this->getWhenFields($value);
+                        if($whenFields) {
+                            $items = array_merge($items, $whenFields);
+                        }
+                    }
+                }
             }
         }
-        return $items ?? [];
+
+        return $items;
     }
 
     /**

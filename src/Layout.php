@@ -112,7 +112,7 @@ trait Layout
                 $data[$key]['path'] = $path;
             }
 
-            $menuTrees = list_to_tree($data,'id','pid','children');
+            $menuTrees = list_to_tree($data,'id','pid','routes');
         } else {
             $menuTrees = $menu;
         }
@@ -282,7 +282,7 @@ trait Layout
     public function formWithinCard($request, $title, $extra, $api, $fields, $actions, $data)
     {
         $form = Form::api($api)
-        ->style(['marginTop' => '30px'])
+        ->style(['padding' => '24px'])
         ->actions($actions)
         ->body($fields)
         ->initialValues($data);
@@ -304,7 +304,6 @@ trait Layout
         return Form::api($api)
         ->actions($actions)
         ->style([
-            'marginTop' => '30px',
             'backgroundColor' => '#fff',
             'paddingBottom' => '20px'
         ])
