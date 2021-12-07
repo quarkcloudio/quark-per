@@ -54,7 +54,7 @@ class CreateModal extends Modal
         // 表单
         return Form::key('createModalForm')
         ->api($request->newResource()->creationApi($request))
-        ->items($request->newResource()->creationFields($request))
+        ->items($request->newResource()->creationFieldsWithinComponents($request))
         ->initialValues($request->newResource()->beforeCreating($request))
         ->labelCol([
             'span' => 6
@@ -75,7 +75,6 @@ class CreateModal extends Modal
             Action::make('取消')->actionType('cancel'),
             
             Action::make("提交")
-            ->withLoading()
             ->reload('table')
             ->type('primary')
             ->actionType('submit')
