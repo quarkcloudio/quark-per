@@ -13,12 +13,13 @@ class ResourceEditableRequest extends QuarkRequest
     {
         $data = $this->all();
 
+        $edit = [];
         foreach ($data as $key => $value) {
             if($value === 'true' || $value === 'false') {
-                $data[$key] = $value === 'true' ? 1 : 0;
+                $edit[$key] = $value === 'true' ? 1 : 0;
             }
         }
 
-        return $this->model()->where('id', $this->input('id'))->update($data);
+        return $this->model()->where('id', $this->input('id'))->update($edit);
     }
 }
