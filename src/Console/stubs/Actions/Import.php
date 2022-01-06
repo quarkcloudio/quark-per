@@ -54,7 +54,7 @@ class Import extends Modal
         return [
             Space::body(
                 [
-                    Tpl::body('模板文件: <a href="api/admin/'.request()->route('resource').'/import/template?token='.get_admin_token().'" target="_blank">下载模板</a>')->style(['marginLeft'=>'50px'])
+                    Tpl::body('模板文件: <a href="/api/admin/'.request()->route('resource').'/import/template?token='.get_admin_token().'" target="_blank">下载模板</a>')->style(['marginLeft'=>'50px'])
                 ]
             )
             ->direction('vertical')
