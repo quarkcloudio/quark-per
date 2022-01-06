@@ -65,6 +65,7 @@ class Import extends Modal
             ->limitNum(1)
             ->limitType([
                 'application/vnd.ms-excel',
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
             ])
             ->help('请上传xls格式的文件')
         ];
