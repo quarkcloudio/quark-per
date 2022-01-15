@@ -39,6 +39,13 @@ abstract class Search
     public $operator = null;
 
     /**
+     * 级联菜单接口
+     *
+     * @var string
+     */
+    public $api = null;
+
+    /**
      * 初始化
      *
      * @param  void
