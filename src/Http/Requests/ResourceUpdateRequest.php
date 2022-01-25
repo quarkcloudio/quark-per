@@ -60,7 +60,7 @@ class ResourceUpdateRequest extends QuarkRequest
     protected function getSubmitData($fields, $submitData)
     {
         foreach ($fields as $value) {
-            if(isset($submitData[$value->name])) {
+            if(array_key_exists($value->name, $submitData)) {
                 $result[$value->name] = is_array($submitData[$value->name]) ? 
                 json_encode($submitData[$value->name]) : $submitData[$value->name];
             }
