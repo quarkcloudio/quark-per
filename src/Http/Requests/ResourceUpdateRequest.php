@@ -40,11 +40,14 @@ class ResourceUpdateRequest extends QuarkRequest
 
         $updateResult = $this->model()->where('id', $this->id)->update($data);
 
-        if($updateResult) {
-            $model = $this->model()->where('id', $this->id)->first();
-        } else {
+        if($updateResult === false) {
             $model = $updateResult;
+        } else {
+            $model = $this->model()->where('id', $this->id)->first();
         }
+
+        // 保存后回调
+        return $this->newResource()->afterSaved($this, $model);
 
         // 保存后回调
         return $this->newResource()->afterSaved($this, $model);
