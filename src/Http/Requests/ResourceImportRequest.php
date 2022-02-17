@@ -106,7 +106,7 @@ class ResourceImportRequest extends QuarkRequest
                 [
                     Tpl::body('导入总量: '.$importTotalNum),
                     Tpl::body('成功数量: '.$importSuccessedNum),
-                    Tpl::body('失败数量: <span style="color:#ff4d4f">'.$importFailedNum.'</span> <a href="api/admin/'.request()->route('resource').'/import/downloadFailed?failedFileId='.$fileId.'&token='.get_admin_token().'" target="_blank">下载失败数据</a>')
+                    Tpl::body('失败数量: <span style="color:#ff4d4f">'.$importFailedNum.'</span> <a href="/api/admin/'.request()->route('resource').'/import/downloadFailed?failedFileId='.$fileId.'&token='.get_admin_token().'" target="_blank">下载失败数据</a>')
                 ]
             )
             ->size('small')
