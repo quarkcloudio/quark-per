@@ -201,7 +201,7 @@ abstract class Resource extends JsonResource
     {
         $uri = explode('/', parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH));
 
-        return in_array(end($uri), ['edit', 'update']);
+        return in_array(end($uri), ['edit', 'save']);
     }
 
     /**
