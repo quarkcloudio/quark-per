@@ -106,7 +106,7 @@ class ResourceImportRequest extends QuarkRequest
                 [
                     Tpl::body('导入总量: '.$importTotalNum),
                     Tpl::body('成功数量: '.$importSuccessedNum),
-                    Tpl::body('失败数量: <span style="color:#ff4d4f">'.$importFailedNum.'</span> <a href="/api/admin/'.request()->route('resource').'/import/downloadFailed?failedFileId='.$fileId.'&token='.get_admin_token().'" target="_blank">下载失败数据</a>')
+                    Tpl::body('失败数量: <span style="color:#ff4d4f">'.$importFailedNum.'</span> <a href="api/admin/'.request()->route('resource').'/import/downloadFailed?failedFileId='.$fileId.'&token='.get_admin_token().'" target="_blank">下载失败数据</a>')
                 ]
             )
             ->size('small')
@@ -146,35 +146,42 @@ class ResourceImportRequest extends QuarkRequest
 
             switch ($fieldValue->component) {
                 case 'inputNumberField':
-                    $result[$fieldValue->name] = $submitData[$fieldValue->name];
+                    $result[$fieldValue->name] = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
                     break;
 
                 case 'textField':
-                    $result[$fieldValue->name] = trim($submitData[$fieldValue->name]);
+                    $data = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
+                    $result[$fieldValue->name] = trim($data);
                     break;
 
                 case 'selectField':
-                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$submitData[$fieldValue->name]);
+                    $data = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
+                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$data);
                     break;
 
                 case 'cascaderField':
-                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$submitData[$fieldValue->name]);
+                    $data = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
+                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$data);
                     break;
 
                 case 'checkboxField':
-                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$submitData[$fieldValue->name]);
+                    $data = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
+                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$data);
                     break;
 
                 case 'radioField':
-                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$submitData[$fieldValue->name]);
+                    $data = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
+                    $result[$fieldValue->name] = $this->getOptionValue($fieldValue->options,$data);
                     break;
 
                 case 'switchField':
-                    $result[$fieldValue->name] = $this->getSwitchValue($fieldValue->options,$submitData[$fieldValue->name]);
+                    $data = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
+                    $result[$fieldValue->name] = $this->getSwitchValue($fieldValue->options,$data);
                     break;
 
                 default:
-                    $result[$fieldValue->name] = $submitData[$fieldValue->name];
+                    $data = isset($submitData[$fieldValue->name]) ? $submitData[$fieldValue->name] : null;
+                    $result[$fieldValue->name] = $data;
                     break;
             }
 
