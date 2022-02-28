@@ -87,7 +87,7 @@ trait Layout
                 ->get()
                 ->toArray();
 
-                $data = array_merge($lists,$lists1,$lists2);
+                $data = array_unique(array_merge($lists,$lists1,$lists2),SORT_REGULAR);
             }
 
             foreach ($data as $key => $value) {
