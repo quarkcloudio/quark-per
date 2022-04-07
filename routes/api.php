@@ -20,6 +20,9 @@ Route::get('admin/{resource}/edit/values', 'ResourceEditController@values');
 Route::post('admin/{resource}/save', 'ResourceUpdateController@handle');
 Route::get('admin/{resource}/detail', 'ResourceShowController@handle');
 
+// 直接加载前端组件
+Route::get('admin/pages/{component}', 'PagesController@handle');
+
 // 通用表单资源
 Route::get('admin/{resource}/{uriKey}-form', 'ResourceCreateController@handle');
 Route::get('admin/{resource}/{uriKey}/form', 'ResourceCreateController@handle');
