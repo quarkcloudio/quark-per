@@ -360,8 +360,9 @@ trait ResolvesFields
         if(!empty($item->when)) {
             foreach ($item->when['items'] as $when) {
                 $body = $when['body'];
+
                 if(is_array($body)) {
-                    $items = array_merge($items, $body);
+                    $items = array_merge($items,$this->findFields($body));
                 } elseif(is_object($body)) {
                     $items[] = $body;
                 }
