@@ -171,6 +171,10 @@ trait ResolvesActions
             $builder->icon($item->icon());
         }
 
+        if($item->actionType() === 'js') {
+            $builder->js($item->js());
+        }
+
         if($item->actionType() === 'link') {
             $builder->link($item->href(), $item->target());
         }
