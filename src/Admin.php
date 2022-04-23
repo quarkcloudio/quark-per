@@ -16,7 +16,7 @@ class Admin
      */
     public static function version()
     {
-        return 'v2.2.20';
+        return 'v2.2.21';
     }
 
     /**

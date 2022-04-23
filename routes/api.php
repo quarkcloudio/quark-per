@@ -30,6 +30,8 @@ Route::get('admin/{resource}/{uriKey}/form', 'ResourceCreateController@handle');
 // 图片上传、下载
 Route::get('admin/picture/getLists', 'PictureController@getLists');
 Route::post('admin/picture/upload', 'PictureController@upload');
+Route::any('admin/picture/crop', 'PictureController@crop');
+Route::any('admin/picture/delete', 'PictureController@delete');
 Route::get('admin/picture/download', 'PictureController@download');
 
 // 文件上传、下载
