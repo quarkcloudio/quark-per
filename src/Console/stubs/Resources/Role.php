@@ -48,8 +48,12 @@ class Role extends Resource
             Field::text('name','名称')->rules(['required'], ['required' => '名称必须填写']),
             Field::text('guard_name','GuardName')->default('admin'),
             Field::tree('menu_ids','权限')->data($menus),
-            Field::datetime('created_at','创建时间')->onlyOnIndex(),
-            Field::datetime('updated_at','更新时间')->onlyOnIndex(),
+            Field::datetime('created_date','创建时间',function () {
+                return \Carbon\Carbon::parse($this->created_at)->format('Y-m-d H:i:s');
+            })->onlyOnIndex(),
+            Field::datetime('updated_date','更新时间',function () {
+                return \Carbon\Carbon::parse($this->updated_at)->format('Y-m-d H:i:s');
+            })->onlyOnIndex(),
         ];
     }
 
