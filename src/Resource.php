@@ -433,6 +433,18 @@ abstract class Resource extends JsonResource
     }
 
     /**
+     * 数据导入模板显示前回调
+     * 
+     * @param Request $request
+     * @param mixed $titles
+     * @return mixed
+     */
+    public function beforeImportTemplateShowing(Request $request, $titles)
+    {
+        return $titles;
+    }
+
+    /**
      * 数据导入前回调
      * 
      * @param Request $request

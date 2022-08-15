@@ -30,15 +30,21 @@ class ResourceImportController extends Controller
 
         $fields = $request->newResource()->importFieldsWithoutHidden($request);
 
-        $exportTitles = [];
+        $titles = [];
 
         foreach ($fields as $fieldKey => $fieldValue) {
             if($fieldValue->component!='hiddenField') {
-                $exportTitles[] = $fieldValue->label . $this->getFieldRemark($fieldValue);
+                $titles[] = $fieldValue->label . $this->getFieldRemark($fieldValue);
             }
         }
 
-        return export('template', $exportTitles, []);
+        // 列表页展示前回调
+        $templateTitles = $request->newResource()->beforeImportTemplateShowing(
+            $request,
+            $titles
+        );
+
+        return export('template', $templateTitles, []);
     }
 
     /**
