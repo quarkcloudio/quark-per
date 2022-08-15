@@ -63,26 +63,26 @@ class ResourceImportRequest extends QuarkRequest
                 continue;
             }
     
-            $submitData = $this->newResource()->beforeSaving(
-                $this,
+            $submitData = $this->getSubmitData(
+                $this->newResource()->importFields($this),
                 $formValues
-            ); // 保存前回调
+            );
     
-            if(isset($submitData['msg'])) {
+            $data = $this->newResource()->beforeSaving(
+                $this,
+                $submitData
+            ); // 保存前回调
+
+            if(isset($data['msg'])) {
                 $importResult = false;
                 $importFailedNum = $importFailedNum+1; // 记录错误条数
-                $item['errorMsg'] = $submitData['msg']; // 记录错误信息
+                $item['errorMsg'] = $data['msg']; // 记录错误信息
 
                 //记录错误数据
                 $importFailedData[] = $item;
                 continue;
             }
-    
-            $data = $this->getSubmitData(
-                $this->newResource()->importFields($this),
-                $submitData
-            );
-    
+
             $model = $this->model()->create($data);
 
             $this->newResource()->afterSaved($this, $model);
@@ -122,7 +122,7 @@ class ResourceImportRequest extends QuarkRequest
      */
     protected function transformFormValues($data)
     {
-        $importFields = $this->newResource()->importFields($this);
+        $importFields = $this->newResource()->importFieldsWithoutHidden($this);
 
         foreach ($importFields as $key => $value) {
             if(isset($data[$key])) {

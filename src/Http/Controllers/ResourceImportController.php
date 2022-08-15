@@ -28,12 +28,14 @@ class ResourceImportController extends Controller
         // 列表页展示前回调
         $resource = $request->newResource();
 
-        $fields = $request->newResource()->importFields($request);
+        $fields = $request->newResource()->importFieldsWithoutHidden($request);
 
         $exportTitles = [];
 
         foreach ($fields as $fieldKey => $fieldValue) {
-            $exportTitles[] = $fieldValue->label . $this->getFieldRemark($fieldValue);
+            if($fieldValue->component!='hiddenField') {
+                $exportTitles[] = $fieldValue->label . $this->getFieldRemark($fieldValue);
+            }
         }
 
         return export('template', $exportTitles, []);

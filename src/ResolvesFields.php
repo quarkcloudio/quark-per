@@ -275,6 +275,23 @@ trait ResolvesFields
     }
 
     /**
+     * 不包含Hidden组件内字段的导入字段
+     *
+     * @param  Request  $request
+     * @return array
+     */
+    public function importFieldsWithoutHidden(Request $request)
+    {
+        foreach ($this->getFields($request) as $value) {
+            if($value->isShownOnImport() && $value->component != 'hiddenField') {
+                $items[] = $value;
+            }
+        }
+
+        return $items ?? [];
+    }
+
+    /**
      * 不包含When组件内字段的导入字段
      *
      * @param  Request  $request
