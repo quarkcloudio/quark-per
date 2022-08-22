@@ -22,6 +22,13 @@ abstract class Drawer extends Action
     public $width = 520;
 
     /**
+     * 关闭时销毁 Modal 里的子元素
+     *
+     * @var bool
+     */
+    public $destroyOnClose = false;
+
+    /**
      * 宽度
      *
      * @return string
@@ -49,5 +56,15 @@ abstract class Drawer extends Action
     public function actions()
     {
         return null;
+    }
+
+    /**
+     * 关闭时销毁 Modal 里的子元素
+     *
+     * @return bool
+     */
+    public function destroyOnClose()
+    {
+        return $this->destroyOnClose;
     }
 }

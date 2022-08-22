@@ -24,6 +24,13 @@ class EditModal extends Modal
     public $size = 'small';
 
     /**
+     * 关闭时销毁 Modal 里的子元素，如果包含editor组件时设置false
+     *
+     * @var bool
+     */
+    public $destroyOnClose = true;
+
+    /**
      * 执行成功后刷新的组件
      *
      * @var string

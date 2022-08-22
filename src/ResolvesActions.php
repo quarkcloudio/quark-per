@@ -184,7 +184,7 @@ trait ResolvesActions
                 return $modal->title($item->name())
                 ->width($item->width())
                 ->body($item->body())
-                ->destroyOnClose()
+                ->destroyOnClose($item->destroyOnClose())
                 ->actions($item->actions());
             });
         }
@@ -194,7 +194,7 @@ trait ResolvesActions
                 return $drawer->title($item->name())
                 ->width($item->width())
                 ->body($item->body())
-                ->destroyOnClose()
+                ->destroyOnClose($item->destroyOnClose())
                 ->actions($item->actions());
             });
         }

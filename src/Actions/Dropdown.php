@@ -139,7 +139,7 @@ abstract class Dropdown extends Action
                 return $modal->title($item->name())
                 ->width($item->width())
                 ->body($item->body())
-                ->destroyOnClose()
+                ->destroyOnClose($item->destroyOnClose())
                 ->actions($item->actions());
             });
         }
@@ -149,7 +149,7 @@ abstract class Dropdown extends Action
                 return $drawer->title($item->name())
                 ->width($item->width())
                 ->body($item->body())
-                ->destroyOnClose()
+                ->destroyOnClose($item->destroyOnClose())
                 ->actions($item->actions());
             });
         }
