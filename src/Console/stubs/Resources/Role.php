@@ -45,9 +45,14 @@ class Role extends Resource
 
         return [
             Field::hidden('id','ID')->onlyOnForms(),
-            Field::text('name','名称')->rules(['required'], ['required' => '名称必须填写']),
-            Field::text('guard_name','GuardName')->default('admin'),
-            Field::tree('menu_ids','权限')->data($menus),
+            Field::text('name','名称')
+            ->rules(['required'], ['required' => '名称必须填写'])
+            ->creationRules(
+                ['unique:roles,name'],
+                ['unique'=>'名称已存在']
+            ),
+            Field::text('guard_name','GuardName')->default('admin')->onlyOnForms(),
+            Field::tree('menu_ids','权限')->data($menus)->onlyOnForms(),
             Field::datetime('created_date','创建时间',function () {
                 return \Carbon\Carbon::parse($this->created_at)->format('Y-m-d H:i:s');
             })->onlyOnIndex(),
@@ -150,12 +155,22 @@ class Role extends Resource
     public function afterSaved(Request $request, $model)
     {
         // 根据菜单id获取所有权限
+        if(empty($request->input('menu_ids'))) {
+            return $model;
+        }
+
         $permissions = Permission::whereIn('menu_id',$request->input('menu_ids'))->pluck('id')->toArray();
 
+        if (empty($permissions)) {
+            return $model;
+        }
+        
         if($this->isCreating()) {
+
             // 同步权限
             return $model->syncPermissions(array_filter(array_unique($permissions)));
         } else {
+
             // 同步权限
             return Role::where('id',$request->input('id'))->first()->syncPermissions(array_filter(array_unique($permissions)));
         }
