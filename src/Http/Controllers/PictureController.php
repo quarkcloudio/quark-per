@@ -120,6 +120,13 @@ class PictureController extends Controller
         $fileHeader = $fileArray[0];
         $fileBody   = $fileArray[1];
 
+        $handle=fopen("php://temp", "rw");
+        fwrite($handle, base64_decode($fileBody));
+        fseek($handle, 0);
+        if (!in_array(strtolower(mime_content_type($handle)), ['jpeg','jpg', 'png', 'gif'])) {
+            return error('只能上传jpg、png、gif格式的图片！');
+        }
+
         switch ($fileHeader) {
             case 'data:image/jpg;base64':
                 $fileType = '.jpg';
