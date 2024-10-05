@@ -100,7 +100,7 @@ return [
                 'component' => 'icon',
                 'icon' => 'icon-question-circle',
                 'tooltip' => '使用文档',
-                'href' => 'http://www.quarkcms.com/',
+                'href' => 'http://www.quarkcloud.io/',
                 'target' => '_blank',
                 'style' => ['color' => '#000']
             ],
@@ -154,7 +154,7 @@ return [
     | 网站版权
     |
     */
-    'copyright' => date('Y').' QuarkCMS',
+    'copyright' => date('Y').' QuarkCloud',
 
     /*
     |--------------------------------------------------------------------------
@@ -166,8 +166,8 @@ return [
     */
     'links' => [
         [
-            'title' => 'Quark',
-            'href' => 'http://www.quarkcms.com/'
+            'title' => 'QuarkCloud',
+            'href' => 'http://www.quarkcloud.io/'
         ],
         [
             'title' => '爱小圈',
@@ -175,7 +175,7 @@ return [
         ],
         [
             'title' => 'Github',
-            'href' => 'https://github.com/quarkcms'
+            'href' => 'https://github.com/quarkcloudio'
         ]
     ],
 
@@ -202,7 +202,7 @@ return [
         'providers' => [
             'admins' => [
                 'driver' => 'eloquent',
-                'model'  => QuarkCMS\QuarkAdmin\Models\Admin::class,
+                'model'  => QuarkCloudIO\QuarkAdmin\Models\Admin::class,
             ],
         ],
     ],

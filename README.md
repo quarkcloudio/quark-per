@@ -28,7 +28,7 @@ QuarkAdmin 是一个可以帮你快速搭建管理后台的工具；它提供的
 
 ``` bash
 # 第一步，安装依赖
-composer require quarkcms/quark-admin
+composer require quarkcloudio/quark-per
 
 # 第二步，然后运行下面的命令来发布资源：
 php artisan quarkadmin:publish
@@ -62,7 +62,7 @@ php artisan serve
 
 ``` bash
 # 第一步，更新依赖
-composer update quarkcms/quark-admin
+composer update quarkcloudio/quark-per
 
 # 第二步，执行更新命令
 php artisan quarkadmin:update
@@ -70,14 +70,14 @@ php artisan quarkadmin:update
 
 ## 演示站点
 
-网址：[http://admin.quarkcms.com/admin/](http://admin.quarkcms.com/admin/)
+网址：[http://per.quarkcloud.io/admin/](http://per.quarkcloud.io/admin/)
 
 用户名：administrator 密码：123456
 
 ## 技术支持
-为了避免打扰作者日常工作，你可以在Github上提交 [Issues](https://github.com/quarkcms/quark-admin/issues)
+为了避免打扰作者日常工作，你可以在Github上提交 [Issues](https://github.com/quarkcloudio/quark-per/issues)
 
-相关教程，你可以查看 [在线文档](http://www.quarkcms.com/quark-admin/)
+相关教程，你可以查看 [在线文档](http://www.quarkcloud.io/quark-per/)
 
 ## License
 QuarkAdmin is licensed under The MIT License (MIT).

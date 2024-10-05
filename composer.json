@@ -1,5 +1,5 @@
 {
-    "name": "quarkcms/quark-admin",
+    "name": "quarkcloudio/quark-per",
     "description": "quark-admin",
     "keywords": [
         "quark-admin",
@@ -20,24 +20,25 @@
         "gregwar/captcha": "^1.0",
         "aliyuncs/oss-sdk-php": "^2.0",
         "guzzlehttp/guzzle": "^6.2|^7.0",
-        "maatwebsite/excel": "^3.1",
-        "quarkcms/quark": "^1.0.0"
+        "maatwebsite/excel": "^3.1"
     },
     "autoload": {
         "psr-4": {
-            "QuarkCMS\\QuarkAdmin\\": "src/"
+            "QuarkCloudIO\\Quark\\": "src/Quark/",
+            "QuarkCloudIO\\QuarkAdmin\\": "src/Admin/"
         },
         "files": [
-            "src/helpers.php"
+            "src/Quark/helpers.php",
+            "src/Admin/helpers.php"
         ]
     },
     "extra": {
         "laravel": {
             "providers": [
-                "QuarkCMS\\QuarkAdmin\\AdminServiceProvider"
+                "QuarkCloudIO\\QuarkAdmin\\AdminServiceProvider"
             ],
             "aliases": {
-                "QuarkAdmin": "QuarkCMS\\QuarkAdmin\\Facades\\Admin"
+                "QuarkAdmin": "QuarkCloudIO\\QuarkAdmin\\Facades\\Admin"
             }
         }
     },

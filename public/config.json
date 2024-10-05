@@ -1,0 +1,9 @@
+{
+  "initApi": "admin/login",
+  "apps": [
+    {
+      "name": "app1",
+      "entry": "/apps/app1.html"
+    }
+  ]
+}
